@@ -1,4 +1,4 @@
-Package: libmaycloud
+Package: libmaycloud-dev
 Version: 1.0-1
 Section: misc 
 Architecture: @DEB_ARCH@ 

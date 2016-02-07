@@ -62,8 +62,9 @@ OBJECTS+=obj/xmlwriter.o
 all: libmaycloud.a
 
 install: libmaycloud.a
-	#install -o root -g root libmaycloud.a /usr/lib/
-	echo TODO...
+	install -o root -g root libmaycloud.a /usr/lib/
+	mkdir -p /usr/include/maycloud
+	install -o root -g root maycloud/*.h /usr/include/maycloud/
 
 deb: $(DEB_FILENAME)
 

@@ -24,6 +24,9 @@ x86_64)
 i386)
 	DEB_ARCH=i386
 	;;
+armv6l)
+	DEB_ARCH=armhf
+	;;
 *)
 	DEB_ARCH=$host_cpu
 esac

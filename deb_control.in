@@ -1,0 +1,8 @@
+Package: libmaycloud
+Version: 1.0-1
+Section: misc 
+Architecture: @DEB_ARCH@ 
+Depends: libudns-dev, libmysqlclient-dev, libexpat1-dev
+Maintainer: Alice <alice@mkpnet.ru>
+Priority: extra
+Description: NedDaemon engine, MayCloud engine, misc tools

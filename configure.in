@@ -19,7 +19,7 @@ case "$host_cpu" in
 x86_64)
 	DEB_ARCH=amd64
 	;;
-i386)
+i686)
 	DEB_ARCH=i386
 	;;
 armv6l)

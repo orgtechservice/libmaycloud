@@ -38,13 +38,6 @@
 #define SPEAKER_LOG_FN "/dev/null"
 
 /**
-* И тут в дело снова вступает Капитан Очевидность
-*/
-#define PPPOEMON_PID_FILE "/var/run/ots_pppoemon.pid"
-#define PPPOEMON_CONF_FILE "/etc/maycloud/ots_pppoemon.conf"
-#define PPPOEMON_LOG_FN "/dev/null"
-
-/**
 * В качестве примера для модуля Example
 */
 #define EXAMPLE_PID_FILE "/var/run/ots_example.pid"

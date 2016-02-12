@@ -2,49 +2,6 @@
 #define MAYCLOUD_CONFIG_H
 
 /**
- * Путь к pid-файлу контроллера
- */
-#define CONTROLLER_PID_FILE "/var/run/ots_controller.pid"
-
-/**
- * Путь к конфигурационному файлу контроллера
- */
-#define CONTROLLER_CONF_FILE "/etc/maycloud/ots_controller.conf"
-
-/**
- * Путь к лог-файлу stderr контроллера
- */
-#define CONTROLLER_LOG_FN "/tmp/stderr.log"
-
-/**
- * Для хоста всё аналогично контроллеру
- */
-#define HOST_PID_FILE "/var/run/ots_host.pid"
-#define HOST_CONF_FILE "/etc/maycloud/ots_host.conf"
-#define HOST_LOG_FN "/dev/null"
-
-/**
- * Для рекордера всё аналогично контроллеру
- */
-#define RECORDER_PID_FILE "/var/run/ots_recorder.pid"
-#define RECORDER_CONF_FILE "/etc/maycloud/ots_recorder.conf"
-#define RECORDER_LOG_FN "/dev/null"
-
-/**
- * И тут в дело вступает Капитан Очевидность и в очередной раз спасает мир
- */
-#define SPEAKER_PID_FILE "/var/run/ots_speaker.pid"
-#define SPEAKER_CONF_FILE "/etc/maycloud/ots_speaker.conf"
-#define SPEAKER_LOG_FN "/dev/null"
-
-/**
-* В качестве примера для модуля Example
-*/
-#define EXAMPLE_PID_FILE "/var/run/ots_example.pid"
-#define EXAMPLE_CONF_FILE "/etc/maycloud/ots_example.conf"
-#define EXAMPLE_LOG_FN "/dev/null"
-
-/**
  * На данном этапе есть смысл обрабатывать выключение/выключение перекодирования аудио дефайнами
  * Возможно, в дальнейшем это не понадобится
  */

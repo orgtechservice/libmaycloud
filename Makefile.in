@@ -37,6 +37,12 @@ OBJECTS+=obj/configurer.o
 OBJECTS+=obj/controlagent.o
 OBJECTS+=obj/controlstream.o
 OBJECTS+=obj/debug.o
+OBJECTS+=obj/easylib.o
+OBJECTS+=obj/easylist.o
+OBJECTS+=obj/easymysql.o
+OBJECTS+=obj/easyresultset.o
+OBJECTS+=obj/easyrow.o
+OBJECTS+=obj/easyvector.o
 OBJECTS+=obj/error.o
 OBJECTS+=obj/fstream.o
 OBJECTS+=obj/iputils.o
@@ -115,6 +121,24 @@ obj/controlstream.o: maycloud/controlstream.cpp maycloud/controlstream.h mayclou
 
 obj/debug.o: maycloud/debug.cpp maycloud/debug.h
 	$(CXX) -c maycloud/debug.cpp -o obj/debug.o
+
+obj/easylib.o: maycloud/easylib.cpp maycloud/easylib.h
+	$(CXX) -c maycloud/easylib.cpp -o obj/easylib.o
+
+obj/easymysql.o: maycloud/easymysql.cpp maycloud/easymysql.h maycloud/easyrow.h maycloud/easyresultset.h
+	$(CXX) -c maycloud/easymysql.cpp -o obj/easymysql.o
+
+obj/easylist.o: maycloud/easylist.cpp maycloud/easylist.h
+	$(CXX) -c maycloud/easylist.cpp -o obj/easylist.o
+
+obj/easyresultset.o: maycloud/easyresultset.cpp maycloud/easyrow.h maycloud/easyresultset.h
+	$(CXX) -c maycloud/easyresultset.cpp -o obj/easyresultset.o
+	
+obj/easyrow.o: maycloud/easyrow.cpp maycloud/easyrow.h
+	$(CXX) -c maycloud/easyrow.cpp -o obj/easyrow.o
+
+obj/easyvector.o: maycloud/easyvector.cpp maycloud/easyvector.h
+	$(CXX) -c maycloud/easyvector.cpp -o obj/easyvector.o
 
 obj/error.o: maycloud/error.cpp maycloud/error.h
 	$(CXX) -c maycloud/error.cpp -o obj/error.o

@@ -165,37 +165,37 @@ EasyRow EasyMySQL::queryOne(const std::string &sql)
 
 EasyResultSet EasyMySQL::queryAll(const std::string &sql)
 {
-    EasyRow row;
-    EasyResultSet result;
-    real_query(sql);
-    MYSQL_RES *res = mysql_use_result(&conn);
-    if ( res )
-    {
-        MYSQL_FIELD *fields = mysql_fetch_fields(res);
-        int field_count = mysql_num_fields(res);
-        EasyVector f;
-        for(int i = 0; i < field_count; i ++)
-        {
-            f.push_back(std::string(fields[i].name, fields[i].name_length));
-        }
-
-        MYSQL_ROW values;
-        while ( values = mysql_fetch_row(res) )
-        {
-            unsigned long *lengths = mysql_fetch_lengths(res);
-
-            EasyRow row;
-            for(int i = 0; i < field_count; i++)
-            {
-                row[ f[i] ] = std::string(values[i], lengths[i]);
-            }
-
-            result.push_back(row);
-        }
-
-        mysql_free_result(res);
-    }
-    return result;
+	EasyResultSet result;
+	real_query(sql);
+	MYSQL_RES *res = mysql_use_result(&conn);
+	if ( res )
+	{
+		MYSQL_FIELD *fields = mysql_fetch_fields(res);
+		int field_count = mysql_num_fields(res);
+		EasyVector f;
+		for(int i = 0; i < field_count; i ++)
+		{
+			f.push_back(std::string(fields[i].name, fields[i].name_length));
+		}
+		
+		MYSQL_ROW values;
+		
+		while ( values = mysql_fetch_row(res) )
+		{
+			unsigned long *lengths = mysql_fetch_lengths(res);
+			
+			EasyRow row;
+			for(int i = 0; i < field_count; i++)
+			{
+				row[ f[i] ] = std::string(values[i], lengths[i]);
+			}
+			
+			result.push_back(row);
+		}
+		
+		mysql_free_result(res);
+	}
+	return result;
 }
 
 bool EasyMySQL::insert(const std::string &table, const EasyRow &row)

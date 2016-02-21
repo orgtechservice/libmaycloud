@@ -4,7 +4,10 @@
 #include <map>
 #include <string>
 
+#include <maycloud/object.h>
 #include <maycloud/easylist.h>
+
+extern template class std::map<std::string, std::string>;
 
 /**
  * Класс представляющий запись таблицы в базе данных,
@@ -15,12 +18,67 @@
  * Первичное назначение - представлять запись в таблице базы данных.
  * Но это также может быть базовый элемент для компонент QListView, QTreeView, QTableView,
  * или представлять набор атрибутов XML-тега или что-нибудь еще.
+ *
+ * @NOTE Класс использует семантику умных указателей. По логике реализации
+ * он является указателем на автоматически создаваемый объект.
+ * Когда один объект копирует другого, оба объекта начинают ссылаться
+ * на одни и те же реальные данные и оба могут модифицировать данные.
  */
-class EasyRow: public std::map<std::string, std::string>
+class EasyRow
 {
-
+private:
+	class Row: public Object, public std::map<std::string, std::string>
+	{
+	};
+	
+	ptr<Row> ref;
 public:
+	
+	/**
+	 * Претворяемся что мы map<>
+	 */
+	typedef Row::const_iterator const_iterator;
+	
+	/**
+	 * Конструктор по-умолчанию, создает новую пустую строку
+	 */
     EasyRow();
+	
+	/**
+	 * Конструктор копий, копирует ссылку на строку,
+	 * в конечном итоге оба объекта начинают работать с одной строкой
+	 */
+	EasyRow(const EasyRow &row);
+	
+	/**
+	 * Деструктор
+	 *
+	 * Освобождает строку. Строка удаляется если на неё больше никто
+	 * не ссылается. Если есть еще ссылки, то строка остается в памяти
+	 */
+	~EasyRow();
+	
+	/**
+	 * Претворяемся что мы map<>
+	 */
+	inline const_iterator begin() const { return ref->begin(); }
+	
+	/**
+	 * Претворяемся что мы map<>
+	 */
+	inline const_iterator end() const { return ref->end(); }
+	
+	/**
+	 * Оператор копий
+	 * 
+	 * Старая строка высвобождается, копирует ссылку объект
+	 */
+	EasyRow& operator = (const EasyRow &row) { ref = row.ref; }
+	
+	/**
+	 * Претворяемся что мы map<>
+	 */
+	inline std::string& operator [] (const std::string &key) { return ref->operator [] (key); }
 	
 	/**
 	 * Вернуть список ключей

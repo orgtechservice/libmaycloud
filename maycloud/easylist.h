@@ -12,7 +12,7 @@
 class EasyList: public std::list<std::string>
 {
 public:
-    EasyList();
+	EasyList();
 };
 
 #endif // EASYLIST_H

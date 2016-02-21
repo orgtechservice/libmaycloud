@@ -12,7 +12,7 @@
 class EasyVector: public std::vector<std::string>
 {
 public:
-    EasyVector();
+	EasyVector();
 };
 
 #endif // EASYVECTOR_H

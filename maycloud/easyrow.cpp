@@ -1,6 +1,13 @@
 #include "maycloud/easyrow.h"
 
+#include <cstdio>
+
 template class std::map<std::string, std::string>;
+
+void EasyRow::Row::copy(const std::map<std::string, std::string> &row)
+{
+	std::map<std::string, std::string>::operator = (row);
+}
 
 /**
 * Конструктор по-умолчанию, создает новую пустую строку
@@ -17,6 +24,17 @@ EasyRow::EasyRow()
 EasyRow::EasyRow(const EasyRow &row)
 {
 	ref = row.ref;
+}
+
+/**
+* Конструктор на основе map<string, string>
+*
+* Создает новый объект и копирует в него данные из map
+*/
+EasyRow::EasyRow(const std::map<std::string, std::string> &row)
+{
+	ref = new Row();
+	ref->copy(row);
 }
 
 /**

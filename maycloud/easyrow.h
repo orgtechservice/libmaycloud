@@ -29,6 +29,8 @@ class EasyRow
 private:
 	class Row: public Object, public std::map<std::string, std::string>
 	{
+	public:
+		void copy(const std::map<std::string, std::string> &row);
 	};
 	
 	ptr<Row> ref;
@@ -51,6 +53,13 @@ public:
 	EasyRow(const EasyRow &row);
 	
 	/**
+	 * Конструктор на основе map<string, string>
+	 *
+	 * Создает новый объект и копирует в него данные из map
+	 */
+	EasyRow(const std::map<std::string, std::string> &row);
+	
+	/**
 	 * Деструктор
 	 *
 	 * Освобождает строку. Строка удаляется если на неё больше никто
@@ -70,8 +79,8 @@ public:
 	
 	/**
 	 * Оператор копий
-	 * 
-	 * Старая строка высвобождается, копирует ссылку объект
+	 *
+	 * Берет ссылку на новый объект, старый отсоединяется.
 	 */
 	EasyRow& operator = (const EasyRow &row) { ref = row.ref; }
 	
@@ -89,7 +98,11 @@ public:
 	 * Вернуть список значений
 	 */
 	EasyList values() const;
+	
+	/**
+	 * Вернуть ссылку на map<>
+	 */
+	inline std::map<std::string, std::string>& map() { return *(ref.getObject()); }
 };
-
 
 #endif // EASYROW_H

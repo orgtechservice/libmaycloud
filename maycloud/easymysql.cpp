@@ -118,6 +118,7 @@ EasyRow EasyMySQL::quoteRow(const EasyRow &row)
 	while ( it != row.end() )
 	{
 		result[it->first] = quote(it->second);
+		++it;
 	}
 	return result;
 }

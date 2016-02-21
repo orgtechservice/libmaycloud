@@ -7,8 +7,6 @@
 #include <maycloud/object.h>
 #include <maycloud/easylist.h>
 
-extern template class std::map<std::string, std::string>;
-
 /**
  * Класс представляющий запись таблицы в базе данных,
  * просто в виде ассоциативного массива

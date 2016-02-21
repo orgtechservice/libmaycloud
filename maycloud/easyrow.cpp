@@ -2,8 +2,6 @@
 
 #include <cstdio>
 
-template class std::map<std::string, std::string>;
-
 void EasyRow::Row::copy(const std::map<std::string, std::string> &row)
 {
 	std::map<std::string, std::string>::operator = (row);

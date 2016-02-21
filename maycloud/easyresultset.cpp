@@ -1,7 +1,5 @@
 #include "easyresultset.h"
 
-template class std::vector<EasyRow>;
-
 /**
 * Конструктор по умолчанию, создает пустой набор данных
 */
@@ -24,4 +22,22 @@ EasyResultSet::EasyResultSet(const EasyResultSet &r): ref(r.ref)
 */
 EasyResultSet::~EasyResultSet()
 {
+}
+
+/**
+* Очистить список
+*/
+void EasyResultSet::clear()
+{
+	ref->clear(); 
+}
+
+/**
+* Сбросить сисок, данные не очищаются, сбрасывается указатель
+* и создается новый чистый объект. Если на старые данные никто не
+* ссылается, то они осовбождаются.
+*/
+void EasyResultSet::reset()
+{
+	ref = new ResultSet();
 }

@@ -4,8 +4,6 @@
 #include <vector>
 #include <maycloud/easyrow.h>
 
-extern template class std::vector<EasyRow>;
-
 /**
  * Класс представляющий набор данных,
  * просто как список записей EasyRow
@@ -71,16 +69,47 @@ public:
 	EasyResultSet& operator = (const EasyResultSet &row);
 	
 	/**
+	 * Число строк в списке
 	 * 
+	 * count() как-то логичнее и привычнее чем size()
 	 */
-	int count() { return ref->size(); }
+	inline int count() { return ref->size(); }
+	
+	/**
+	 * Число строк в списке
+	 * 
+	 * для симметрии с vector<>
+	 */
+	inline int size() { return ref->size(); }
+	
+	/**
+	 * Очистить список
+	 */
+	void clear();
+	
+	/**
+	 * Сбросить сисок, данные не очищаются, сбрасывается указатель
+	 * и создается новый чистый объект. Если на старые данные никто не
+	 * ссылается, то они осовбождаются.
+	 */
+	void reset();
 	
 	/**
 	 * Претворяемся что мы vector<>
 	 */
 	inline EasyRow& operator [] (int idx) { return ref->operator [] (idx); }
 	
+	/**
+	 * Добавить строку в конец списка
+	 */
 	void push_back(const EasyRow &row) { ref->push_back(row); }
+	
+	/**
+	 * Добавить строку в конец списка
+	 *
+	 * для симметрии с QT
+	 */
+	void append(const EasyRow &row) { ref->push_back(row); }
 };
 
 #endif // EASYRESULTSET_H

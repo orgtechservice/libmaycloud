@@ -48,16 +48,4 @@
 */
 #define ZLIB_INFLATE_CHUNK_SIZE (FD_READ_CHUNK_SIZE * 8)
 
-/**
- * utm_services
- */
-
-#define UTM_SERVICES_CONFIG_FN "/etc/utm_services.conf"
-
-#define NF_SERVICE_PID_FILE "/var/run/nf_service.pid"
-#define NF_SERVICE_LOG_FN "/var/log/nf_service.log"
-#define NF_SERVICE_TMP_STDIN_FN "/tmp/nf_service_in"
-#define NF_SERVICE_TMP_STDOUT_FN "/tmp/nf_service_out"
-//#define NF_SERVICE_DEBUG
-
 #endif // MAYCLOUD_CONFIG_H

@@ -88,6 +88,17 @@ public:
 	inline std::string& operator [] (const std::string &key) { return ref->operator [] (key); }
 	
 	/**
+	 * Претворяемся что мы map<>, удалить элемент из строки по ключу
+	 */
+	void erase(const std::string &key) { ref->erase(key); }
+	
+	/**
+	 * Удалить элемент из строки по ключу,
+	 * более очевидный псевдоним для функции erase
+	 */
+	void remove(const std::string &key) { ref->erase(key); }
+	
+	/**
 	 * Вернуть список ключей
 	 */
 	EasyList keys() const;

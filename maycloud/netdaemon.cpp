@@ -675,3 +675,10 @@ void NetDaemon::cleanup(int fd)
 	p->first = 0;
 	p->last = 0;
 }
+
+bool NetDaemon::exec(std::string path, const EasyVector &args, const EasyRow &env, void (*callback)(void *data), void *data) {
+	process_t process;
+	process.pid = 0;
+	processes.push_back(process);
+	return true;
+}

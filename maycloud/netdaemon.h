@@ -5,6 +5,7 @@
 #include <maycloud/error.h>
 #include <maycloud/object.h>
 #include <maycloud/config.h>
+#include <maycloud/easylib.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -45,6 +46,20 @@ private:
 	* TRUE - активен, FALSE остановлен или в процессе останова
 	*/
 	bool active;
+
+	/**
+	* Подпроцесс
+	*/
+	struct process_t {
+		pid_t pid;
+	};
+
+	typedef std::list<process_t> process_list_t;
+
+	/**
+	* Список подпроцессов
+	*/
+	process_list_t processes;
 	
 	struct timer
 	{
@@ -373,6 +388,8 @@ public:
 		gtimer = reinterpret_cast<timer_callback_t>(callback);
 		gtimer_data = data;
 	}
+
+	bool exec(std::string path, const EasyVector &args, const EasyRow & env, void (*callback)(void *data), void *data);
 	
 	/**
 	* Обработчик ошибок

@@ -34,7 +34,7 @@ typedef void (*timer_callback_t) (const timeval &tv, void *data);
 /**
 * callback обработчика завершения подпроцесса
 */
-typedef void (*exit_callback_t)(pid_t pid, void *data);
+typedef void (*exit_callback_t)(pid_t pid, int exit_code, void *data);
 
 /**
 * Главный класс сетевого демона

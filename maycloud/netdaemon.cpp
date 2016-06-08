@@ -34,7 +34,8 @@ static void onTimer(const timeval &tv, NetDaemon* daemon) {
 			int status = 0;
 			waitpid(it->second.pid, & status, WNOHANG);
 			if(WIFEXITED(status)) {
-				it->second.callback(it->second.pid, it->second.data);
+				int exit_code = WEXITSTATUS(status);
+				it->second.callback(it->second.pid, exit_code, it->second.data);
 				keys.push_back(it->second.pid);
 			}
 		}

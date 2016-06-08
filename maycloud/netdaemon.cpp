@@ -28,12 +28,19 @@ static void onTimer(const timeval &tv, NetDaemon* daemon) {
 		last_check = ts;
 		if(sigchld_counter == 0) return;
 
+		NetDaemon::pid_list_t keys;
+
 		for(NetDaemon::process_list_t::iterator it = daemon->processes.begin(); it != daemon->processes.end(); it ++) {
 			int status = 0;
 			waitpid(it->second.pid, & status, WNOHANG);
 			if(WIFEXITED(status)) {
 				it->second.callback(it->second.pid, it->second.data);
+				keys.push_back(it->second.pid);
 			}
+		}
+
+		for(NetDaemon::pid_list_t::iterator it = keys.begin(); it != keys.end(); it ++) {
+			daemon->processes.erase(*it);
 		}
 
 		sigchld_counter --;

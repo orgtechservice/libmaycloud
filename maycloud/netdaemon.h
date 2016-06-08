@@ -453,6 +453,7 @@ public:
 	};
 
 	typedef std::map<pid_t, process_t> process_list_t;
+	typedef std::list<pid_t> pid_list_t;
 
 	/**
 	* Список подпроцессов

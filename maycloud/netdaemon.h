@@ -17,6 +17,7 @@
 
 #include <sys/epoll.h>
 #include <sys/time.h>
+#include <sys/wait.h>
 
 #include <iostream>
 #include <queue>
@@ -51,21 +52,6 @@ private:
 	* TRUE - активен, FALSE остановлен или в процессе останова
 	*/
 	bool active;
-
-	/**
-	* Подпроцесс
-	*/
-	struct process_t {
-		pid_t pid;
-		exit_callback_t callback;
-	};
-
-	typedef std::map<pid_t, process_t> process_list_t;
-
-	/**
-	* Список подпроцессов
-	*/
-	process_list_t processes;
 	
 	struct timer
 	{
@@ -456,6 +442,22 @@ public:
 	* @param fd файловый дескриптор
 	*/
 	void cleanup(int fd);
+
+	/**
+	* Подпроцесс
+	*/
+	struct process_t {
+		pid_t pid;
+		exit_callback_t callback;
+		void *data;
+	};
+
+	typedef std::map<pid_t, process_t> process_list_t;
+
+	/**
+	* Список подпроцессов
+	*/
+	process_list_t processes;
 };
 
 #endif // NANOSOFT_NETDAEMON_H

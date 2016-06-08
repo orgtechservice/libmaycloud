@@ -28,7 +28,13 @@ static void onTimer(const timeval &tv, NetDaemon* daemon) {
 		last_check = ts;
 		if(sigchld_counter == 0) return;
 
-		// check process here
+		for(NetDaemon::process_list_t::iterator it = daemon->processes.begin(); it != daemon->processes.end(); it ++) {
+			int status = 0;
+			waitpid(it->second.pid, & status, WNOHANG);
+			if(WIFEXITED(status)) {
+				it->second.callback(it->second.pid, it->second.data);
+			}
+		}
 
 		sigchld_counter --;
 	}
@@ -719,6 +725,7 @@ pid_t NetDaemon::exec(std::string path, const EasyVector &args, const EasyRow &e
 			process_t process;
 			process.pid = pid;
 			process.callback = callback;
+			process.data = data;
 			processes[pid] = process;
 		}
 		return pid;

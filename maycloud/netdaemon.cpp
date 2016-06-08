@@ -4,17 +4,33 @@
 using namespace std;
 
 NetDaemon *daemon_instance = 0;
+unsigned int sigchld_counter = 0;
 
 void my_gnutls_log_func( int level, const char *message)
 {
 	printf("gnutls: level=%d %s", level, message);
 }
 
-static void signal_handler(int signo) {
+static void signalHandler(int signo) {
 	if(daemon_instance == 0) return;
 
 	if(signo == SIGCHLD) {
-		printf("Got SIGCHLD\n");
+		sigchld_counter ++;
+	}
+}
+
+int last_check = 0;
+
+static void onTimer(const timeval &tv, NetDaemon* daemon) {
+	int ts = tv.tv_sec;
+
+	if(ts >= last_check + 1) {
+		last_check = ts;
+		if(sigchld_counter == 0) return;
+
+		// check process here
+
+		sigchld_counter --;
 	}
 }
 
@@ -23,9 +39,8 @@ static void signal_handler(int signo) {
 * @param fd_limit максимальное число одновременных виртуальных потоков
 * @param buf_size размер файлового буфера в блоках
 */
-NetDaemon::NetDaemon(int fd_limit, int buf_size): timerCount(0), gtimer(0), count(0), active(0)
-{
-	signal(SIGCHLD, signal_handler);
+NetDaemon::NetDaemon(int fd_limit, int buf_size): timerCount(0), gtimer(0), count(0), active(0) {
+	signal(SIGCHLD, signalHandler);
 	limit = fd_limit;
 	epoll = epoll_create(fd_limit);
 	
@@ -369,6 +384,7 @@ void NetDaemon::doActiveAction()
 int NetDaemon::run()
 {
 	active = 1;
+	setGlobalTimer(onTimer, this);
 	
 	while ( count > 0 )
 	{

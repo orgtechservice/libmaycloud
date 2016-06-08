@@ -3,9 +3,19 @@
 
 using namespace std;
 
+NetDaemon *daemon_instance = 0;
+
 void my_gnutls_log_func( int level, const char *message)
 {
 	printf("gnutls: level=%d %s", level, message);
+}
+
+static void signal_handler(int signo) {
+	if(daemon_instance == 0) return;
+
+	if(signo == SIGCHLD) {
+		printf("Got SIGCHLD\n");
+	}
 }
 
 /**
@@ -13,12 +23,9 @@ void my_gnutls_log_func( int level, const char *message)
 * @param fd_limit максимальное число одновременных виртуальных потоков
 * @param buf_size размер файлового буфера в блоках
 */
-NetDaemon::NetDaemon(int fd_limit, int buf_size):
-	timerCount(0),
-	gtimer(0),
-	count(0),
-	active(0)
+NetDaemon::NetDaemon(int fd_limit, int buf_size): timerCount(0), gtimer(0), count(0), active(0)
 {
+	signal(SIGCHLD, signal_handler);
 	limit = fd_limit;
 	epoll = epoll_create(fd_limit);
 	
@@ -58,6 +65,12 @@ NetDaemon::NetDaemon(int fd_limit, int buf_size):
 	gnutls_global_set_log_function(my_gnutls_log_func);
 #endif // DEBUG_TLS
 #endif // HAVE_GNUTLS
+
+	/*
+	* Так как предполагается, что у нас всегда один экземпляр NetDaemon, я сделаю присваивание прямо при создании объекта © WST
+	* Поправьте меня, если я ошибаюсь.
+	*/
+	daemon_instance = this;
 }
 
 /**
@@ -676,9 +689,22 @@ void NetDaemon::cleanup(int fd)
 	p->last = 0;
 }
 
-bool NetDaemon::exec(std::string path, const EasyVector &args, const EasyRow &env, void (*callback)(void *data), void *data) {
-	process_t process;
-	process.pid = 0;
-	processes.push_back(process);
-	return true;
+pid_t NetDaemon::exec(std::string path, const EasyVector &args, const EasyRow &env, exit_callback_t callback, void *data) {
+	pid_t pid;
+	pid = fork();
+	if(pid == -1) {
+		logger.unexpected("NetDaemon::exec(%s) failed to create child process", path.c_str());
+		return -1;
+	} else {
+		if(pid == 0) {
+			//::close(epoll);
+			easyExec(path, args, env);
+		} else {
+			process_t process;
+			process.pid = pid;
+			process.callback = callback;
+			processes[pid] = process;
+		}
+		return pid;
+	}
 }

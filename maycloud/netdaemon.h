@@ -31,6 +31,11 @@
 typedef void (*timer_callback_t) (const timeval &tv, void *data);
 
 /**
+* callback обработчика завершения подпроцесса
+*/
+typedef void (*exit_callback_t)(pid_t pid, void *data);
+
+/**
 * Главный класс сетевого демона
 */
 class NetDaemon
@@ -52,9 +57,10 @@ private:
 	*/
 	struct process_t {
 		pid_t pid;
+		exit_callback_t callback;
 	};
 
-	typedef std::list<process_t> process_list_t;
+	typedef std::map<pid_t, process_t> process_list_t;
 
 	/**
 	* Список подпроцессов
@@ -389,7 +395,7 @@ public:
 		gtimer_data = data;
 	}
 
-	bool exec(std::string path, const EasyVector &args, const EasyRow & env, void (*callback)(void *data), void *data);
+	pid_t exec(std::string path, const EasyVector &args, const EasyRow & env, exit_callback_t callback, void *data);
 	
 	/**
 	* Обработчик ошибок

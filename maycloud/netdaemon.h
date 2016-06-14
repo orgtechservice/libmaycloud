@@ -381,7 +381,19 @@ public:
 		gtimer_data = data;
 	}
 
+	/**
+	* Запустить внешний процесс и добавить его в отслеживание
+	* Функция callback будет автоматически вызвана при его завершении
+	* data — указатель на пользовательские данные
+	*/
 	pid_t exec(std::string path, const EasyVector &args, const EasyRow & env, exit_callback_t callback, void *data);
+
+	/**
+	* Добавить существующий процесс в мониторинг
+	* Функция callback будет автоматически вызвана при его завершении
+	* data — указатель на пользовательские данные
+	*/
+	void bindProcess(pid_t pid, exit_callback_t callback, void *data);
 	
 	/**
 	* Обработчик ошибок
@@ -459,6 +471,7 @@ public:
 	* Список подпроцессов
 	*/
 	process_list_t processes;
+	process_list_t orphaned_processes;
 };
 
 #endif // NANOSOFT_NETDAEMON_H

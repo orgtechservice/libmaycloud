@@ -26,10 +26,25 @@ static void onTimer(const timeval &tv, NetDaemon* daemon) {
 
 	if(ts >= last_check + 1) {
 		last_check = ts;
-		if(sigchld_counter == 0) return;
 
 		NetDaemon::pid_list_t keys;
 
+		// Обработаем список orphaned_processes
+		for(NetDaemon::process_list_t::iterator it = daemon->orphaned_processes.begin(); it != daemon->orphaned_processes.end(); it ++) {
+			int result = kill(it->second.pid, 0);
+			if((result == -1) && (errno == ESRCH)) {
+				keys.push_back(it->second.pid);
+			}
+		}
+
+		for(NetDaemon::pid_list_t::iterator it = keys.begin(); it != keys.end(); it ++) {
+			daemon->orphaned_processes.erase(*it);
+		}
+
+		keys.clear();
+
+		// Обработаем список processes
+		if(sigchld_counter == 0) return;
 		for(NetDaemon::process_list_t::iterator it = daemon->processes.begin(); it != daemon->processes.end(); it ++) {
 			int status = 0;
 			waitpid(it->second.pid, & status, WNOHANG);
@@ -727,8 +742,9 @@ pid_t NetDaemon::exec(std::string path, const EasyVector &args, const EasyRow &e
 		return -1;
 	} else {
 		if(pid == 0) {
-			//::close(epoll);
+			::close(epoll);
 			easyExec(path, args, env);
+			exit(0);
 		} else {
 			process_t process;
 			process.pid = pid;
@@ -738,4 +754,12 @@ pid_t NetDaemon::exec(std::string path, const EasyVector &args, const EasyRow &e
 		}
 		return pid;
 	}
+}
+
+void NetDaemon::bindProcess(pid_t pid, exit_callback_t callback, void *data) {
+	process_t process;
+	process.pid = pid;
+	process.callback = callback;
+	process.data = data;
+	orphaned_processes[pid] = process;
 }

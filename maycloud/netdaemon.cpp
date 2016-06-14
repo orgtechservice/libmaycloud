@@ -398,7 +398,6 @@ void NetDaemon::doActiveAction()
 int NetDaemon::run()
 {
 	active = 1;
-	setGlobalTimer(onTimer, this);
 	
 	while ( count > 0 )
 	{
@@ -434,6 +433,7 @@ void NetDaemon::processTimers()
 	{
 		gtimer(tv, gtimer_data);
 	}
+	onTimer(tv, this);
 	while ( timerCount > 0 )
 	{
 		t = timers.top();

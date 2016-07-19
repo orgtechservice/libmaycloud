@@ -50,6 +50,7 @@ OBJECTS+=obj/logger.o
 OBJECTS+=obj/mysql.o
 OBJECTS+=obj/netdaemon.o
 OBJECTS+=obj/object.o
+OBJECTS+=obj/processmanager.o
 OBJECTS+=obj/randomstring.o
 OBJECTS+=obj/tagbuilder.o
 OBJECTS+=obj/taghelper.o
@@ -152,11 +153,14 @@ obj/logger.o: maycloud/logger.cpp maycloud/logger.h
 obj/mysql.o: maycloud/mysql.cpp maycloud/mysql.h maycloud/config.h
 	$(CXX) -c maycloud/mysql.cpp -o obj/mysql.o
 
-obj/netdaemon.o: maycloud/netdaemon.cpp maycloud/netdaemon.h maycloud/config.h
+obj/netdaemon.o: maycloud/netdaemon.cpp maycloud/netdaemon.h maycloud/config.h maycloud/processmanager.h
 	$(CXX) -c maycloud/netdaemon.cpp -o obj/netdaemon.o
 
 obj/object.o: maycloud/object.cpp maycloud/object.h
 	$(CXX) -c maycloud/object.cpp -o obj/object.o
+
+obj/processmanager.o: maycloud/processmanager.cpp maycloud/processmanager.h
+	$(CXX) -c maycloud/processmanager.cpp -o obj/processmanager.o
 
 obj/randomstring.o: maycloud/randomstring.cpp maycloud/randomstring.h
 	$(CXX) -c maycloud/randomstring.cpp -o obj/randomstring.o

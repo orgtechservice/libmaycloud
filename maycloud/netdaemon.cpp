@@ -19,50 +19,6 @@ static void signalHandler(int signo) {
 	}
 }
 
-int last_check = 0;
-
-static void onTimer(const timeval &tv, NetDaemon* daemon) {
-	int ts = tv.tv_sec;
-
-	if(ts >= last_check + 1) {
-		last_check = ts;
-
-		NetDaemon::pid_list_t keys;
-
-		// Обработаем список orphaned_processes
-		for(NetDaemon::process_list_t::iterator it = daemon->orphaned_processes.begin(); it != daemon->orphaned_processes.end(); it ++) {
-			int result = kill(it->second.pid, 0);
-			if((result == -1) && (errno == ESRCH)) {
-				keys.push_back(it->second.pid);
-			}
-		}
-
-		for(NetDaemon::pid_list_t::iterator it = keys.begin(); it != keys.end(); it ++) {
-			daemon->orphaned_processes.erase(*it);
-		}
-
-		keys.clear();
-
-		// Обработаем список processes
-		if(sigchld_counter == 0) return;
-		for(NetDaemon::process_list_t::iterator it = daemon->processes.begin(); it != daemon->processes.end(); it ++) {
-			int status = 0;
-			waitpid(it->second.pid, & status, WNOHANG);
-			if(WIFEXITED(status)) {
-				int exit_code = WEXITSTATUS(status);
-				it->second.callback(it->second.pid, exit_code, it->second.data);
-				keys.push_back(it->second.pid);
-			}
-		}
-
-		for(NetDaemon::pid_list_t::iterator it = keys.begin(); it != keys.end(); it ++) {
-			daemon->processes.erase(*it);
-		}
-
-		sigchld_counter --;
-	}
-}
-
 /**
 * Конструктор демона
 * @param fd_limit максимальное число одновременных виртуальных потоков
@@ -448,7 +404,7 @@ void NetDaemon::processTimers()
 	{
 		gtimer(tv, gtimer_data);
 	}
-	onTimer(tv, this);
+	onProcessTimer();
 	while ( timerCount > 0 )
 	{
 		t = timers.top();
@@ -732,34 +688,4 @@ void NetDaemon::cleanup(int fd)
 	p->quota = 0;
 	p->first = 0;
 	p->last = 0;
-}
-
-pid_t NetDaemon::exec(std::string path, const EasyVector &args, const EasyRow &env, exit_callback_t callback, void *data) {
-	pid_t pid;
-	pid = fork();
-	if(pid == -1) {
-		logger.unexpected("NetDaemon::exec(%s) failed to create child process", path.c_str());
-		return -1;
-	} else {
-		if(pid == 0) {
-			::close(epoll);
-			easyExec(path, args, env);
-			exit(0);
-		} else {
-			process_t process;
-			process.pid = pid;
-			process.callback = callback;
-			process.data = data;
-			processes[pid] = process;
-		}
-		return pid;
-	}
-}
-
-void NetDaemon::bindProcess(pid_t pid, exit_callback_t callback, void *data) {
-	process_t process;
-	process.pid = pid;
-	process.callback = callback;
-	process.data = data;
-	orphaned_processes[pid] = process;
 }

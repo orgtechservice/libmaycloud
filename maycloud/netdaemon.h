@@ -6,6 +6,7 @@
 #include <maycloud/object.h>
 #include <maycloud/config.h>
 #include <maycloud/easylib.h>
+#include <maycloud/processmanager.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -32,14 +33,9 @@
 typedef void (*timer_callback_t) (const timeval &tv, void *data);
 
 /**
-* callback обработчика завершения подпроцесса
-*/
-typedef void (*exit_callback_t)(pid_t pid, int exit_code, void *data);
-
-/**
 * Главный класс сетевого демона
 */
-class NetDaemon
+class NetDaemon: public ProcessManager
 {
 private:
 	/**
@@ -382,20 +378,6 @@ public:
 	}
 
 	/**
-	* Запустить внешний процесс и добавить его в отслеживание
-	* Функция callback будет автоматически вызвана при его завершении
-	* data — указатель на пользовательские данные
-	*/
-	pid_t exec(std::string path, const EasyVector &args, const EasyRow & env, exit_callback_t callback, void *data);
-
-	/**
-	* Добавить существующий процесс в мониторинг
-	* Функция callback будет автоматически вызвана при его завершении
-	* data — указатель на пользовательские данные
-	*/
-	void bindProcess(pid_t pid, exit_callback_t callback, void *data);
-	
-	/**
 	* Обработчик ошибок
 	*
 	* По умолчанию выводит все ошибки в stderr
@@ -454,24 +436,6 @@ public:
 	* @param fd файловый дескриптор
 	*/
 	void cleanup(int fd);
-
-	/**
-	* Подпроцесс
-	*/
-	struct process_t {
-		pid_t pid;
-		exit_callback_t callback;
-		void *data;
-	};
-
-	typedef std::map<pid_t, process_t> process_list_t;
-	typedef std::list<pid_t> pid_list_t;
-
-	/**
-	* Список подпроцессов
-	*/
-	process_list_t processes;
-	process_list_t orphaned_processes;
 };
 
 #endif // NANOSOFT_NETDAEMON_H

@@ -22,6 +22,50 @@ ControlStream::~ControlStream()
 }
 
 /**
+* Распарсить атрибут "to" на маршрут и имя агента
+*/
+void ControlStream::parseAttributeTo(const std::string &to, std::string &route, std::string &name)
+{
+	std::string resource;
+	parseAttributeTo(to, route, name, resource);
+}
+
+/**
+* Распарсить атрибут "to" на маршрут, имя агента и ресурс
+*/
+void ControlStream::parseAttributeTo(const std::string &to, std::string &route, std::string &name, std::string &resource)
+{
+	// все могло быть проще... но это же STL...
+	// если будет время, надо будет сделать более понятное решение
+	
+	std::size_t pos = to.find('/');
+	std::string part = to.substr(0, pos); // выцепляем часть route:host
+	if ( pos == std::string::npos ) resource = "";
+	else resource = to.substr(pos+1, std::string::npos);
+	
+	pos = part.find(':');
+	route = part.substr(0, pos);
+	if ( pos == std::string::npos ) name = "";
+	else name = part.substr(pos+1, std::string::npos);
+}
+
+/**
+* Сформировать атрибут "to"
+*/
+std::string ControlStream::makeAttributeTo(const std::string &route, const std::string &name)
+{
+	return route + ":" + name;
+}
+
+/**
+* Сформировать атрибут "to"
+*/
+std::string ControlStream::makeAttributeTo(const std::string &route, const std::string &name, const std::string &resource)
+{
+	return route + ":" + name + "/" + resource;
+}
+
+/**
  * Вернуть маску ожидаемых событий
  */
 uint32_t ControlStream::getEventsMask()

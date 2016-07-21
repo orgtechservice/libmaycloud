@@ -114,6 +114,26 @@ public:
 	~ControlStream();
 	
 	/**
+	 * Распарсить атрибут "to" на маршрут и имя агента
+	 */
+	static void parseAttributeTo(const std::string &to, std::string &route, std::string &name);
+	
+	/**
+	 * Распарсить атрибут "to" на маршрут, имя агента и ресурс
+	 */
+	static void parseAttributeTo(const std::string &to, std::string &route, std::string &name, std::string &resource);
+	
+	/**
+	 * Сформировать атрибут "to"
+	 */
+	static std::string makeAttributeTo(const std::string &route, const std::string &name);
+	
+	/**
+	 * Сформировать атрибут "to"
+	 */
+	static std::string makeAttributeTo(const std::string &route, const std::string &name, const std::string &resource);
+	
+	/**
 	 * Обработчик открытия тега
 	 */
 	virtual void onStartElement(const std::string &name, const attributes_t &attributes);

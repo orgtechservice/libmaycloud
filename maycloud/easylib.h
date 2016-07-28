@@ -23,6 +23,14 @@ EasyRow easyEnviron(char **envp);
 EasyRow easyEnviron();
 
 /**
+ * Распарсить команду, представленную в виде строки, в
+ * набор аргументов EasyVector.
+ * 
+ * @param args выходной набор аргументов  
+ */
+void parseCmdString(const std::string cmd, EasyVector& args);
+
+/**
  * Вызов exec()
  */
 int easyExec(const std::string &filename, EasyVector args, char **envp);

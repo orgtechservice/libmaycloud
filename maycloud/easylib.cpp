@@ -54,6 +54,64 @@ EasyRow easyEnviron()
 	return easyEnviron(environ);
 }
 
+/**
+ * Распарсить команду, представленную в виде строки, в
+ * набор аргументов EasyVector.
+ * 
+ * TODO штука недотестирована, но для работы виртуалок должно хватить.
+ * 
+ * @param args выходной набор аргументов  
+ */
+void parseCmdString(const std::string cmd, EasyVector& args)
+{
+	std::size_t pos = 0;
+	bool open = false;
+	char opening = 0;
+	std::string arg;
+	while(cmd[pos] != 0)
+	{
+		if(cmd[pos] == '\'' or cmd[pos] == '\"')
+		{
+			if(pos == 0 or cmd[pos - 1] != '\\')
+			{
+				if(!open)
+				{
+					opening = cmd[pos];
+					open = true;
+					
+					pos++;
+					continue;
+				}
+				else
+				{
+					if(cmd[pos] == opening)
+					{
+						opening = 0;
+						open = false;
+						 
+						pos++;
+						continue;
+					}
+				}
+			}
+		}
+		
+		if(cmd[pos] == ' ')
+		{
+			if(!open)
+			{
+				args.append(arg);
+				arg = "";
+			}
+			else arg += cmd[pos];
+		}
+		else arg += cmd[pos];
+		
+		pos++;
+	}
+	args.append(arg);
+}
+
 int easyExec(const std::string &filename, EasyVector args, char **envp)
 {
 	typedef char * const *argv_t;

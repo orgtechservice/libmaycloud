@@ -141,3 +141,54 @@ void ProcessManager::onProcessTimer()
 		ps.erase(*kit);
 	}
 }
+
+/**
+ * Тщательно проверить существование процесса
+ */
+bool ProcessManager::processExists(pid_t pid, std::string command) {
+	// Тривиальные случаи
+	if(pid == 0) return false;
+	if(pid == 1) return true;
+
+	// Остальные
+	if(kill(pid, 0) == 0) {
+		char path[40];
+		char cmdline[1000];
+		sprintf(path, "/proc/%i/cmdline", pid);
+		FILE *cmdline_file = fopen(path, "r");
+		if(cmdline_file == 0) {
+			// Процесс исчез между вызовами kill и fopen!
+			return false;
+		}
+
+		char *str = fgets(cmdline, 999, cmdline_file);
+		fclose(cmdline_file);
+		
+		// Поиск подстроки (напомню, fgets гарантирует добавление ноль-терминатора)
+		char *position = strstr(cmdline, command.c_str());
+		
+		if(position != 0) {
+			return true;
+		} else {
+			return false;
+		}
+	} else {
+		// Здесь могла произойти ошибка, связанная с тем, что мы не можем лапать чужие <s>части тела</s> процессы
+		if(errno == 0) {
+			return false;
+		} else {
+			switch(errno)
+			{
+				// Процесс запущен, но у нас нет прав, чтобы его трогать.
+				// Скоррее всего, это какой-то левый процесс, и нечего к нему лезть вообще.
+				// Нужно протестировать это как следует.
+				case EPERM:
+					fprintf(stderr, "Process <%i, %s> exists, but running under different user, so I cannot control it\n", pid, command.c_str());
+					//return true;
+				// Процесс и так мёртвый, всё ОК.
+				case ESRCH:
+					return false;
+			}
+		}
+	}
+}

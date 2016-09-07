@@ -61,6 +61,11 @@ public:
 	* Проводит проверки и считывает статусы завешенных процессов
 	*/
 	void onProcessTimer();
+
+	/**
+	 * Тщательно проверить существование процесса
+	 */
+	bool processExists(pid_t pid, std::string command);
 };
 
 #endif // MAYCLOUD_PROCESSMANAGER_H

@@ -156,13 +156,13 @@ bool ProcessManager::processExists(pid_t pid, std::string command) {
 		char cmdline[1000];
 		memset(cmdline, 0, 1000);
 		sprintf(path, "/proc/%i/cmdline", pid);
-		FILE *cmdline_file = fopen(path, "r");
+		FILE *cmdline_file = fopen(path, "rb");
 		if(cmdline_file == 0) {
 			// Процесс исчез между вызовами kill и fopen!
 			return false;
 		}
 
-		size_t limit = fread(cmdline, sizeof(char), 1000, cmdline_file);
+		size_t limit = fread(cmdline, sizeof(char), 999, cmdline_file);
 		fclose(cmdline_file);
 
 		for(size_t i = 0; i < limit; i++)

@@ -154,6 +154,7 @@ bool ProcessManager::processExists(pid_t pid, std::string command) {
 	if(kill(pid, 0) == 0) {
 		char path[40];
 		char cmdline[1000];
+		memset(cmdline, 0, 1000);
 		sprintf(path, "/proc/%i/cmdline", pid);
 		FILE *cmdline_file = fopen(path, "r");
 		if(cmdline_file == 0) {
@@ -161,8 +162,13 @@ bool ProcessManager::processExists(pid_t pid, std::string command) {
 			return false;
 		}
 
-		char *str = fgets(cmdline, 999, cmdline_file);
+		size_t limit = fread(cmdline, sizeof(char), 1000, cmdline_file);
 		fclose(cmdline_file);
+
+		for(size_t i = 0; i < limit; i++)
+		{
+			if(cmdline[i] == 0) cmdline[i] = ' ';
+		}
 		
 		// Поиск подстроки (напомню, fgets гарантирует добавление ноль-терминатора)
 		char *position = strstr(cmdline, command.c_str());
@@ -172,6 +178,7 @@ bool ProcessManager::processExists(pid_t pid, std::string command) {
 		} else {
 			return false;
 		}
+		//------------------------------------------------
 	} else {
 		// Здесь могла произойти ошибка, связанная с тем, что мы не можем лапать чужие <s>части тела</s> процессы
 		if(errno == 0) {

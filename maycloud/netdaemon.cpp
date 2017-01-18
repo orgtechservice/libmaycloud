@@ -24,7 +24,7 @@ static void signalHandler(int signo) {
 * @param fd_limit максимальное число одновременных виртуальных потоков
 * @param buf_size размер файлового буфера в блоках
 */
-NetDaemon::NetDaemon(int fd_limit, int buf_size): timerCount(0), gtimer(0), count(0), active(0) {
+NetDaemon::NetDaemon(int fd_limit, int buf_size): sleep_time(200), timerCount(0), gtimer(0), count(0), active(0) {
 	signal(SIGCHLD, signalHandler);
 	limit = fd_limit;
 	epoll = epoll_create(fd_limit);
@@ -108,9 +108,26 @@ void NetDaemon::stderror()
 }
 
 /**
+* Установить время ожидания для epoll_wait
+*
+* Оказвыает влияние на частоту таймеров. Если указать
+* слишком маленькое значение, то частота таймера (глобального)
+* повыситься, но будет тратиться больше процессорного времени
+* на обработку таймера. Если указать слишком высокое значение,
+* то таймеры будут обратываться реже и возможно будут запаздывать.
+*
+* Значение по умолчанию (200мс) выбрано из расчета что обычно
+* не требуется большая точность таймеров и оверхед на CPU нежелателен
+*/
+void NetDaemon::setSleepTime(int v)
+{
+	sleep_time = ( v < 0 ) ? 0 : v;
+}
+
+/**
 * Вернуть число подконтрольных объектов
 */
-int NetDaemon::getObjectCount()
+int NetDaemon::getObjectCount() const
 {
 	return count;
 }
@@ -347,7 +364,7 @@ bool NetDaemon::resetObject(ptr<AsyncObject> &object)
 void NetDaemon::doActiveAction()
 {
 	struct epoll_event event;
-	int r = epoll_wait(epoll, &event, 1, 200);
+	int r = epoll_wait(epoll, &event, 1, sleep_time);
 	if ( r > 0 )
 	{
 		ptr<AsyncObject> obj = fds[event.data.fd].obj;
@@ -360,7 +377,6 @@ void NetDaemon::doActiveAction()
 		}
 	}
 	if ( r < 0 ) stderror();
-	processTimers();
 }
 
 /**
@@ -370,9 +386,21 @@ int NetDaemon::run()
 {
 	active = 1;
 	
+	struct timeval tv;
+	gettimeofday(&tv, 0);
+	int prevtime = (tv.tv_sec % 10000000) * 100 + tv.tv_usec / 10000;
+	
 	while ( count > 0 )
 	{
 		doActiveAction();
+		
+		gettimeofday(&tv, 0);
+		int ticktime = (tv.tv_sec % 10000000) * 100 + tv.tv_usec / 10000;
+		if ( ticktime != prevtime )
+		{
+			prevtime = ticktime;
+			processTimers();
+		}
 	}
 
 	return 0;

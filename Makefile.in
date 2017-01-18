@@ -45,15 +45,25 @@ OBJECTS+=obj/easyrow.o
 OBJECTS+=obj/easyvector.o
 OBJECTS+=obj/error.o
 OBJECTS+=obj/fstream.o
+OBJECTS+=obj/hasher.o
+OBJECTS+=obj/heavyhash.o
 OBJECTS+=obj/iputils.o
+OBJECTS+=obj/ipv4.o
 OBJECTS+=obj/logger.o
+OBJECTS+=obj/macaddress.o
+OBJECTS+=obj/macaddress64.o
 OBJECTS+=obj/mysql.o
+OBJECTS+=obj/mysqlconnect.o
 OBJECTS+=obj/netdaemon.o
 OBJECTS+=obj/object.o
+OBJECTS+=obj/oid.o
 OBJECTS+=obj/processmanager.o
+OBJECTS+=obj/queue.o
 OBJECTS+=obj/randomstring.o
+OBJECTS+=obj/stack.o
 OBJECTS+=obj/tagbuilder.o
 OBJECTS+=obj/taghelper.o
+OBJECTS+=obj/tempstring.o
 OBJECTS+=obj/xml_tag.o
 OBJECTS+=obj/xml_types.o
 OBJECTS+=obj/xmlparser.o
@@ -144,14 +154,32 @@ obj/error.o: maycloud/error.cpp maycloud/error.h
 obj/fstream.o: maycloud/fstream.cpp maycloud/fstream.h maycloud/stream.h
 	$(CXX) -c maycloud/fstream.cpp -o obj/fstream.o
 
+obj/hasher.o: maycloud/hasher.cpp maycloud/hasher.h
+	$(CXX) -c maycloud/hasher.cpp -o obj/hasher.o
+
+obj/heavyhash.o: maycloud/heavyhash.cpp maycloud/heavyhash.h maycloud/hasher.h
+	$(CXX) -c maycloud/heavyhash.cpp -o obj/heavyhash.o
+
 obj/iputils.o: maycloud/iputils.cpp maycloud/iputils.h
 	$(CXX) -c maycloud/iputils.cpp -o obj/iputils.o
+
+obj/ipv4.o: maycloud/ipv4.cpp maycloud/ipv4.h maycloud/tempstring.h
+	$(CXX) -c maycloud/ipv4.cpp -o obj/ipv4.o
 
 obj/logger.o: maycloud/logger.cpp maycloud/logger.h
 	$(CXX) -c maycloud/logger.cpp -o obj/logger.o
 
+obj/macaddress.o: maycloud/macaddress.cpp maycloud/macaddress.h maycloud/tempstring.h
+	$(CXX) -c maycloud/macaddress.cpp -o obj/macaddress.o
+
+obj/macaddress64.o: maycloud/macaddress64.cpp maycloud/macaddress64.h maycloud/tempstring.h
+	$(CXX) -c maycloud/macaddress64.cpp -o obj/macaddress64.o
+
 obj/mysql.o: maycloud/mysql.cpp maycloud/mysql.h maycloud/config.h
 	$(CXX) -c maycloud/mysql.cpp -o obj/mysql.o
+
+obj/mysqlconnect.o: maycloud/mysqlconnect.cpp maycloud/mysqlconnect.h
+	$(CXX) -c maycloud/mysqlconnect.cpp -o obj/mysqlconnect.o
 
 obj/netdaemon.o: maycloud/netdaemon.cpp maycloud/netdaemon.h maycloud/config.h maycloud/processmanager.h
 	$(CXX) -c maycloud/netdaemon.cpp -o obj/netdaemon.o
@@ -159,17 +187,29 @@ obj/netdaemon.o: maycloud/netdaemon.cpp maycloud/netdaemon.h maycloud/config.h m
 obj/object.o: maycloud/object.cpp maycloud/object.h
 	$(CXX) -c maycloud/object.cpp -o obj/object.o
 
+obj/oid.o: maycloud/oid.cpp maycloud/oid.h maycloud/tempstring.h
+	$(CXX) -c maycloud/oid.cpp -o obj/oid.o
+
 obj/processmanager.o: maycloud/processmanager.cpp maycloud/processmanager.h
 	$(CXX) -c maycloud/processmanager.cpp -o obj/processmanager.o
 
+obj/queue.o: maycloud/queue.cpp maycloud/queue.h
+	$(CXX) -c maycloud/queue.cpp -o obj/queue.o
+
 obj/randomstring.o: maycloud/randomstring.cpp maycloud/randomstring.h
 	$(CXX) -c maycloud/randomstring.cpp -o obj/randomstring.o
+
+obj/stack.o: maycloud/stack.cpp maycloud/stack.h
+	$(CXX) -c maycloud/stack.cpp -o obj/stack.o
 
 obj/tagbuilder.o: maycloud/tagbuilder.cpp maycloud/tagbuilder.h maycloud/xml_types.h
 	$(CXX) -c maycloud/tagbuilder.cpp -o obj/tagbuilder.o
 
 obj/taghelper.o: maycloud/taghelper.cpp maycloud/taghelper.h maycloud/xml_types.h
 	$(CXX) -c maycloud/taghelper.cpp -o obj/taghelper.o
+
+obj/tempstring.o: maycloud/tempstring.cpp maycloud/tempstring.h
+	$(CXX) -c maycloud/tempstring.cpp -o obj/tempstring.o
 
 obj/xml_tag.o: maycloud/xml_tag.cpp maycloud/xml_tag.h maycloud/xml_types.h
 	$(CXX) -c maycloud/xml_tag.cpp -o obj/xml_tag.o

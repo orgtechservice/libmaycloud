@@ -55,6 +55,47 @@ bool parse_mac_str(const char* mac, unsigned char* rez_mac)
 	return true;
 }
 
+bool parse_mac8_str(const char* mac, unsigned char* rez_mac)
+{
+	int len = strlen(mac);
+	char crez = 0;
+	
+	if(len < 17) return false;
+	
+	int i = 0;
+	int bc = 0;
+	int cc = 0;
+	while(i < len && bc < 8)
+	{
+		if(mac[i] >= 0x30 && mac[i] <= 0x39)
+		{
+		  crez = (crez << 4) + (mac[i] - 0x30);
+		  cc++;
+		}
+		if(mac[i] >= 0x41 && mac[i] <= 0x46)
+		{
+		  crez = (crez << 4) + (mac[i] - 0x37);
+		  cc++;
+		}
+		if(mac[i] >= 0x61 && mac[i] <= 0x66)
+		{
+		  crez = (crez << 4) + (mac[i] - 0x57);
+		  cc++;
+		}
+		
+		if(cc == 2)
+		{
+		    rez_mac[bc] = crez;
+		    
+		    bc++;
+		    cc = 0;
+		}
+		  
+		i++;
+	}
+	return true;
+}
+
 /**
  * Парсинг мас-адреса, представленного в виде массива из шести байт
  */
@@ -66,6 +107,27 @@ unsigned long long int parse_mac_6(const unsigned char* mac)
 	int ofst = 40;
 	
 	for(int i = 0; i < 6; i++)
+	{
+		rez2 = (int) mac[i];
+		rez2 <<= ofst;
+		rez += rez2;
+		ofst -= 8;
+	}
+	
+	return rez;
+}
+
+/**
+ * Парсинг мас-адреса, представленного в виде массива из восьми байт
+ */
+unsigned long long int parse_mac_8(const unsigned char* mac)
+{
+	unsigned long long int rez = 0;
+	unsigned long long int rez2 = 0;
+	
+	int ofst = 40;
+	
+	for(int i = 0; i < 8; i++)
 	{
 		rez2 = (int) mac[i];
 		rez2 <<= ofst;

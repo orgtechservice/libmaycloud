@@ -15,9 +15,15 @@ unsigned int parse_ip(const char *ip);
 unsigned long long int parse_mac_6(const unsigned char* mac);
 
 /**
+ * Парсинг мас-адреса, представленного в виде массива из восьми байт
+ */
+unsigned long long int parse_mac_8(const unsigned char* mac);
+
+/**
  * Парсинг мас-адреса, представленного в виде строки, в последовательность из шести байт
  */
 bool parse_mac_str(const char* mac, unsigned char* rez_mac);
+bool parse_mac8_str(const char* mac, unsigned char* rez_mac);
 
 inline unsigned int make_ip(const unsigned char ip[4])
 {

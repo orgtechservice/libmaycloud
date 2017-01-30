@@ -47,7 +47,7 @@ public:
 	}
 	inline operator unsigned long long int () { parse_mac_6(mac); }
 	
-	TempString toString();
+	TempString toString() const;
 };
 
 #endif // MACADRESS_H

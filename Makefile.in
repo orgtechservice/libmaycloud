@@ -26,6 +26,7 @@ RANLIB:=ranlib
 
 DEB_FILENAME=libmaycloud-$(DEB_ARCH).deb
 
+OBJECTS+=obj/asn1reader.o
 OBJECTS+=obj/asyncdns.o
 OBJECTS+=obj/asyncobject.o
 OBJECTS+=obj/asyncserver.o
@@ -60,6 +61,8 @@ OBJECTS+=obj/oid.o
 OBJECTS+=obj/processmanager.o
 OBJECTS+=obj/queue.o
 OBJECTS+=obj/randomstring.o
+OBJECTS+=obj/snmpbuilder.o
+OBJECTS+=obj/snmpparser.o
 OBJECTS+=obj/stack.o
 OBJECTS+=obj/tagbuilder.o
 OBJECTS+=obj/taghelper.o
@@ -96,6 +99,9 @@ libmaycloud.a: $(OBJECTS)
 	$(RANLIB) libmaycloud.a
 
 ########################## BUILD RULES #######################################
+
+obj/asn1reader.o: maycloud/asn1reader.cpp maycloud/asn1reader.h
+	$(CXX) -c maycloud/asn1reader.cpp -o obj/asn1reader.o
 
 obj/asyncdns.o: maycloud/asyncdns.cpp maycloud/asyncdns.h
 	$(CXX) -c maycloud/asyncdns.cpp -o obj/asyncdns.o
@@ -198,6 +204,12 @@ obj/queue.o: maycloud/queue.cpp maycloud/queue.h
 
 obj/randomstring.o: maycloud/randomstring.cpp maycloud/randomstring.h
 	$(CXX) -c maycloud/randomstring.cpp -o obj/randomstring.o
+
+obj/snmpbuilder.o: maycloud/snmpbuilder.cpp maycloud/snmpbuilder.h
+	$(CXX) -c maycloud/snmpbuilder.cpp -o obj/snmpbuilder.o
+
+obj/snmpparser.o: maycloud/snmpparser.cpp maycloud/snmpparser.h
+	$(CXX) -c maycloud/snmpparser.cpp -o obj/snmpparser.o
 
 obj/stack.o: maycloud/stack.cpp maycloud/stack.h
 	$(CXX) -c maycloud/stack.cpp -o obj/stack.o

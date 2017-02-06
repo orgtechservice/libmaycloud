@@ -5,9 +5,11 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <pcre.h>
 #include <time.h>
+
 #include <sys/time.h>
+
+//#include <pcre.h>
 
 /**
 * Парсер SNMP пакетов

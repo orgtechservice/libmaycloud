@@ -27,6 +27,7 @@ RANLIB:=ranlib
 DEB_FILENAME=libmaycloud-$(DEB_ARCH).deb
 
 OBJECTS+=obj/asn1reader.o
+OBJECTS+=obj/asyncagent.o
 OBJECTS+=obj/asyncdns.o
 OBJECTS+=obj/asyncobject.o
 OBJECTS+=obj/asyncserver.o
@@ -102,6 +103,9 @@ libmaycloud.a: $(OBJECTS)
 
 obj/asn1reader.o: maycloud/asn1reader.cpp maycloud/asn1reader.h
 	$(CXX) -c maycloud/asn1reader.cpp -o obj/asn1reader.o
+
+obj/asyncagent.o: maycloud/asyncagent.cpp maycloud/asyncagent.h
+	$(CXX) -c maycloud/asyncagent.cpp -o obj/asyncagent.o
 
 obj/asyncdns.o: maycloud/asyncdns.cpp maycloud/asyncdns.h
 	$(CXX) -c maycloud/asyncdns.cpp -o obj/asyncdns.o

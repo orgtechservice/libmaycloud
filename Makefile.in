@@ -65,6 +65,7 @@ OBJECTS+=obj/randomstring.o
 OBJECTS+=obj/snmpbuilder.o
 OBJECTS+=obj/snmpparser.o
 OBJECTS+=obj/stack.o
+OBJECTS+=obj/sqlite3.o
 OBJECTS+=obj/tagbuilder.o
 OBJECTS+=obj/taghelper.o
 OBJECTS+=obj/tempstring.o
@@ -217,6 +218,9 @@ obj/snmpparser.o: maycloud/snmpparser.cpp maycloud/snmpparser.h
 
 obj/stack.o: maycloud/stack.cpp maycloud/stack.h
 	$(CXX) -c maycloud/stack.cpp -o obj/stack.o
+
+obj/sqlite3.o: maycloud/sqlite3.cpp maycloud/sqlite3.h maycloud/config.h
+	$(CXX) -c maycloud/sqlite3.cpp -o obj/sqlite3.o
 
 obj/tagbuilder.o: maycloud/tagbuilder.cpp maycloud/tagbuilder.h maycloud/xml_types.h
 	$(CXX) -c maycloud/tagbuilder.cpp -o obj/tagbuilder.o

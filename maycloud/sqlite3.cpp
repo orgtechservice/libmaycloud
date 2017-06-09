@@ -19,6 +19,16 @@ namespace nanosoft
 		close();
 	}
 
+	int Sqlite3::callback(void* data, int row_count, char** field_value, char** field_name)
+	{
+		result* r = static_cast<result*>(data);
+		for(int i = 0; i < row_count; i++)
+		{
+			r->insert(result_pair(field_name[i], field_value[i] ? field_value[i] : ""));
+		}
+		return 0;
+	}
+
 	/**
 	 * Открыть базу данных
 
@@ -53,5 +63,55 @@ namespace nanosoft
 	void Sqlite3::close()
 	{
 		sqlite3_close(db);
+	}
+
+	/**
+	 * Выполнить произвольный SQL-запрос
+	 * @param sql текст одного SQL-запроса
+	 * @param len длина запроса
+	 * @return набор данных
+	 */
+	Sqlite3::result Sqlite3::queryRaw(const char *sql, size_t len)
+	{
+		if ( DEBUG::DUMP_SQL )
+		{
+			std::string sql_dump(sql, len);
+			printf("DUMP SQL[%s]: \033[22;31m%s\033[0m\n", this->path.c_str(), sql_dump.c_str());
+		}
+
+		result r;
+		char* err = 0;
+		int status = sqlite3_exec(db, sql, callback, (void*) &r, &err);
+		if(status != SQLITE_OK)
+		{
+			close();
+			if(reopen())
+			{
+				status = sqlite3_exec(db, sql, callback, (void*) &r, &err);
+				if(status != SQLITE_OK) fprintf(stderr, "[Sqlite3] %s\n", err);
+			}
+		}
+
+		return r;
+	}
+
+	/**
+	 * Выполнить произвольный SQL-запрос
+	 * @param sql текст одного SQL-запроса
+	 * @return набор данных
+	 */
+	Sqlite3::result Sqlite3::query(const char *sql, ...)
+	{
+		char *buf;
+		va_list args;
+		va_start(args, sql);
+		int len = vasprintf(&buf, sql, args);
+		va_end(args);
+		
+		result r = queryRaw(buf, len);
+		
+		free(buf);
+		
+		return r;
 	}
 }

@@ -66,6 +66,11 @@ public:
 	 * Тщательно проверить существование процесса
 	 */
 	bool processExists(pid_t pid, std::string command);
+
+	/**
+	 * Провести некоторые подготовительные действия перед выполнением стороннего процесса
+	 */
+	virtual int prepareExec();
 };
 
 #endif // MAYCLOUD_PROCESSMANAGER_H

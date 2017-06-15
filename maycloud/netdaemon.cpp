@@ -407,6 +407,24 @@ int NetDaemon::run()
 }
 
 /**
+ * Провести некоторые подготовительные действия перед выполнением стороннего процесса
+ */
+int NetDaemon::prepareExec()
+{
+	fprintf(stderr, "[NetDaemon] closing sockets\n");
+	for(int i = 0; i < limit; i++)
+	{
+		ptr<AsyncObject> obj = fds[i].obj;
+		if(obj != 0)
+		{
+			::close(obj->getFd());
+		}
+	}
+
+	return 0;
+}
+
+/**
 * Установить таймер
 * @param calltime время запуска таймера
 * @param callback функция обратного вызова

@@ -25,6 +25,9 @@ namespace nanosoft
 		typedef std::map<std::string, std::string> result;
 		typedef std::pair<std::string, std::string> result_pair;
 		typedef std::map<std::string, std::string>::iterator result_iterator;
+
+		typedef std::map<std::string, std::string> row_t;
+		typedef std::map<std::string, std::string>::iterator row_iterator;
 	protected:
 		/**
 		 * Путь к базе данных Sqlite3
@@ -70,6 +73,11 @@ namespace nanosoft
 		void close();
 
 		/**
+		 * Экранировать строку и заключить её в кавычки
+		 */
+		std::string quote(const std::string &text);
+
+		/**
 		 * Выполнить произвольный SQL-запрос
 		 * @param sql текст одного SQL-запроса
 		 * @param len длина запроса
@@ -92,6 +100,20 @@ namespace nanosoft
 		 * @return набор данных
 		 */
 		result query(const char *sql, ...);
+
+		/**
+		 * Вставить в таблицу набор данных
+		 * @param table_name имя таблицы
+		 * @param row <имя столбца> => <значение>
+		 */
+		void insert(const char *table_name, row_t &row);
+		
+		/**
+		 * Заменить набор данных в таблице
+		 * @param table_name имя таблицы
+		 * @param row <имя столбца> => <значение>
+		 */
+		void replace(const char *table_name, row_t &row);
 	};
 }
 

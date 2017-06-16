@@ -66,6 +66,14 @@ namespace nanosoft
 	}
 
 	/**
+	 * Экранировать строку и заключить её в кавычки
+	 */
+	std::string Sqlite3::quote(const std::string &text)
+	{
+		return '"' + text + '"';
+	}
+
+	/**
 	 * Выполнить произвольный SQL-запрос
 	 * @param sql текст одного SQL-запроса
 	 * @param len длина запроса
@@ -113,5 +121,65 @@ namespace nanosoft
 		free(buf);
 		
 		return r;
+	}
+
+	/**
+	 * Вставить в таблицу набор данных
+	 * @param table_name имя таблицы
+	 * @param row <имя столбца> => <значение>
+	 */
+	void Sqlite3::insert(const char *table_name, row_t &row)
+	{
+		std::string insert = "INSERT INTO " + std::string(table_name) + "(";
+		row_iterator it = row.begin();
+		insert += it->first;
+		it++;
+		while(it != row.end())
+		{
+			insert += (", " + it->first);
+			it++;
+		}
+		insert += ") VALUES(";
+		it = row.begin();
+		insert += quote(it->second);
+		it++;
+		while(it != row.end())
+		{
+			insert += (", " + quote(it->second));
+			it++;
+		}
+		insert += ");";
+		
+		query(insert.c_str());
+	}
+	
+	/**
+	 * Заменить набор данных в таблице
+	 * @param table_name имя таблицы
+	 * @param row <имя столбца> => <значение>
+	 */
+	void Sqlite3::replace(const char *table_name, row_t &row)
+	{
+		std::string insert = "REPLACE INTO " + std::string(table_name) + "(";
+		row_iterator it = row.begin();
+		insert += it->first;
+		it++;
+		while(it != row.end())
+		{
+			insert += (", " + it->first);
+			it++;
+		}
+		insert += ") VALUES(";
+		it = row.begin();
+		insert += quote(it->second);
+		it++;
+		while(it != row.end())
+		{
+			insert += (", " + quote(it->second));
+			it++;
+		}
+		insert += ");";
+		
+		query(insert.c_str());
 	}
 }

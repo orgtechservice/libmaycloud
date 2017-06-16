@@ -31,7 +31,6 @@ namespace nanosoft
 
 	/**
 	 * Открыть базу данных
-
 	 * @param path - путь к базе данных
 	 * @return TRUE - база открыта, FALSE - ошибка открытия
 	 */
@@ -47,7 +46,6 @@ namespace nanosoft
 
 	/**
 	 * Открыть базу данных
-
 	 * @param path - путь к базе данных
 	 * @return TRUE - база открыта, FALSE - ошибка открытия
 	 */

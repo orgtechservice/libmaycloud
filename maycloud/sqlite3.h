@@ -13,6 +13,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 
 namespace nanosoft
 {
@@ -22,10 +23,8 @@ namespace nanosoft
 	class Sqlite3
 	{
 	public:
-		typedef std::map<std::string, std::string> result;
-		typedef std::pair<std::string, std::string> result_pair;
-		typedef std::map<std::string, std::string>::iterator result_iterator;
-
+		typedef std::vector< std::map<std::string, std::string> > result;
+		
 		typedef std::map<std::string, std::string> row_t;
 		typedef std::map<std::string, std::string>::iterator row_iterator;
 	protected:

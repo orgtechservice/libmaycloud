@@ -22,10 +22,12 @@ namespace nanosoft
 	int Sqlite3::callback(void* data, int row_count, char** field_value, char** field_name)
 	{
 		result* r = static_cast<result*>(data);
+		row_t row;
 		for(int i = 0; i < row_count; i++)
 		{
-			r->insert(result_pair(field_name[i], field_value[i] ? field_value[i] : ""));
+			row[field_name[i]] = field_value[i] ? field_value[i] : "";
 		}
+		r->push_back(row);
 		return 0;
 	}
 

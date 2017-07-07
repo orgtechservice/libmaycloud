@@ -43,7 +43,7 @@ pid_t ProcessManager::exec(std::string path, const EasyVector &args, const EasyR
 	pid_t pid = this->fork(callback, data);
 	if ( pid == 0 )
 	{
-		//prepareExec();
+		prepareExec();
 		int r = easyExec(path, args, env);
 		if ( r == -1 )
 		{
@@ -203,4 +203,4 @@ bool ProcessManager::processExists(pid_t pid, std::string command) {
 /**
  * Провести некоторые подготовительные действия перед выполнением стороннего процесса
  */
-//int ProcessManager::prepareExec() { return 0; }
+int ProcessManager::prepareExec() { return 0; }

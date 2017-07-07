@@ -409,7 +409,7 @@ int NetDaemon::run()
 /**
  * Провести некоторые подготовительные действия перед выполнением стороннего процесса
  */
-/*int NetDaemon::prepareExec()
+int NetDaemon::prepareExec()
 {
 	fprintf(stderr, "[NetDaemon] closing sockets\n");
 	for(int i = 0; i < limit; i++)
@@ -422,7 +422,7 @@ int NetDaemon::run()
 	}
 
 	return 0;
-}*/
+}
 
 /**
 * Установить таймер

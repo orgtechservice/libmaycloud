@@ -65,7 +65,7 @@ bool AsyncUDPServer::bind(const char *ip, const char *port)
 	// first, load up address structs with getaddrinfo():
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = AF_UNSPEC;  // use IPv4 or IPv6, whichever
-	hints.ai_socktype = SOCK_DGRAM | SOCK_CLOEXEC;
+	hints.ai_socktype = SOCK_DGRAM;
 	hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
 	getaddrinfo(ip, port, &hints, &res);
 	

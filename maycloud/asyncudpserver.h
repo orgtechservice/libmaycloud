@@ -65,14 +65,14 @@ public:
 	bool bindToDevice(const char *ifname);
 	
 	/**
-	* Установить флаг броадкаста
-	*/
+	 * Установить флаг броадкаста
+	 */
 	bool setBroadcast(bool state);
 	
 	/**
-	* Установить флаг Reuse addr
-	*/
-	bool setReuseAddr(bool state);
+	 * Установить флаг Reuse addr
+	 */
+	//bool setReuseAddr(bool state);
 	
 	/**
 	* Закрыть сокет

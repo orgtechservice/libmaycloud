@@ -419,7 +419,6 @@ int NetDaemon::prepareExec()
 		{
 			fprintf(stderr, "\tfd: %i\n", obj->getFd());
 			::close(obj->getFd());
-			removeObject(obj);
 		}
 	}
 

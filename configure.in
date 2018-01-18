@@ -15,6 +15,19 @@ AC_PROG_CXX
 #AC_CHECK_TOOL(RANLIB, ranlib, ranlib)
 #AC_CHECK_TOOL(MKDIR, mkdir, mkdir)
 
+AC_DEFUN([AC_GET_DISTR],
+[
+OS=$(awk '/DISTRIB_ID=/' /etc/*-release | sed 's/DISTRIB_ID=//' | tr '@<:@:upper:@:>@' '@<:@:lower:@:>@')
+if @<:@ -z "$OS" @:>@; then
+    OS=$(awk '{print $1}' /etc/*-release | tr '@<:@:upper:@:>@' '@<:@:lower:@:>@')
+fi
+if @<:@ $OS = "raspbian" @:>@; then
+	MYSQL_DEP=libmariadb-dev
+else
+	MYSQL_DEP=libmysqlclient-dev
+fi
+] )
+
 case "$host_cpu" in
 x86_64)
 	DEB_ARCH=amd64
@@ -32,7 +45,10 @@ armv7l)
 	DEB_ARCH=$host_cpu
 esac
 
+AC_GET_DISTR
+
 AC_SUBST(DEB_ARCH)
+AC_SUBST(MYSQL_DEP)
 
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES(deb/DEBIAN/control:deb_control.in)

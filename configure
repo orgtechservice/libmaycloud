@@ -583,6 +583,7 @@ PACKAGE_URL=''
 
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
+MYSQL_DEP
 DEB_ARCH
 OBJEXT
 EXEEXT
@@ -2409,6 +2410,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 #AC_CHECK_TOOL(RANLIB, ranlib, ranlib)
 #AC_CHECK_TOOL(MKDIR, mkdir, mkdir)
 
+
+
 case "$host_cpu" in
 x86_64)
 	DEB_ARCH=amd64
@@ -2425,6 +2428,19 @@ armv7l)
 *)
 	DEB_ARCH=$host_cpu
 esac
+
+
+OS=$(awk '/DISTRIB_ID=/' /etc/*-release | sed 's/DISTRIB_ID=//' | tr '[:upper:]' '[:lower:]')
+if [ -z "$OS" ]; then
+    OS=$(awk '{print }' /etc/*-release | tr '[:upper:]' '[:lower:]')
+fi
+if [ $OS = "raspbian" ]; then
+	MYSQL_DEP=libmariadb-dev
+else
+	MYSQL_DEP=libmysqlclient-dev
+fi
+
+
 
 
 

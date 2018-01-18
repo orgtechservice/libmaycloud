@@ -2430,10 +2430,7 @@ armv7l)
 esac
 
 
-OS=$(awk '/DISTRIB_ID=/' /etc/*-release | sed 's/DISTRIB_ID=//' | tr '[:upper:]' '[:lower:]')
-if [ -z "$OS" ]; then
-    OS=$(awk '{print }' /etc/*-release | tr '[:upper:]' '[:lower:]')
-fi
+OS=$(awk '/^ID=/' /etc/*-release | sed 's/ID=//' | tr '[:upper:]' '[:lower:]')
 if [ $OS = "raspbian" ]; then
 	MYSQL_DEP=libmariadb-dev
 else

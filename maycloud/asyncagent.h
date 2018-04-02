@@ -5,6 +5,7 @@
 #include <maycloud/asyncstream.h>
 #include <maycloud/asyncdns.h>
 #include <maycloud/logger.h>
+#include <maycloud/ipv4.h>
 
 class AsyncAgent: public AsyncStream
 {

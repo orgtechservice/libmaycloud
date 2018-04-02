@@ -55,8 +55,8 @@ void ControlAgent::on_connect_a4(struct dns_ctx *ctx, struct dns_rr_a4 *result, 
 		if ( ::connect(p->getFd(), (struct sockaddr *)&target, sizeof( struct sockaddr )) == 0 || errno == EINPROGRESS || errno == EALREADY )
 		{
 			p->connection_state = CONNECTED;
-			
 			p->onControllerConnected();
+
 			return;
 		}
 		
@@ -66,9 +66,25 @@ void ControlAgent::on_connect_a4(struct dns_ctx *ctx, struct dns_rr_a4 *result, 
 	}
 	else
 	{
-		printf("ControlAgent::on_connect_a4() connect failed: no IP address\n");
-		logger.error("connection failed: no IP address");
-		p->reconnect();
+		if (! p->enableObject())
+		{
+			// пичаль, попробуем в другой раз
+			logger.unexpected("ControlAgent::startConnection() enableObject failed");
+			p->reconnect();
+			return;
+		}
+
+		if (p->connectTo(IPv4(p->controller_hostname.c_str()), p->controller_port))
+		{
+			p->onControllerConnected();
+			return;
+		}
+		else
+		{
+			printf("ControlAgent::on_connect_a4() connect failed: no IP address\n"); 
+			logger.error("connection failed: no IP address");
+			p->reconnect();
+		}
 	}
 	
 	p->disableObject();

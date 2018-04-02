@@ -65,11 +65,26 @@ void AsyncAgent::on_connect_a4(struct dns_ctx *ctx, struct dns_rr_a4 *result, vo
 	}
 	else
 	{
-		printf("AsyncAgent::on_connect_a4() connect failed: no IP address\n");
-		logger.error("connection failed: no IP address");
-		p->reconnect();
+		if  (! p->enableObject() )
+		{
+			// пичаль, попробуем в другой раз
+			logger.unexpected("AsyncAgent::startConnection() enableObject failed");
+			p->reconnect();
+			return;
+		}
+
+		if (p->connectTo(IPv4(p->hostname.c_str()), p->port))
+		{
+			p->onRemoteHostConnected();
+			return;
+		}
+		else 
+		{	
+			printf("AsyncAgent::on_connect_a4() connect failed: no IP address\n");
+			logger.error("connection failed: no IP address");
+			p->reconnect();
+		}
 	}
-	
 	p->disableObject();
 }
 
@@ -91,7 +106,7 @@ void AsyncAgent::startConnection()
 	}
 	
 	setFd( sock );
-	
+
 	// Резолвим DNS записи сервера
 	connection_state = RESOLVING;
 	adns->a4(hostname.c_str(), on_connect_a4, this);

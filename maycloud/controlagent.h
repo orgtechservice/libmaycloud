@@ -2,6 +2,7 @@
 #define CONTROLAGENT_H
 
 #include <maycloud/controlstream.h>
+#include <maycloud/ipv4.h>
 
 /**
  * Базовый класс для всех агентов

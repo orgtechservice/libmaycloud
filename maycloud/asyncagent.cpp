@@ -54,7 +54,6 @@ void AsyncAgent::on_connect_a4(struct dns_ctx *ctx, struct dns_rr_a4 *result, vo
 		if ( ::connect(p->getFd(), (struct sockaddr *)&target, sizeof( struct sockaddr )) == 0 || errno == EINPROGRESS || errno == EALREADY )
 		{
 			p->connection_state = CONNECTED;
-			
 			p->onRemoteHostConnected();
 			return;
 		}
@@ -65,7 +64,7 @@ void AsyncAgent::on_connect_a4(struct dns_ctx *ctx, struct dns_rr_a4 *result, vo
 	}
 	else
 	{
-		if  (! p->enableObject() )
+		if (! p->enableObject() )
 		{
 			// пичаль, попробуем в другой раз
 			logger.unexpected("AsyncAgent::startConnection() enableObject failed");
@@ -75,6 +74,7 @@ void AsyncAgent::on_connect_a4(struct dns_ctx *ctx, struct dns_rr_a4 *result, vo
 
 		if (p->connectTo(IPv4(p->hostname.c_str()), p->port))
 		{
+			p->connection_state = CONNECTED;
 			p->onRemoteHostConnected();
 			return;
 		}

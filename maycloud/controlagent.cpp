@@ -56,7 +56,6 @@ void ControlAgent::on_connect_a4(struct dns_ctx *ctx, struct dns_rr_a4 *result, 
 		{
 			p->connection_state = CONNECTED;
 			p->onControllerConnected();
-
 			return;
 		}
 		
@@ -76,6 +75,7 @@ void ControlAgent::on_connect_a4(struct dns_ctx *ctx, struct dns_rr_a4 *result, 
 
 		if (p->connectTo(IPv4(p->controller_hostname.c_str()), p->controller_port))
 		{
+			p->connection_state = CONNECTED;
 			p->onControllerConnected();
 			return;
 		}

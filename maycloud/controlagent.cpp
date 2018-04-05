@@ -165,7 +165,7 @@ void ControlAgent::reconnectTimer(const timeval &tv, ControlAgent *agent)
 */
 void ControlAgent::onStreamClosed()
 {
-	reconnect();
+
 }
 
 /**

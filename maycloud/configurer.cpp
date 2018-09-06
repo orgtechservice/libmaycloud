@@ -41,22 +41,34 @@ bool Configurer::parseParam(std::string param)
 	return true;
 }
 
+bool Configurer::FileExists(const std::string& path)
+{
+		return std::ifstream(path.c_str()).good();
+}
+
 bool Configurer::loadFile(const char* fn)
 {
-	params.erase(params.begin(), params.end());
 	
-	file.open(fn, std::ifstream::in);
-	
-	char param[256];
-	file.getline(param, 256);
-	while(file.good())
+	if (FileExists(fn))
 	{
-		printf("[Configurer]: %s\n", param);
-		parseParam(param);
+		params.erase(params.begin(), params.end());	
+		file.open(fn, std::ifstream::in);
+		char param[256];
 		file.getline(param, 256);
+		while(file.good())
+		{
+			printf("[Configurer]: %s\n", param);
+			parseParam(param);
+			file.getline(param, 256);
+		}
 	}
+	else
+	{
+		return false;
+	}	
 	
 	file.close();
+	return true;
 }
 
 std::string Configurer::searchParam(std::string name)

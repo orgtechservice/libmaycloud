@@ -41,32 +41,25 @@ bool Configurer::parseParam(std::string param)
 	return true;
 }
 
-bool Configurer::FileExists(const std::string& path)
-{
-		return std::ifstream(path.c_str()).good();
-}
-
 bool Configurer::loadFile(const char* fn)
 {
-	
-	if (FileExists(fn))
-	{
-		params.erase(params.begin(), params.end());	
-		file.open(fn, std::ifstream::in);
-		char param[256];
-		file.getline(param, 256);
-		while(file.good())
-		{
-			printf("[Configurer]: %s\n", param);
-			parseParam(param);
-			file.getline(param, 256);
-		}
-	}
-	else
+	params.erase(params.begin(), params.end());	
+	file.open(fn, std::ifstream::in);
+
+	if (!file.good())
 	{
 		return false;
-	}	
-	
+	}
+		
+	char param[256];
+	file.getline(param, 256); //почему повторяется 2 раза?
+	while(file.good())//возвращает true, если нет флагов ошибки
+	{
+		printf("[Configurer]: %s\n", param);
+		parseParam(param);
+		file.getline(param, 256);
+	}
+		
 	file.close();
 	return true;
 }

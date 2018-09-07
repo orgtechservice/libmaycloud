@@ -19,7 +19,6 @@ protected:
 	std::map<std::string, std::string> params;
 	
 	bool parseParam(std::string param);
-	bool FileExists(const std::string& path);
 
 public:
 	/**

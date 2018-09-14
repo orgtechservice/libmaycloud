@@ -16,6 +16,7 @@
 #include <sys/epoll.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/select.h>
 
 #ifdef HAVE_LIBZ
 #include <zlib.h>

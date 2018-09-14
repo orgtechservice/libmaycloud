@@ -299,18 +299,42 @@ bool AsyncStream::connectEx(void *sa, size_t sa_len)
 	{
 		fcntl(getFd(), F_SETFL, flags | O_NONBLOCK);
 	}
-	
-	int r = ::connect(getFd(), (struct sockaddr *)sa, sa_len);
-	if ( r == 0 || errno == EINPROGRESS )
+
+	if ( ::connect(getFd(), (struct sockaddr *)sa, sa_len) == -1 )
+	{
+		if(errno == EINPROGRESS || errno == EALREADY)
+		{
+			fd_set rfds, wfds;
+			FD_ZERO(&rfds);
+			FD_ZERO(&wfds);
+			FD_SET(getFd(), &rfds);
+			FD_SET(getFd(), &wfds);
+			/* Ждем не больше пяти секунд. */
+			struct timeval tv;
+			tv.tv_sec = 5;
+			tv.tv_usec = 0;
+			/* Данный вызов является блокирующим, но в данном случае для нас это не критично */
+			if ( select(getFd() + 1, &rfds, &wfds, NULL, &tv) > 0 )
+			{
+				socklen_t len = sizeof(int);
+				int optval = 0;
+				getsockopt(getFd(), SOL_SOCKET, SO_ERROR, (void*)(&optval), &len); 
+				if(!optval)
+				{
+					onConnect();
+					return true;
+				}
+			}
+		}
+	}
+	else
 	{
 		onConnect();
 		return true;
 	}
-	else
-	{
-		onConnectFault(errno);
-		return false;
-	}
+
+	onConnectFault(errno);
+	return false;
 }
 
 /**
@@ -757,6 +781,7 @@ void AsyncStream::close()
 {
 	if ( getFd() != -1 )
 	{
+		disableObject();
 		int r = ::close(getFd());
 		setFd(-1);
 		if ( r < 0 ) stderror();

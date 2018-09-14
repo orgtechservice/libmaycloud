@@ -43,7 +43,7 @@ void ControlAgent::on_connect_a4(struct dns_ctx *ctx, struct dns_rr_a4 *result, 
 		target.sin_port = htons(p->controller_port);
 		memcpy(&target.sin_addr, &result->dnsa4_addr[0], sizeof(result->dnsa4_addr[0]));
 		memset(target.sin_zero, 0, 8);
-		
+
 		if ( ! p->enableObject() )
 		{
 			// пичаль, попробуем в другой раз
@@ -51,14 +51,42 @@ void ControlAgent::on_connect_a4(struct dns_ctx *ctx, struct dns_rr_a4 *result, 
 			p->reconnect();
 			return;
 		}
-		
-		if ( ::connect(p->getFd(), (struct sockaddr *)&target, sizeof( struct sockaddr )) == 0 || errno == EINPROGRESS || errno == EALREADY )
+
+		if ( ::connect(p->getFd(), (struct sockaddr *)&target, sizeof( struct sockaddr )) == -1 )
+		{
+			if(errno == EINPROGRESS || errno == EALREADY)
+			{
+				fd_set rfds, wfds;
+				FD_ZERO(&rfds);
+				FD_ZERO(&wfds);
+				FD_SET(p->getFd(), &rfds);
+				FD_SET(p->getFd(), &wfds);
+				/* Ждем не больше пяти секунд. */
+				struct timeval tv;
+				tv.tv_sec = 5;
+				tv.tv_usec = 0;
+				/* Данный вызов является блокирующим, но в данном случае для нас это не критично */
+				if ( select(p->getFd() + 1, &rfds, &wfds, NULL, &tv) > 0 )
+				{
+					socklen_t len = sizeof(int);
+					int optval = 0;
+					getsockopt(p->getFd(), SOL_SOCKET, SO_ERROR, (void*)(&optval), &len); 
+					if(!optval)
+					{
+						p->connection_state = CONNECTED;
+						p->onControllerConnected();
+						return;
+					}
+				}
+			}
+		}
+		else
 		{
 			p->connection_state = CONNECTED;
 			p->onControllerConnected();
 			return;
 		}
-		
+
 		printf("ControlAgent::on_connect_a4() connect fault: %s\n", strerror(errno));
 		logger.error("connection failed");
 		p->reconnect();

@@ -272,7 +272,7 @@ void AsyncStream::onConnectFault(int err)
 void AsyncStream::onAsyncError(int err)
 {
 	char *buf;
-	int len = asprintf(&buf, "AsyncStream::onAsyncError(%d) %s\n", err, strerror(err));
+	asprintf(&buf, "AsyncStream::onAsyncError(%d) %s\n", err, strerror(err));
 	onError(buf);
 	free(buf);
 }
@@ -762,7 +762,7 @@ bool AsyncStream::putInBuffer(const char *data, size_t len)
 * Завершить чтение/запись
 * @note только для сокетов
 */
-bool AsyncStream::shutdown(int how)
+void AsyncStream::shutdown(int how)
 {
 	if ( how & READ & ~ flags ) {
 		if ( ::shutdown(getFd(), SHUT_RD) != 0 ) stderror();

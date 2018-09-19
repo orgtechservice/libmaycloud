@@ -111,6 +111,7 @@ public:
 			p = obj.p;
 			if ( p ) p->lock();
 		}
+		return *this;
 	}
 	
 	type* operator -> () {

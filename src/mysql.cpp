@@ -41,7 +41,7 @@ namespace nanosoft
 		}
 		
 		// кодировка только UTF-8
-		int status = mysql_real_query(&conn, "SET NAMES UTF8", sizeof("SET NAMES UTF8"));
+		mysql_real_query(&conn, "SET NAMES UTF8", sizeof("SET NAMES UTF8"));
 		return true;
 	}
 	

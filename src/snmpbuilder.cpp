@@ -59,12 +59,14 @@ bool SNMPBuilder::reset(const char *community)
 	// offset[2], offset[3] = OID bindings size
 	offset += 4;
 	// offset = OID bindings;
+
+	return true;
 }
 
 /**
 * Установить тип пакета
 */
-bool SNMPBuilder::setCommand(unsigned char type)
+void SNMPBuilder::setCommand(unsigned char type)
 {
 	cmd_offset[0] = type;
 }
@@ -72,7 +74,7 @@ bool SNMPBuilder::setCommand(unsigned char type)
 /**
 * Установить requestID
 */
-bool SNMPBuilder::setRequestID(unsigned int value)
+void SNMPBuilder::setRequestID(unsigned int value)
 {
 	unsigned char *p = requestID_offset;
 	p[0] = (value >> 24) & 0xFF;
@@ -141,7 +143,7 @@ static void saveLen(unsigned char *offset, size_t len)
 /**
 * Завершить запись пакета
 */
-bool SNMPBuilder::commit()
+void SNMPBuilder::commit()
 {
 	// packet size
 	saveLen(buffer+2, offset - buffer - 4);

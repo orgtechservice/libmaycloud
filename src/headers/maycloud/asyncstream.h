@@ -389,7 +389,7 @@ public:
 	* Завершить чтение/запись
 	* @note только для сокетов
 	*/
-	bool shutdown(int how);
+	void shutdown(int how);
 	
 	/**
 	* Закрыть поток

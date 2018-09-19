@@ -342,8 +342,6 @@ ATXmlTag* ATXmlTag::findNext(const char *path, ATXmlTag *from)
 	// TODO выделять строку во временном буфере
 	string name(path, remain++);
 	
-	ATXmlTag *parent = from->parent;
-	
 	for(ATXmlTag *child = firstChild(name.c_str()); child; child = nextChild(name.c_str(), child))
 	{
 		if ( child->hasChild(from) )

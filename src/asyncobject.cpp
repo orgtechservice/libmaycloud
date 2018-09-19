@@ -6,14 +6,14 @@ using namespace std;
 /**
 * Конструктор
 */
-AsyncObject::AsyncObject(): daemon(0), fd(-1), terminating(false)
+AsyncObject::AsyncObject(): fd(-1), daemon(0), terminating(false)
 {
 }
 
 /**
 * Конструктор
 */
-AsyncObject::AsyncObject(int afd): daemon(0), fd(afd), terminating(false)
+AsyncObject::AsyncObject(int afd): fd(afd), daemon(0), terminating(false)
 {
 }
 

@@ -198,6 +198,7 @@ bool ProcessManager::processExists(pid_t pid, std::string command) {
 			}
 		}
 	}
+	return false;
 }
 
 /**

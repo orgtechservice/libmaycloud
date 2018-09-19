@@ -45,7 +45,7 @@ public:
 	{
 		return memcmp(mac, ma.mac, sizeof(mac)) <= 0;
 	}
-	inline operator unsigned long long int () { parse_mac_6(mac); }
+	inline operator unsigned long long int () { return parse_mac_6(mac); }
 	
 	TempString toString() const;
 };

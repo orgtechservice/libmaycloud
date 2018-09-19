@@ -22,12 +22,12 @@ bool ASN1Reader::readHeader(asn1_header_t &h, const unsigned char *&data, const 
 	
 	if ( p[1] & 0x80 )
 	{
-		int c = p[1] & 0x7F;
+		unsigned int c = p[1] & 0x7F;
 		if ( c > sizeof(h.length) ) return false;
 		h.data = p + 2 + c;
 		if ( h.data > limit ) return false;
 		unsigned int l = 0;
-		for(int i = 0; i < c; i++) l = l * 256 + p[i+2];
+		for(unsigned int i = 0; i < c; i++) l = l * 256 + p[i+2];
 		h.length = l;
 		h.limit = h.data + l;
 	}

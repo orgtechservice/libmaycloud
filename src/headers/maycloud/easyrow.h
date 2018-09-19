@@ -80,7 +80,7 @@ public:
 	 *
 	 * Берет ссылку на новый объект, старый отсоединяется.
 	 */
-	EasyRow& operator = (const EasyRow &row) { ref = row.ref; }
+	EasyRow& operator = (const EasyRow &row) { ref = row.ref; return *this; }
 	
 	/**
 	 * Претворяемся что мы map<>

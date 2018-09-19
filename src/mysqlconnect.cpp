@@ -158,7 +158,7 @@ bool MYSQLConnect::mysqlCommit()
 /**
  * Загрузить данные из базы
  */
-bool MYSQLConnect::mysqlLoadFromDB() { }
+bool MYSQLConnect::mysqlLoadFromDB() { return true; }
 
 /**
  * Загрузка конфигурации из файла

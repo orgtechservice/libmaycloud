@@ -178,7 +178,7 @@ EasyResultSet EasyMySQL::queryAll(const std::string &sql)
 		
 		MYSQL_ROW values;
 		
-		while ( values = mysql_fetch_row(res) )
+		while ( (values = mysql_fetch_row(res)) )
 		{
 			unsigned long *lengths = mysql_fetch_lengths(res);
 			

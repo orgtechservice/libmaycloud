@@ -125,7 +125,7 @@ private:
 	/**
 	* Максимальное число обслуживаемых объектов
 	*/
-	size_t limit;
+	int limit;
 	
 	/**
 	* Текущее число объектов
@@ -399,10 +399,9 @@ public:
 	* @param calltime время запуска таймера
 	* @param callback функция обратного вызова
 	* @param data указатель на пользовательские данные
-	* @return TRUE - таймер установлен, FALSE - таймер установить не удалось
 	*/
 	template <class data_t>
-	bool setGlobalTimer(void (*callback)(const timeval &tv, data_t *data), data_t *data)
+	void setGlobalTimer(void (*callback)(const timeval &tv, data_t *data), data_t *data)
 	{
 		gtimer = reinterpret_cast<timer_callback_t>(callback);
 		gtimer_data = data;

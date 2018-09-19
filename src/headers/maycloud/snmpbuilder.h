@@ -34,12 +34,12 @@ public:
 	/**
 	* Установить тип пакета
 	*/
-	bool setCommand(unsigned char type);
+	void setCommand(unsigned char type);
 	
 	/**
 	* Установить requestID
 	*/
-	bool setRequestID(unsigned int value);
+	void setRequestID(unsigned int value);
 	
 	/**
 	* Добавить OID со значением NULL
@@ -49,7 +49,7 @@ public:
 	/**
 	* Завершить запись пакета
 	*/
-	bool commit();
+	void commit();
 	
 	/**
 	* Вернуть указатель на данные

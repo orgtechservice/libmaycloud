@@ -24,7 +24,7 @@ static void signalHandler(int signo) {
 * @param fd_limit максимальное число одновременных виртуальных потоков
 * @param buf_size размер файлового буфера в блоках
 */
-NetDaemon::NetDaemon(int fd_limit, int buf_size): sleep_time(200), timerCount(0), gtimer(0), count(0), active(0) {
+NetDaemon::NetDaemon(int fd_limit, int buf_size): active(0), sleep_time(200), gtimer(0), count(0), timerCount(0) {
 	signal(SIGCHLD, signalHandler);
 	limit = fd_limit;
 	epoll = epoll_create(fd_limit);
@@ -692,7 +692,7 @@ bool NetDaemon::push(int fd)
 		fb->offset += r;
 		
 		// если блок записан полностью,
-		if ( r == rest )
+		if ( r == (ssize_t) rest )
 		{
 			// добавить его в список освободившихся
 			block_t *block = fb->first;

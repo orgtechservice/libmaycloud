@@ -10,7 +10,7 @@ using namespace nanosoft;
  * Конструктор потока
  */
 ControlStream::ControlStream(int sock):
-	AsyncXMLStream(sock), XMLWriter(1024), depth(0), state(INIT)
+	AsyncXMLStream(sock), XMLWriter(1024), state(INIT), depth(0)
 {
 }
 

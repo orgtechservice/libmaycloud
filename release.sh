@@ -2,4 +2,4 @@
 
 make distclean
 cmake -DCMAKE_BUILD_TYPE=Release .
-make deb
+make -j4 deb

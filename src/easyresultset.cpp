@@ -1,4 +1,4 @@
-#include "easyresultset.h"
+#include "maycloud/easyresultset.h"
 
 /**
 * Конструктор по умолчанию, создает пустой набор данных

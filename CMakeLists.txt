@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
 project(libmaycloud)
 
-SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall")
-SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wall")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+set(CMAKE_INSTALL_PREFIX "/usr/local")
 
 FILE(GLOB LIBMAYCLOUD_SOURCE src/*.cpp)
 FILE(GLOB LIBMAYCLOUD_HEADERS src/headers/maycloud/*.h)
@@ -16,7 +17,7 @@ INSTALL(TARGETS maycloud LIBRARY DESTINATION lib ARCHIVE DESTINATION lib COMPONE
 INSTALL(FILES ${LIBMAYCLOUD_HEADERS} DESTINATION include/maycloud COMPONENT dev)
 
 ADD_CUSTOM_TARGET (distclean @echo cleaning for source distribution)
-SET(DISTCLEANED CMakeCache.txt CMakeFiles cmake_install.cmake install_manifest_maycloud.txt install_manifest_dev.txt Makefile cmake_deb_package_dev cmake_deb_package_maycloud *.a *.deb)
+set(DISTCLEANED CMakeCache.txt CMakeFiles cmake_install.cmake install_manifest_maycloud.txt install_manifest_dev.txt Makefile cmake_deb_package_dev cmake_deb_package_maycloud *.a *.deb)
 
 ADD_CUSTOM_COMMAND (
 	DEPENDS clean
@@ -33,6 +34,7 @@ set(DEB_PACKAGE_maycloud_VERSION "0.0.1")
 set(DEB_PACKAGE_maycloud_SECTION "utils")
 set(DEB_PACKAGE_maycloud_DESRCIPTION "MayCloud core library")
 set(DEB_PACKAGE_maycloud_MAINTAINER "Orgtechservice, Ltd. <dev@mkpnet.ru>")
+set(DEB_PACKAGE_maycloud_ARCH "amd64")
 set(DEB_PACKAGE_maycloud_DEPENDS "libudns0, libsqlite3-0")
 
 set(DEB_PACKAGE_dev_NAME "${CMAKE_PROJECT_NAME}-dev")

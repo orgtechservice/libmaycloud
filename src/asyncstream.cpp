@@ -272,7 +272,7 @@ void AsyncStream::onConnectFault(int err)
 void AsyncStream::onAsyncError(int err)
 {
 	char *buf;
-	asprintf(&buf, "AsyncStream::onAsyncError(%d) %s\n", err, strerror(err));
+	int res = asprintf(&buf, "AsyncStream::onAsyncError(%d) %s\n", err, strerror(err));
 	onError(buf);
 	free(buf);
 }

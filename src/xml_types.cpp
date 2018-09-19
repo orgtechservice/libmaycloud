@@ -105,7 +105,7 @@ void attributes_t::setAttributef(const char *name, const char *fmt, ...)
 	char *value;
 	va_list args;
 	va_start(args, fmt);
-	vasprintf(&value, fmt, args);
+	int res = vasprintf(&value, fmt, args);
 	va_end(args);
 	(*this)[name] = value;
 	free(value);

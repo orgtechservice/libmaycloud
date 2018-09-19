@@ -29,7 +29,7 @@ namespace nanosoft
 	XMLWriter::~XMLWriter()
 	{
 		flush();
-		delete outbuf;
+		delete [] outbuf;
 	}
 	
 	/**

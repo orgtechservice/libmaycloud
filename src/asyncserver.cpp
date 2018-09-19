@@ -1,7 +1,5 @@
 #include <maycloud/asyncserver.h>
 
-using namespace std;
-
 /**
 * Конструктор
 */

@@ -7,7 +7,7 @@ SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wall")
 FILE(GLOB LIBMAYCLOUD_SOURCE src/*.cpp)
 FILE(GLOB LIBMAYCLOUD_HEADERS src/headers/maycloud/*.h)
 
-include_directories(/usr/include src/headers)
+include_directories(src/headers)
 
 add_library(maycloud STATIC ${LIBMAYCLOUD_SOURCE})
 

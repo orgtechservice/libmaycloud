@@ -1,7 +1,8 @@
 
-# Название проекта и минимально требуемая версия CMake
-cmake_minimum_required(VERSION 2.8)
+# Название проекта, минимально требуемая версия CMake, стандарт C++ (включить если понадобится)
+cmake_minimum_required(VERSION 3.1)
 project(libmaycloud)
+#set(CMAKE_CXX_STANDARD 11)
 
 # Основные переменные окружения, задающие флаги компилятора и префикс для установки (также применяется к deb-пакету)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")

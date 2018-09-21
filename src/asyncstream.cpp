@@ -115,6 +115,7 @@ void AsyncStream::handleRead()
 		putInDecompressor(chunk, ret);
 		ret = ::read(getFd(), chunk, sizeof(chunk));
 	}
+	if ( ret == 0 ) close();
 	if ( ret < 0 )
 	{
 		if ( errno != EAGAIN ) stderror();

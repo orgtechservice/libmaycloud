@@ -51,20 +51,6 @@ NetDaemon::NetDaemon(int fd_limit, int buf_size): active(0), sleep_time(200), gt
 		block->next = stack;
 		stack = block;
 	}
-	
-#ifdef HAVE_GNUTLS
-	printf("BEFORE gnutls_global_init()\n");
-	if ( gnutls_global_init() )
-	{
-		fprintf(stderr, "GnuTLS global init fault\n");
-	}
-	printf("AFTER gnutls_global_init()\n");
-	
-#ifdef DEBUG_TLS
-	gnutls_global_set_log_level(9);
-	gnutls_global_set_log_function(my_gnutls_log_func);
-#endif // DEBUG_TLS
-#endif // HAVE_GNUTLS
 
 	/*
 	* Так как предполагается, что у нас всегда один экземпляр NetDaemon, я сделаю присваивание прямо при создании объекта © WST
@@ -83,10 +69,6 @@ NetDaemon::~NetDaemon()
 	
 	delete [] fds;
 	delete [] buffer;
-	
-#ifdef HAVE_GNUTLS
-	gnutls_global_deinit();
-#endif // HAVE_GNUTLS
 }
 
 /**

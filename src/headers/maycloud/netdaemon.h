@@ -23,10 +23,6 @@
 #include <iostream>
 #include <queue>
 
-#ifdef HAVE_GNUTLS
-#include <gnutls/gnutls.h>
-#endif // HAVE_GNUTLS
-
 /**
 * Callback таймера
 */

@@ -5,9 +5,15 @@ project(libmaycloud)
 #set(CMAKE_CXX_STANDARD 11)
 
 # Основные переменные окружения, задающие флаги компилятора и префикс для установки (также применяется к deb-пакету)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
 set(CMAKE_INSTALL_PREFIX "/usr/local")
+
+# Проверим наличие зависимостей
+find_package(EXPAT)
+find_package(SQLITE3)
+find_package(UDNS)
 
 # Исходники и заголовочные файлы проекта
 FILE(GLOB LIBMAYCLOUD_SOURCE src/*.cpp)

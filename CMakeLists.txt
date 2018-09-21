@@ -53,7 +53,7 @@ set(DEB_PACKAGE_dev_SECTION "development")
 set(DEB_PACKAGE_dev_DESRCIPTION "MayCloud core library (development files)")
 set(DEB_PACKAGE_dev_MAINTAINER "Orgtechservice, Ltd. <dev@mkpnet.ru>")
 set(DEB_PACKAGE_dev_ARCH "amd64")
-set(DEB_PACKAGE_dev_DEPENDS "${CMAKE_PROJECT_NAME}, libudns-dev, libsqlite3-dev, libexpat1-dev, libmysqlclient-dev | libperconaserverclient-dev | libmariadb-client-lgpl-dev")
+set(DEB_PACKAGE_dev_DEPENDS "${CMAKE_PROJECT_NAME}, libudns-dev, libsqlite3-dev, libexpat1-dev, libmysqlclient-dev | libperconaserverclient-dev | libmariadb-client-lgpl-dev | libmariadbclient-dev")
 
 # Кастомная цель для формирования deb-пакетов
 add_custom_target(deb DEPENDS deb_package)

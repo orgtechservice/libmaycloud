@@ -40,6 +40,15 @@ ADD_CUSTOM_COMMAND (
 	TARGET  distclean
 )
 
+# Определяем архитектуру машины
+if("${CMAKE_SYSTEM_PROCESSOR}" EQUAL "unknown")
+	message("-- Building for ARM")
+	set(PKGARCH "armhf")
+else()
+	message("-- Building for amd64")
+	set(PKGARCH "amd64")
+endif()
+
 # Компоненты, которые пакуем в deb-пакеты при помощи цели «deb»
 set(DEB_PACKAGE_COMPONENTS "maycloud" "dev")
 
@@ -49,7 +58,7 @@ set(DEB_PACKAGE_maycloud_VERSION "0.0.1")
 set(DEB_PACKAGE_maycloud_SECTION "utils")
 set(DEB_PACKAGE_maycloud_DESRCIPTION "MayCloud core library")
 set(DEB_PACKAGE_maycloud_MAINTAINER "Orgtechservice, Ltd. <dev@mkpnet.ru>")
-set(DEB_PACKAGE_maycloud_ARCH "amd64")
+set(DEB_PACKAGE_maycloud_ARCH "${PKGARCH}")
 set(DEB_PACKAGE_maycloud_DEPENDS "libudns0, libsqlite3-0, libexpat1, mariadb-client | mysql-client")
 
 # Заготовка control-файла для libmaycloud-dev
@@ -58,7 +67,7 @@ set(DEB_PACKAGE_dev_VERSION "0.0.1")
 set(DEB_PACKAGE_dev_SECTION "development")
 set(DEB_PACKAGE_dev_DESRCIPTION "MayCloud core library (development files)")
 set(DEB_PACKAGE_dev_MAINTAINER "Orgtechservice, Ltd. <dev@mkpnet.ru>")
-set(DEB_PACKAGE_dev_ARCH "amd64")
+set(DEB_PACKAGE_dev_ARCH "${PKGARCH}")
 set(DEB_PACKAGE_dev_DEPENDS "${CMAKE_PROJECT_NAME}, libudns-dev, libsqlite3-dev, libexpat1-dev, libmysqlclient-dev | libperconaserverclient-dev | libmariadb-client-lgpl-dev | libmariadbclient-dev")
 
 # Кастомная цель для формирования deb-пакетов

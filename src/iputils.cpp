@@ -18,9 +18,9 @@ bool parse_mac_str(const char* mac, unsigned char* rez_mac)
 {
 	int len = strlen(mac);
 	char crez = 0;
-	
+
 	if(len < 17) return false;
-	
+
 	int i = 0;
 	int bc = 0;
 	int cc = 0;
@@ -28,28 +28,28 @@ bool parse_mac_str(const char* mac, unsigned char* rez_mac)
 	{
 		if(mac[i] >= 0x30 && mac[i] <= 0x39)
 		{
-		  crez = (crez << 4) + (mac[i] - 0x30);
-		  cc++;
+			crez = (crez << 4) + (mac[i] - 0x30);
+			cc++;
 		}
 		if(mac[i] >= 0x41 && mac[i] <= 0x46)
 		{
-		  crez = (crez << 4) + (mac[i] - 0x37);
-		  cc++;
+			crez = (crez << 4) + (mac[i] - 0x37);
+			cc++;
 		}
 		if(mac[i] >= 0x61 && mac[i] <= 0x66)
 		{
-		  crez = (crez << 4) + (mac[i] - 0x57);
-		  cc++;
+			crez = (crez << 4) + (mac[i] - 0x57);
+			cc++;
 		}
-		
+
 		if(cc == 2)
 		{
-		    rez_mac[bc] = crez;
-		    
-		    bc++;
-		    cc = 0;
+			rez_mac[bc] = crez;
+			
+			bc++;
+			cc = 0;
 		}
-		  
+
 		i++;
 	}
 	return true;
@@ -59,9 +59,9 @@ bool parse_mac8_str(const char* mac, unsigned char* rez_mac)
 {
 	int len = strlen(mac);
 	char crez = 0;
-	
+
 	if(len < 17) return false;
-	
+
 	int i = 0;
 	int bc = 0;
 	int cc = 0;
@@ -69,28 +69,28 @@ bool parse_mac8_str(const char* mac, unsigned char* rez_mac)
 	{
 		if(mac[i] >= 0x30 && mac[i] <= 0x39)
 		{
-		  crez = (crez << 4) + (mac[i] - 0x30);
-		  cc++;
+			crez = (crez << 4) + (mac[i] - 0x30);
+			cc++;
 		}
 		if(mac[i] >= 0x41 && mac[i] <= 0x46)
 		{
-		  crez = (crez << 4) + (mac[i] - 0x37);
-		  cc++;
+			crez = (crez << 4) + (mac[i] - 0x37);
+			cc++;
 		}
 		if(mac[i] >= 0x61 && mac[i] <= 0x66)
 		{
-		  crez = (crez << 4) + (mac[i] - 0x57);
-		  cc++;
+			crez = (crez << 4) + (mac[i] - 0x57);
+			cc++;
 		}
-		
+
 		if(cc == 2)
 		{
-		    rez_mac[bc] = crez;
-		    
-		    bc++;
-		    cc = 0;
+			rez_mac[bc] = crez;
+			
+			bc++;
+			cc = 0;
 		}
-		  
+
 		i++;
 	}
 	return true;

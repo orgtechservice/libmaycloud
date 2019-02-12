@@ -20,6 +20,11 @@ bool DEBUG::DUMP_STANZA = false;
 bool DEBUG::DUMP_SQL = false;
 
 /**
+ * Выводить для отладки актуальную конфигурацию
+ */
+bool DEBUG::DUMP_CONFIG = false;
+
+/**
 * Прочитать значение булевской опции
 */
 static bool get_bool_opt_raw(const char *name)
@@ -53,4 +58,5 @@ void DEBUG::load_from_env()
 	DUMP_IO = get_bool_opt("DUMP_IO");
 	DUMP_STANZA = get_bool_opt("DUMP_STANZA");
 	DUMP_SQL = get_bool_opt("DUMP_SQL");
+	DUMP_CONFIG = get_bool_opt("DUMP_CONFIG");
 }

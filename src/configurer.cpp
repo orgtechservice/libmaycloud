@@ -1,11 +1,35 @@
 /**
  * Configurer
- * Revision on 19.03.2015
  * 
- * (c) Michael Solomatin
+ * (c) Mikhail Solomatin
  */
 
 #include <maycloud/configurer.h>
+#include <maycloud/debug.h>
+
+std::string Configurer::actual_map;
+Configurer::params_map Configurer::params;
+Configurer::multi_params_map Configurer::local_params;
+
+/**
+ * Вывести актуальную конфигурацию
+ */
+void Configurer::dumpConfig()
+{
+	for(params_iterator it = params.begin(); it != params.end(); it++)
+	{
+		printf("[Configurer]: %s=%s\n", it->first.c_str(), it->second.c_str());
+	}
+
+	for(multi_params_iterator it = local_params.begin(); it != local_params.end(); it++)
+	{
+		printf("\n[Configurer]: [%s]\n", it->first.c_str());
+		for(params_iterator it2 = it->second.begin(); it2 != it->second.end(); it2++)
+		{
+			printf("[Configurer]:\t%s=%s\n", it2->first.c_str(), it2->second.c_str());
+		}
+	}
+}
 
 Configurer::Configurer()
 {
@@ -21,46 +45,48 @@ bool Configurer::parseParam(std::string param)
 {
 	std::string paramName;
 	std::string paramValue;
-	
+
 	int i = 0;
+	if(param[i] == '#' || param[i] == '\n' || param[i] == 0) return false;
+	if(param[i] == '[')
+	{
+		++i;
+		actual_map = "";
+		while(param[i] != 0 && param[i] != '\n' && param[i] != ']')
+		{
+			actual_map = actual_map + param[i++];
+		}
+		return false;
+	}
+
 	while(param[i] != 0 && param[i] != '\n' && param[i] != '=')
 	{
-		paramName = paramName + param[i];
-		i++;
+		paramName = paramName + param[i++];
 	}
-	i++;
-	if(param[i] != '\'') return false;
-	i++;
+	++i;
+	if(param[i] == '\'') ++i;
 	while(param[i] != 0 && param[i] != '\n' && param[i] != '\'')
 	{
-		paramValue = paramValue + param[i];
-		i++;
+		paramValue = paramValue + param[i++];
 	}
-	
-	params[paramName] = paramValue;
+
+	if(actual_map == "") params[paramName] = paramValue;
+	else local_params[actual_map][paramName] = paramValue;
 	return true;
 }
 
 bool Configurer::loadFile(const char* fn)
 {
-	params.erase(params.begin(), params.end());	
-	file.open(fn, std::ifstream::in);
-
-	if (!file.good())
-	{
-		return false;
-	}
-		
+	actual_map = "";
+	std::ifstream file(fn);
 	char param[256];
-	file.getline(param, 256); //почему повторяется 2 раза?
-	while(file.good())//возвращает true, если нет флагов ошибки
+	while(file.good())
 	{
-		printf("[Configurer]: %s\n", param);
-		parseParam(param);
 		file.getline(param, 256);
+		parseParam(param);
 	}
-		
 	file.close();
+	if(DEBUG::DUMP_CONFIG) dumpConfig();
 	return true;
 }
 

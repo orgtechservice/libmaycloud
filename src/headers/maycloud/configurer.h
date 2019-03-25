@@ -3,9 +3,8 @@
 
 /**
  * Configurer
- * Revision on 19.03.2015
  * 
- * (c) Michael Solomatin
+ * (c) Mikhail Solomatin
  */
 
 #include <string>
@@ -15,11 +14,11 @@
 class Configurer
 {
 public:
-	typedef std::map<std::string, std::string> params_map;
-	typedef std::map<std::string, params_map> multi_params_map;
+	using params_map = std::map<std::string, std::string>;
+	using multi_params_map = std::map<std::string, params_map>;
 
-	typedef params_map::iterator params_iterator;
-	typedef multi_params_map::iterator multi_params_iterator;
+	using params_iterator = params_map::iterator;
+	using multi_params_iterator = multi_params_map::iterator;
 protected:
 	/**
 	 * Актуальная карта параметров.
@@ -49,6 +48,8 @@ public:
 	bool loadFile(const char* fn);
 	std::string searchParam(std::string name);
 	std::string searchParam(std::string name, std::string default_value);
+	std::string searchLocalParam(std::string node, std::string name);
+	std::string searchLocalParam(std::string node, std::string name, std::string default_value);
 
 	/**
 	 * Вывести актуальную конфигурацию

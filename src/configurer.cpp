@@ -93,7 +93,7 @@ bool Configurer::loadFile(const char* fn)
 std::string Configurer::searchParam(std::string name)
 {
 	std::string value;
-	std::map<std::string, std::string>::iterator it = params.find(name);
+	params_iterator it = params.find(name);
 	if(it != params.end()) value = it->second;
 	return value;
 }
@@ -101,7 +101,31 @@ std::string Configurer::searchParam(std::string name)
 std::string Configurer::searchParam(std::string name, std::string default_value)
 {
 	std::string value(default_value);
-	std::map<std::string, std::string>::iterator it = params.find(name);
+	params_iterator it = params.find(name);
 	if(it != params.end()) value = it->second;
+	return value;
+}
+
+std::string Configurer::searchLocalParam(std::string node, std::string name)
+{
+	std::string value;
+	multi_params_iterator multi_it = local_params.find(node);
+	if(multi_it != local_params.end())
+	{
+		params_iterator it = multi_it->second.find(name);
+		if(it != multi_it->second.end()) value = it->second;
+	}
+	return value;
+}
+
+std::string Configurer::searchLocalParam(std::string node, std::string name, std::string default_value)
+{
+	std::string value(default_value);
+	multi_params_iterator multi_it = local_params.find(node);
+	if(multi_it != local_params.end())
+	{
+		params_iterator it = multi_it->second.find(name);
+		if(it != multi_it->second.end()) value = it->second;
+	}
 	return value;
 }

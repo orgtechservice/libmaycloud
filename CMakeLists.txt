@@ -41,10 +41,10 @@ ADD_CUSTOM_COMMAND (
 )
 
 # Определяем архитектуру машины
-if("${CMAKE_SYSTEM_PROCESSOR}" EQUAL "unknown")
+if("${CMAKE_HOST_SYSTEM_PROCESSOR}" MATCHES "unknown")
 	message("-- Building for ARM")
 	set(PKGARCH "armhf")
-elseif("${CMAKE_SYSTEM_PROCESSOR}" EQUAL "arm")
+elseif("${CMAKE_HOST_SYSTEM_PROCESSOR}" MATCHES "arm")
 	message("-- Building for ARM")
 	set(PKGARCH "armhf")
 else()

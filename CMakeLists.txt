@@ -10,6 +10,10 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
 set(CMAKE_INSTALL_PREFIX "/usr/local")
 
+if(CMAKE_BUILD_TYPE MATCHES "Debug")
+	add_compile_options(-Wall -pedantic)
+endif()
+
 # Проверим наличие зависимостей
 find_package(EXPAT)
 find_package(SQLITE3)

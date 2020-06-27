@@ -47,7 +47,8 @@ void Logger::information(const char *message, ...) {
 	char *buf;
 	va_list args;
 	va_start(args, message);
-	int res = vasprintf(&buf, message, args);
+	int res __attribute__((unused));
+	res = vasprintf(&buf, message, args);
 	va_end(args);
 
 	std::string current_time = currentTime();
@@ -72,7 +73,8 @@ void Logger::unexpected(const char *message, ...) {
 	char *buf;
 	va_list args;
 	va_start(args, message);
-	int res = vasprintf(&buf, message, args);
+	int res __attribute__((unused));
+	res = vasprintf(&buf, message, args);
 	va_end(args);
 
 	std::string current_time = currentTime();
@@ -97,7 +99,8 @@ void Logger::warning(const char *message, ...) {
 	char *buf;
 	va_list args;
 	va_start(args, message);
-	int res = vasprintf(&buf, message, args);
+	int res __attribute__((unused));
+	res = vasprintf(&buf, message, args);
 	va_end(args);
 
 	std::string current_time = currentTime();
@@ -122,7 +125,8 @@ void Logger::error(const char *message, ...) {
 	char *buf;
 	va_list args;
 	va_start(args, message);
-	int res = vasprintf(&buf, message, args);
+	int res __attribute__((unused));
+	res = vasprintf(&buf, message, args);
 	va_end(args);
 
 	std::string current_time = currentTime();
@@ -148,7 +152,8 @@ void Logger::fatalError(const char *message, int exitcode, ...) {
 	char *buf;
 	va_list args;
 	va_start(args, exitcode);
-	int res = vasprintf(&buf, message, args);
+	int res __attribute__((unused));
+	res = vasprintf(&buf, message, args);
 	va_end(args);
 
 	std::string current_time = currentTime();

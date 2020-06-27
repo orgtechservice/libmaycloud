@@ -14,10 +14,17 @@ set(CMAKE_INSTALL_PREFIX "/usr/local")
 find_package(EXPAT)
 find_package(SQLITE3)
 find_package(UDNS)
+find_library(MYSQL_LIBRARY NAMES mysqlclient perconaserverclient mariadbclient)
 
 # Исходники и заголовочные файлы проекта
 FILE(GLOB LIBMAYCLOUD_SOURCE src/*.cpp)
 FILE(GLOB LIBMAYCLOUD_HEADERS src/headers/maycloud/*.h)
+
+IF(MYSQL_LIBRARY)
+	message("\n==============================================\n-- WARNING: Building without MySQL support! --\n==============================================\n")
+	LIST(FILTER LIBMAYCLOUD_SOURCE EXCLUDE REGEX "(mysql|easymysql|easyresultset)\\.cpp$")
+	LIST(FILTER LIBMAYCLOUD_HEADERS EXCLUDE REGEX "(mysql|easymysql|easyresultset)\\.h$")
+endif()
 
 # Каталоги для добавления в список включения (опция -I компилятора)
 include_directories(src/headers)

@@ -20,7 +20,7 @@ find_library(MYSQL_LIBRARY NAMES mysqlclient perconaserverclient mariadbclient)
 FILE(GLOB LIBMAYCLOUD_SOURCE src/*.cpp)
 FILE(GLOB LIBMAYCLOUD_HEADERS src/headers/maycloud/*.h)
 
-IF(MYSQL_LIBRARY)
+IF(NOT MYSQL_LIBRARY)
 	message("\n==============================================\n-- WARNING: Building without MySQL support! --\n==============================================\n")
 	LIST(FILTER LIBMAYCLOUD_SOURCE EXCLUDE REGEX "(mysql|easymysql|easyresultset)\\.cpp$")
 	LIST(FILTER LIBMAYCLOUD_HEADERS EXCLUDE REGEX "(mysql|easymysql|easyresultset)\\.h$")

@@ -23,17 +23,13 @@ namespace nanosoft
 		return ret;
 	}
 	
-	std::string generateSalt(int len)
-	{
-		char str[len + 1];
+	std::string generateSalt(int len) {
+		char str[80];
 		str[len] = 0;
 		
-		for(int i = 0; i < len; i++)
-		{
-			while(1)
-			{
+		for(int i = 0; i < len; i++) {
+			while(1) {
 				str[i] = (char) (rand() % 'z' + '0');
-				
 				if(str[i] >= '0' && str[i] <= '9') break;
 				if(str[i] >= 'A' && str[i] <= 'Z') break;
 				if(str[i] >= 'a' && str[i] <= 'z') break;

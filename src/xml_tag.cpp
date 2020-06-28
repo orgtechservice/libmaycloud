@@ -334,26 +334,24 @@ ATXmlTag* ATXmlTag::find(const std::string &path)
 * @param path путь к узлу
 * @return найденый узел или 0 если узлов больше нет
 */
-ATXmlTag* ATXmlTag::findNext(const char *path, ATXmlTag *from)
-{
+ATXmlTag* ATXmlTag::findNext(const char *path, ATXmlTag *from) {
 	const char *remain = strchr(path, '/');
 	if ( remain == 0 ) return nextChild(path, from);
+
+	ATXmlTag *result = 0;
 	
 	// TODO выделять строку во временном буфере
-	string name(path, remain++);
+	string name(path, remain ++);
 	
-	for(ATXmlTag *child = firstChild(name.c_str()); child; child = nextChild(name.c_str(), child))
-	{
-		if ( child->hasChild(from) )
-		{
-			ATXmlTag *result = child->findNext(remain, from);
-			if ( result ) return result;
+	for(ATXmlTag *child = firstChild(name.c_str()); child; child = nextChild(name.c_str(), child)) {
+		if(child->hasChild(from)) {
+			result = child->findNext(remain, from);
+			if(result) return result;
 			
 			child = nextChild(name.c_str(), child);
-			for(; child; child = nextChild(name.c_str(), child))
-			{
-				ATXmlTag *result = child->find(remain);
-				if ( result ) return result;
+			for(; child; child = nextChild(name.c_str(), child)) {
+				result = child->find(remain);
+				if(result) return result;
 			}
 			
 			return 0;
@@ -391,17 +389,15 @@ bool ATXmlTag::hasChild(ATXmlTag *tag)
 /**
 * Удалить потомка с указанным именем
 */
-void ATXmlTag::removeChild(const char *name)
-{
-	for(nodes_list_t::iterator iter = childnodes.begin(); iter != childnodes.end(); ++iter)
-	{
+void ATXmlTag::removeChild(const char *name) {
+	for(nodes_list_t::iterator iter = childnodes.begin(); iter != childnodes.end(); ++ iter) {
 		ATXmlNode *node = *iter;
-		if ( node->type == TTag && node->tag->name() == name )
-		{
+		if(node->type == TTag && node->tag->name() == name) {
 			childnodes.erase(iter);
 			children.remove(node->tag);
 			delete node->tag;
 			delete node;
+			return;
 		}
 	}
 }
@@ -409,34 +405,21 @@ void ATXmlTag::removeChild(const char *name)
 /**
 * Удалить потомка с указанным именем
 */
-void ATXmlTag::removeChild(const std::string &name)
-{
-	for(nodes_list_t::iterator iter = childnodes.begin(); iter != childnodes.end(); ++iter)
-	{
-		ATXmlNode *node = *iter;
-		if ( node->type == TTag && node->tag->name() == name )
-		{
-			childnodes.erase(iter);
-			children.remove(node->tag);
-			delete node->tag;
-			delete node;
-		}
-	}
+void ATXmlTag::removeChild(const std::string &name) {
+	return removeChild(name.c_str());
 }
 
 /**
 * Удалить всех потомков
 */
-void ATXmlTag::clear()
-{
-	for(tags_list_t::iterator it = children.begin(); it != children.end(); it++) {
+void ATXmlTag::clear() {
+	for(tags_list_t::iterator it = children.begin(); it != children.end(); ++ it) {
 		delete *it;
 	}
 	children.clear();
 	
-	for(nodes_list_t::iterator it = childnodes.begin(); it != childnodes.end(); it++) {
+	for(nodes_list_t::iterator it = childnodes.begin(); it != childnodes.end(); ++ it) {
 		delete *it;
 	}
 	childnodes.clear();
 }
-

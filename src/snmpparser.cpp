@@ -119,7 +119,7 @@ void SNMPParser::onResponseValueInt(const char *host, unsigned int host_ip, cons
 		float f_min = (((min * 4.0) / 1024.0) / 1024.0) * 8;
 		float f_max = (((max * 4.0) / 1024.0) / 1024.0) * 8;
 		float f_avg = count > 0 ? ((((sum * 4.0 * 8.0) / 1024.0) / 1024.0) / count) : 0;
-		printf("%s min: %.2f, avg: %.2f, max: %.2f, count: %d\n", host, f_min, f_avg, f_max, count);
+		printf("%s min: %.2f, avg: %.2f, max: %.2f, count: %u\n", host, f_min, f_avg, f_max, count);
 		//printf("----\n");
 		min = diff;
 		max = diff;

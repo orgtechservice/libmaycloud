@@ -28,7 +28,7 @@ EasyRow easyEnviron();
  * 
  * @param args выходной набор аргументов  
  */
-void parseCmdString(const std::string cmd, EasyVector& args);
+void parseCmdString(const std::string &cmd, EasyVector& args);
 
 /**
  * Вызов exec()

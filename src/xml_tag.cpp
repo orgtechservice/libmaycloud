@@ -120,7 +120,7 @@ void ATXmlTag::insertCharacterData(std::string cdata) {
 
 std::string ATXmlTag::getCharacterData() {
 	std::string cdata = "";
-	for(nodes_list_t::iterator it = childnodes.begin(); it != childnodes.end(); it++) {
+	for(nodes_list_t::iterator it = childnodes.begin(); it != childnodes.end(); ++ it) {
 		if ( (*it)->type == TCharacterData ) {
 			cdata += (*it)->cdata;
 		}
@@ -137,7 +137,7 @@ bool ATXmlTag::hasChild(std::string tag_name) {
 }
 
 ATXmlTag *ATXmlTag::getChild(std::string tag_name) {
-	for(tags_list_t::iterator it = children.begin(); it != children.end(); it++) {
+	for(tags_list_t::iterator it = children.begin(); it != children.end(); ++ it) {
 		if((*it)->name() == tag_name) {
 			return *it;
 		}
@@ -146,7 +146,7 @@ ATXmlTag *ATXmlTag::getChild(std::string tag_name) {
 }
 
 ATXmlTag *ATXmlTag::getChildByAttribute(std::string tag_name, std::string attribute, std::string attribute_value) {
-	for(tags_list_t::iterator it = children.begin(); it != children.end(); it++) {
+	for(tags_list_t::iterator it = children.begin(); it != children.end(); ++ it) {
 		if((*it)->name() == tag_name) {
 			if((*it)->hasAttribute(attribute) && (*it)->getAttribute(attribute) == attribute_value) {
 				return *it;
@@ -172,14 +172,14 @@ std::string ATXmlTag::toString() const
 		xml += prefix + ":";
 	}
     xml += tag_name;
-	for(attributes_t::const_iterator it = this->begin(); it != this->end(); it++) {
+	for(attributes_t::const_iterator it = this->begin(); it != this->end(); ++ it) {
 		xml += " " + it->first + std::string("=\"") + XMLWriter::escape(it->second) + std::string("\"");
 	}
     if(childnodes.empty()) {
 		xml += " />";
 	} else {
 		xml += ">";
-		for(nodes_list_t::const_iterator it = childnodes.begin(); it != childnodes.end(); it++) {
+		for(nodes_list_t::const_iterator it = childnodes.begin(); it != childnodes.end(); ++ it) {
 			switch((*it)->type) {
 				case TTag:
 					xml += (*it)->tag->asString();

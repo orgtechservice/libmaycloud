@@ -45,6 +45,7 @@ add_library(maycloud STATIC ${LIBMAYCLOUD_SOURCE})
 # Установка компонентов — библиотеки и заголовочных файлов
 INSTALL(TARGETS maycloud LIBRARY DESTINATION lib ARCHIVE DESTINATION lib COMPONENT maycloud)
 INSTALL(FILES ${LIBMAYCLOUD_HEADERS} DESTINATION include/maycloud COMPONENT dev)
+INSTALL(FILES ${PROJECT_SOURCE_DIR}/src/headers/maycloud/config.h DESTINATION include/maycloud COMPONENT dev)
 
 # Реализация кастомной цели distclean
 ADD_CUSTOM_TARGET (distclean @echo cleaning for source distribution)

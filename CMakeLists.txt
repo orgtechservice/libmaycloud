@@ -28,7 +28,13 @@ IF(NOT MYSQL_LIBRARY)
 	message("\n==============================================\n-- WARNING: Building without MySQL support! --\n==============================================\n")
 	LIST(FILTER LIBMAYCLOUD_SOURCE EXCLUDE REGEX "(mysql|easymysql|easyresultset)\\.cpp$")
 	LIST(FILTER LIBMAYCLOUD_HEADERS EXCLUDE REGEX "(mysql|easymysql|easyresultset)\\.h$")
+else()
+	message("-- Building with MySQL support")
+	set(LIBMAYCLOUD_MYSQL "yes")
 endif()
+
+# Файл активной конфигурации библиотеки
+configure_file(${PROJECT_SOURCE_DIR}/src/headers/maycloud/config.h.in ${PROJECT_SOURCE_DIR}/src/headers/maycloud/config.h @ONLY)
 
 # Каталоги для добавления в список включения (опция -I компилятора)
 include_directories(src/headers)
@@ -42,7 +48,7 @@ INSTALL(FILES ${LIBMAYCLOUD_HEADERS} DESTINATION include/maycloud COMPONENT dev)
 
 # Реализация кастомной цели distclean
 ADD_CUSTOM_TARGET (distclean @echo cleaning for source distribution)
-set(DISTCLEANED CMakeCache.txt CMakeFiles cmake_install.cmake install_manifest_maycloud.txt install_manifest_dev.txt Makefile cmake_deb_package_dev cmake_deb_package_maycloud *.a *.deb)
+set(DISTCLEANED CMakeCache.txt CMakeFiles cmake_install.cmake install_manifest_maycloud.txt install_manifest_dev.txt Makefile cmake_deb_package_dev cmake_deb_package_maycloud *.a *.deb "src/headers/maycloud/config.h")
 ADD_CUSTOM_COMMAND (
 	DEPENDS clean
 	COMMENT "distribution clean"

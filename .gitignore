@@ -2,8 +2,11 @@ CMakeCache.txt
 CMakeFiles
 Makefile
 cmake_deb_package_*
-cmake_install.cmake
 install_manifest_*.txt
 *.deb
 *.a
 .vscode
+*.cmake
+_CPack_Packages
+install_manifest.txt
+*.rpm

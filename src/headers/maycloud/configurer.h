@@ -14,11 +14,11 @@
 class Configurer
 {
 public:
-	using params_map = std::map<std::string, std::string>;
-	using multi_params_map = std::map<std::string, params_map>;
+	typedef std::map<std::string, std::string> params_map;
+    typedef std::map<std::string, params_map> multi_params_map;
 
-	using params_iterator = params_map::iterator;
-	using multi_params_iterator = multi_params_map::iterator;
+    typedef params_map::iterator params_iterator;
+    typedef multi_params_map::iterator multi_params_iterator;
 protected:
 	/**
 	 * Актуальная карта параметров.

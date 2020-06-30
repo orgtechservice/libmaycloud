@@ -2,7 +2,8 @@
 # Название проекта, минимально требуемая версия CMake, стандарт C++ (включить если понадобится)
 cmake_minimum_required(VERSION 3.1)
 project(libmaycloud)
-#set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 11)
+set(VERSION "0.0.1")
 
 # Основные переменные окружения, задающие флаги компилятора и префикс для установки (также применяется к deb-пакету)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -15,9 +16,9 @@ if(CMAKE_BUILD_TYPE MATCHES "Debug")
 endif()
 
 # Проверим наличие зависимостей
-find_package(EXPAT)
-find_package(SQLITE3)
-find_package(UDNS)
+find_package(EXPAT REQUIRED)
+find_package(SQLITE3 REQUIRED)
+find_package(UDNS REQUIRED)
 find_library(MYSQL_LIBRARY NAMES mysqlclient perconaserverclient mariadbclient)
 
 # Исходники и заголовочные файлы проекта
@@ -75,7 +76,7 @@ set(DEB_PACKAGE_COMPONENTS "maycloud" "dev")
 
 # Заготовка control-файла для libmaycloud
 set(DEB_PACKAGE_maycloud_NAME "${CMAKE_PROJECT_NAME}")
-set(DEB_PACKAGE_maycloud_VERSION "0.0.1")
+set(DEB_PACKAGE_maycloud_VERSION ${VERSION})
 set(DEB_PACKAGE_maycloud_SECTION "utils")
 set(DEB_PACKAGE_maycloud_DESRCIPTION "MayCloud core library")
 set(DEB_PACKAGE_maycloud_MAINTAINER "Orgtechservice, Ltd. <dev@mkpnet.ru>")
@@ -84,7 +85,7 @@ set(DEB_PACKAGE_maycloud_DEPENDS "libudns0, libsqlite3-0, libexpat1")
 
 # Заготовка control-файла для libmaycloud-dev
 set(DEB_PACKAGE_dev_NAME "${CMAKE_PROJECT_NAME}-dev")
-set(DEB_PACKAGE_dev_VERSION "0.0.1")
+set(DEB_PACKAGE_dev_VERSION ${VERSION})
 set(DEB_PACKAGE_dev_SECTION "development")
 set(DEB_PACKAGE_dev_DESRCIPTION "MayCloud core library (development files)")
 set(DEB_PACKAGE_dev_MAINTAINER "Orgtechservice, Ltd. <dev@mkpnet.ru>")
@@ -99,3 +100,13 @@ add_custom_target(dev DEPENDS maycloud)
 
 # Макрос, реализующий упаковку в deb-пакет
 include(cmake/deb_packaging.cmake)
+
+set(CPACK_PACKAGE_VERSION ${VERSION})
+set(CPACK_GENERATOR "RPM")
+set(CPACK_PACKAGE_NAME "libmaycloud")
+set(CPACK_PACKAGE_RELEASE 1)
+set(CPACK_PACKAGE_CONTACT "Ilya Averkov")
+set(CPACK_PACKAGE_VENDOR "Orgtechservice, Ltd.")
+set(CPACK_PACKAGING_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_PACKAGE_RELEASE}.${CMAKE_SYSTEM_PROCESSOR}")
+include(CPack)

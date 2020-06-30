@@ -1,8 +1,9 @@
 #include "maycloud/easylib.h"
 
 #include <unistd.h>
-#include <string.h>
-#include <stdio.h>
+#include <cstring>
+#include <cstdio>
+#include <iostream>
 
 std::string implode(const std::string &sep, const std::list<std::string> &list)
 {
@@ -173,4 +174,24 @@ int easyExec(const std::string &filename, EasyVector args, EasyRow env)
 		e.append(it->first + "=" + it->second);
 	}
 	return easyExec(filename, args, e);
+}
+
+/**
+* Получить вывод команды командной строки
+*/
+std::string getCmdOutput(const char *cmd) {
+    char buffer[512];
+    std::string result;
+    FILE *pipe = popen(cmd, "r");
+    if (!pipe) {
+        std::cerr << "getCmdOutput(): popen() failed\n";
+        return "";
+    }
+
+    while (fgets(buffer, sizeof buffer, pipe) != nullptr) {
+        result += buffer;
+    }
+
+    pclose(pipe);
+    return result;
 }

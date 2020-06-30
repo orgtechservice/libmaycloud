@@ -14,7 +14,7 @@
 class Configurer
 {
 public:
-	typedef std::map<std::string, std::string> params_map;
+    typedef std::map<std::string, std::string> params_map;
     typedef std::map<std::string, params_map> multi_params_map;
 
     typedef params_map::iterator params_iterator;

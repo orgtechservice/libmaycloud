@@ -56,4 +56,9 @@ int easyExec(const std::string &filename, EasyVector args, EasyVector env);
  */
 int easyExec(const std::string &filename, EasyVector args, EasyRow env);
 
+/**
+* Получить вывод команды командной строки
+*/
+std::string getCmdOutput(const char *cmd);
+
 #endif // EASYLIB_H

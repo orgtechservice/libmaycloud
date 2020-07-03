@@ -71,36 +71,6 @@ else()
 	set(PKGARCH "amd64")
 endif()
 
-# Компоненты, которые пакуем в deb-пакеты при помощи цели «deb»
-set(DEB_PACKAGE_COMPONENTS "maycloud" "dev")
-
-# Заготовка control-файла для libmaycloud
-set(DEB_PACKAGE_maycloud_NAME "${CMAKE_PROJECT_NAME}")
-set(DEB_PACKAGE_maycloud_VERSION ${VERSION})
-set(DEB_PACKAGE_maycloud_SECTION "utils")
-set(DEB_PACKAGE_maycloud_DESRCIPTION "MayCloud core library")
-set(DEB_PACKAGE_maycloud_MAINTAINER "Orgtechservice, Ltd. <dev@mkpnet.ru>")
-set(DEB_PACKAGE_maycloud_ARCH "${PKGARCH}")
-set(DEB_PACKAGE_maycloud_DEPENDS "libudns0, libsqlite3-0, libexpat1")
-
-# Заготовка control-файла для libmaycloud-dev
-set(DEB_PACKAGE_dev_NAME "${CMAKE_PROJECT_NAME}-dev")
-set(DEB_PACKAGE_dev_VERSION ${VERSION})
-set(DEB_PACKAGE_dev_SECTION "development")
-set(DEB_PACKAGE_dev_DESRCIPTION "MayCloud core library (development files)")
-set(DEB_PACKAGE_dev_MAINTAINER "Orgtechservice, Ltd. <dev@mkpnet.ru>")
-set(DEB_PACKAGE_dev_ARCH "${PKGARCH}")
-set(DEB_PACKAGE_dev_DEPENDS "${CMAKE_PROJECT_NAME}, libudns-dev, libsqlite3-dev, libexpat1-dev")
-
-# Кастомная цель для формирования deb-пакетов
-add_custom_target(deb DEPENDS deb_package)
-
-# Костыль, куда ж без них в нашем нелёгком деле
-add_custom_target(dev DEPENDS maycloud)
-
-# Макрос, реализующий упаковку в deb-пакет
-include(cmake/deb_packaging.cmake)
-
 set(CPACK_PACKAGE_VERSION ${VERSION})
 set(CPACK_GENERATOR "RPM")
 set(CPACK_PACKAGE_NAME "libmaycloud")

@@ -50,7 +50,7 @@ INSTALL(FILES ${PROJECT_SOURCE_DIR}/src/headers/maycloud/config.h DESTINATION in
 
 # Реализация кастомной цели distclean
 ADD_CUSTOM_TARGET (distclean @echo cleaning for source distribution)
-set(DISTCLEANED CMakeCache.txt CMakeFiles cmake_install.cmake install_manifest_maycloud.txt install_manifest_dev.txt Makefile cmake_deb_package_dev cmake_deb_package_maycloud *.a *.deb "src/headers/maycloud/config.h")
+set(DISTCLEANED CMakeCache.txt CMakeFiles _CPack_Packages install_manifest.txt cmake_install.cmake install_manifest_maycloud.txt install_manifest_dev.txt Makefile cmake_deb_package_dev cmake_deb_package_maycloud *.a *.deb *.cmake "src/headers/maycloud/config.h")
 ADD_CUSTOM_COMMAND (
 	DEPENDS clean
 	COMMENT "distribution clean"
@@ -72,11 +72,12 @@ else()
 endif()
 
 set(CPACK_PACKAGE_VERSION ${VERSION})
-set(CPACK_GENERATOR "RPM")
+set(CPACK_GENERATOR "DEB")
 set(CPACK_PACKAGE_NAME "libmaycloud")
 set(CPACK_PACKAGE_RELEASE 1)
 set(CPACK_PACKAGE_CONTACT "Ilya Averkov")
 set(CPACK_PACKAGE_VENDOR "Orgtechservice, Ltd.")
 set(CPACK_PACKAGING_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
 set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_PACKAGE_RELEASE}.${CMAKE_SYSTEM_PROCESSOR}")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libudns0, libsqlite3-0, libexpat1")
 include(CPack)

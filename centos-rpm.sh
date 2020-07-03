@@ -3,4 +3,4 @@
 make distclean
 cmake3 -DCMAKE_BUILD_TYPE=Release .
 make -j4
-cpack3
+cpack3 -G RPM

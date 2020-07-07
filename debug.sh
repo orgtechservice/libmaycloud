@@ -19,6 +19,8 @@ cmake -DCMAKE_BUILD_TYPE=Debug .
 make -j4
 cpack -G DEB
 
-echo
-border "Created: `ls --color *.deb` — `ls -lha *.deb | awk -F " " {'printf $5'}`"
-echo
+if ls *.deb; then
+	echo
+	border "Created: `ls --color *.deb` — `ls -lha *.deb | awk -F " " {'printf $5'}`"
+	echo
+fi

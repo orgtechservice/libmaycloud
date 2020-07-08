@@ -5,6 +5,7 @@
 #include <string>
 #include <maycloud/easyvector.h>
 #include <maycloud/easyrow.h>
+#include <maycloud/logger.h>
 
 #define cstr(s) s.c_str()
 
@@ -60,5 +61,30 @@ int easyExec(const std::string &filename, EasyVector args, EasyRow env);
 * Получить вывод команды командной строки
 */
 std::string getCmdOutput(const char *cmd);
+
+/**
+* Послать команду командному процессору операционной системы
+*/
+bool sendCmd(const std::string &cmd);
+
+/**
+* Послать команду командному процессору операционной системы
+*/
+bool sendCmd(const std::string &cmd, const std::string &errorMessage);
+
+/**
+* Послать команду командному процессору операционной системы и записать в лог
+*/
+bool sendCmdLog(const std::string &cmd);
+
+/**
+* Послать команду командному процессору операционной системы и записать в лог
+*/
+bool sendCmdLog(const std::string &cmd, const std::string &successLogMessage);
+
+/**
+* Послать команду командному процессору операционной системы и записать в лог
+*/
+bool sendCmdLog(const std::string &cmd, const std::string &errorMessage, const std::string &successLogMessage);
 
 #endif // EASYLIB_H

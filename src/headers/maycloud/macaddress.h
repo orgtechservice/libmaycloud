@@ -46,8 +46,10 @@ public:
 		return memcmp(mac, ma.mac, sizeof(mac)) <= 0;
 	}
 	inline operator unsigned long long int () { return parse_mac_6(mac); }
-	
-	TempString toString() const;
+
+    TempString toString() const;
+
+    TempString toShortString() const;
 };
 
 #endif // MACADRESS_H

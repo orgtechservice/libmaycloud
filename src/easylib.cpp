@@ -195,3 +195,44 @@ std::string getCmdOutput(const char *cmd) {
     pclose(pipe);
     return result;
 }
+
+bool sendCmd(const std::string &cmd) {
+    return !system(cmd.c_str());
+}
+
+bool sendCmd(const std::string &cmd, const std::string &errorMessage) {
+    if (!system(cmd.c_str())) {
+        return true;
+    } else {
+        std::cerr << errorMessage;
+        return false;
+    }
+}
+
+bool sendCmdLog(const std::string &cmd) {
+    if (!system(cmd.c_str())) {
+        logger.information(cmd.c_str());
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool sendCmdLog(const std::string &cmd, const std::string &successLogMessage) {
+    if (!system(cmd.c_str())) {
+        logger.information(successLogMessage.c_str());
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool sendCmdLog(const std::string &cmd, const std::string &errorMessage, const std::string &successLogMessage) {
+    if (!system(cmd.c_str())) {
+        logger.information(successLogMessage.c_str());
+        return true;
+    } else {
+        std::cerr << errorMessage;
+        return false;
+    }
+}

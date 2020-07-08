@@ -204,7 +204,7 @@ bool sendCmd(const std::string &cmd, const std::string &errorMessage) {
     if (!system(cmd.c_str())) {
         return true;
     } else {
-        std::cerr << errorMessage;
+        std::cerr << errorMessage << '\n';
         return false;
     }
 }
@@ -232,7 +232,7 @@ bool sendCmdLog(const std::string &cmd, const std::string &errorMessage, const s
         logger.information(successLogMessage.c_str());
         return true;
     } else {
-        std::cerr << errorMessage;
+        std::cerr << errorMessage  << '\n';
         return false;
     }
 }

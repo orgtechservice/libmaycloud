@@ -60,7 +60,7 @@ int easyExec(const std::string &filename, EasyVector args, EasyRow env);
 /**
 * Получить вывод команды командной строки
 */
-std::string getCmdOutput(const char *cmd);
+std::string getCmdOutput(const std::string& cmd);
 
 /**
 * Послать команду командному процессору операционной системы

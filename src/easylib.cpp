@@ -179,12 +179,12 @@ int easyExec(const std::string &filename, EasyVector args, EasyRow env)
 /**
 * Получить вывод команды командной строки
 */
-std::string getCmdOutput(const char *cmd) {
+std::string getCmdOutput(const std::string& cmd) {
     char buffer[512];
     std::string result;
-    FILE *pipe = popen(cmd, "r");
+    FILE *pipe = popen(cmd.c_str(), "r");
     if (!pipe) {
-        std::cerr << "getCmdOutput(): popen() failed\n";
+        std::cerr << "getCmdOutput(" + cmd + "): popen() failed\n";
         return "";
     }
 

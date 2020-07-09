@@ -188,7 +188,7 @@ std::string getCmdOutput(const char *cmd) {
         return "";
     }
 
-    while (fgets(buffer, sizeof buffer, pipe) != nullptr) {
+    while (fgets(buffer, sizeof buffer, pipe) != NULL) {
         result += buffer;
     }
 

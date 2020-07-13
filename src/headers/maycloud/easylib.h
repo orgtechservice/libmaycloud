@@ -70,7 +70,7 @@ bool sendCmd(const std::string &cmd);
 /**
 * Послать команду командному процессору операционной системы
 */
-bool sendCmd(const std::string &cmd, const std::string &errorMessage);
+bool sendCmd(const std::string &cmd, const std::string &error_message);
 
 /**
 * Послать команду командному процессору операционной системы и записать в лог
@@ -80,11 +80,11 @@ bool sendCmdLog(const std::string &cmd);
 /**
 * Послать команду командному процессору операционной системы и записать в лог
 */
-bool sendCmdLog(const std::string &cmd, const std::string &successLogMessage);
+bool sendCmdLog(const std::string &cmd, const std::string &success_log_message);
 
 /**
 * Послать команду командному процессору операционной системы и записать в лог
 */
-bool sendCmdLog(const std::string &cmd, const std::string &errorMessage, const std::string &successLogMessage);
+bool sendCmdLog(const std::string &cmd, const std::string &error_message, const std::string &success_log_message);
 
 #endif // EASYLIB_H

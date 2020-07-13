@@ -200,11 +200,11 @@ bool sendCmd(const std::string &cmd) {
     return !system(cmd.c_str());
 }
 
-bool sendCmd(const std::string &cmd, const std::string &errorMessage) {
+bool sendCmd(const std::string &cmd, const std::string &error_message) {
     if (!system(cmd.c_str())) {
         return true;
     } else {
-        std::cerr << errorMessage << '\n';
+        std::cerr << error_message << '\n';
         return false;
     }
 }
@@ -218,21 +218,21 @@ bool sendCmdLog(const std::string &cmd) {
     }
 }
 
-bool sendCmdLog(const std::string &cmd, const std::string &successLogMessage) {
+bool sendCmdLog(const std::string &cmd, const std::string &success_log_message) {
     if (!system(cmd.c_str())) {
-        logger.information(successLogMessage.c_str());
+        logger.information(success_log_message.c_str());
         return true;
     } else {
         return false;
     }
 }
 
-bool sendCmdLog(const std::string &cmd, const std::string &errorMessage, const std::string &successLogMessage) {
+bool sendCmdLog(const std::string &cmd, const std::string &error_message, const std::string &success_log_message) {
     if (!system(cmd.c_str())) {
-        logger.information(successLogMessage.c_str());
+        logger.information(success_log_message.c_str());
         return true;
     } else {
-        std::cerr << errorMessage  << '\n';
+        std::cerr << error_message << '\n';
         return false;
     }
 }

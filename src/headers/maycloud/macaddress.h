@@ -7,6 +7,7 @@
 #include <string.h>
 #include <string.h>
 #include <stdio.h>
+#include <bitset>
 
 class MACAddress
 {
@@ -50,6 +51,12 @@ public:
     TempString toString() const;
 
     TempString toShortString() const;
+
+    /**
+     * Преобразует MAC-48 в EUI-64
+     * @return последовательность битов
+     */
+    std::bitset<64> toEui64();
 };
 
 #endif // MACADRESS_H

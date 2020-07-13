@@ -28,3 +28,21 @@ TempString MACAddress::toShortString() const {
     str.printf("%X:%X:%X:%X:%X:%X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
     return str;
 }
+
+std::bitset<64> MACAddress::toEui64() {
+    std::bitset<64> bs;
+
+    for (unsigned int i = 0; i < 3; ++i) {
+        bs |= ((uint64_t) mac[i]) << (i * 8);
+    }
+
+    bs |= (0xFFFEull << 24u);
+
+    for (unsigned int i = 3; i < 5; ++i) {
+        bs |= ((uint64_t) mac[i]) << (i * 8 + 16);
+    }
+
+    bs.flip(6);
+
+    return bs;
+}

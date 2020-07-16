@@ -10,6 +10,13 @@ MACAddress::MACAddress(unsigned char b1, unsigned char b2, unsigned char b3, uns
 	mac[5] = b6;
 }
 
+MACAddress::MACAddress(const std::vector<u_int8_t> &vector) {
+    int size = std::min(6, (int) vector.size());
+    for (int i = 0; i < size; ++i) {
+        mac[i] = vector[i];
+    }
+}
+
 unsigned char MACAddress::operator [] (unsigned int i) const
 {
 	if(i < 6) return mac[i];
@@ -23,26 +30,36 @@ TempString MACAddress::toString() const
 	return str;
 }
 
-TempString MACAddress::toShortString() const {
-    TempString str;
-    str.printf("%X:%X:%X:%X:%X:%X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+std::string MACAddress::toShortString() const {
+    char str[18];
+    sprintf(str, "%x:%x:%x:%x:%x:%x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
     return str;
 }
 
-std::bitset<64> MACAddress::toEui64() {
-    std::bitset<64> bs;
-
-    for (unsigned int i = 0; i < 3; ++i) {
-        bs |= ((uint64_t) mac[i]) << (i * 8);
+std::vector<u_int8_t> MACAddress::getEui64Vector() const {
+    std::vector<u_int8_t> eui64(8);
+    for (int i = 0; i < 3; ++i) {
+        eui64[i] = mac[i];
     }
 
-    bs |= (0xFFFEull << 24u);
+    eui64[3] = 0xff;
+    eui64[4] = 0xfe;
 
-    for (unsigned int i = 3; i < 5; ++i) {
-        bs |= ((uint64_t) mac[i]) << (i * 8 + 16);
+    for (int i = 3; i < 6; ++i) {
+        eui64[i + 2] = mac[i];
     }
 
-    bs.flip(6);
+    eui64[0] ^= 64u;
 
-    return bs;
+    return eui64;
+}
+
+MACAddress64 MACAddress::getEui64Mac64() const {
+    MACAddress64 mac64(mac[0], mac[1], mac[2], 0xff, 0xfe, mac[3], mac[4], mac[5]);
+    return mac64;
+}
+
+void MACAddress::convertMacShortForm(std::string &mac_string) {
+    MACAddress mac_obj(mac_string.c_str());
+    mac_string = mac_obj.toShortString();
 }

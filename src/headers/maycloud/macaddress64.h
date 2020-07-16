@@ -7,6 +7,9 @@
 #include <string.h>
 #include <string.h>
 #include <stdio.h>
+#include <vector>
+#include <zconf.h>
+#include <string>
 
 class MACAddress64
 {
@@ -16,6 +19,7 @@ public:
 	inline MACAddress64() { memset(mac, 0, sizeof(mac)); }
 	inline MACAddress64(const MACAddress64& b) { memcpy(mac, b.mac, sizeof(mac)); }
 	inline MACAddress64(const char* b) { parse_mac8_str(b, mac); }
+    explicit MACAddress64(const std::vector<u_int8_t> & v);
 	
 	MACAddress64(unsigned char b1, 
 		     unsigned char b2,
@@ -54,8 +58,13 @@ public:
 		return memcmp(mac, ma.mac, sizeof(mac)) <= 0;
 	}
 	inline operator unsigned long long int () { return parse_mac_8(mac); }
-	
-	TempString toString();
+
+    TempString toString();
+
+	/**
+	 * Возвращает MAC64 в короткой форме маленькими буквами
+	 */
+    std::string toShortString();
 };
 
 #endif // MACADRESS_64_H

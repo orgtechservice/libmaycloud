@@ -14,8 +14,15 @@ HttpConnection::HttpConnection(int fd, AsyncWebServer *server): AsyncStream(fd) 
  * Деструктор
  */
 HttpConnection::~HttpConnection() {
+	// Удаляем созданные ранее объекты запроса и ответа
 	delete response;
 	delete request;
+
+	// Закрываем сокет если ещё открыт
+	close();
+
+	// Покидаем демона, чтобы гарантированно не получать от него больше вызовы
+	leaveDaemon();
 }
 
 /**
@@ -50,10 +57,13 @@ void HttpConnection::sendResponse() {
  * можем только корректно закрыть соединение с нашей стороны.
  */
 void HttpConnection::onPeerDown() {
-	close();
+	delete this;
 }
 
+/**
+ * Опустошение исходящего буфера.
+ * На этом этапе все данные отправлены и необходимо закрыть соединение
+ */
 void HttpConnection::onEmpty() {
-	close();
-	leaveDaemon();
+	delete this;
 }

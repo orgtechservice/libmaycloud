@@ -4,28 +4,34 @@
 
 ## Сборка и установка
 
-В силу использования фирмой исключительно операционных систем семейста Debian (Ubuntu, Linux Mint), работа данного программного обеспечения на других дистрибутивах Linux не проверялась, а конечной целью сборки являются deb-пакеты:
-
-* ``libmaycloud`` — Непосредственно библиотека
-* ``libmaycloud-dev`` — Заголовочные файлы для разработки
+В силу использования фирмой преимущественно операционных систем семейста Debian (Ubuntu, Linux Mint), работа данного программного обеспечения на других дистрибутивах Linux проверялась мало, а конечной целью сборки является deb-пакет. Вопреки принятой в Debian системе, когда сама библиотека и её заголовочные файлы разбиваются на два раздельных пакета, формируется один-единственный deb-пакет, включающий всё сразу, это сделано для удобства и минимизации ручной работы. Также имеется возможность формирования rpm-пакета для установки на CentOS 6.x и основанных на ней системах.
 
 Работа на операционных системах, отличных от Linux (Windows, FreeBSD, OpenIndiana и прочие) невозможна в силу использования системных вызовов ОС Linux.
 
-Команды сборки:
+Команды сборки (debug-версия):
 
 ```bash
 git clone https://github.com/orgtechservice/libmaycloud.git
 cd libmaycloud
-cmake .
-make deb
-sudo dpkg -i *.deb
+./debug.sh
+```
+
+Команды сборки (release-версия):
+
+```bash
+git clone https://github.com/orgtechservice/libmaycloud.git
+cd libmaycloud
+./release.sh
 ```
 
 ## Зависимости
 
-Для того, чтобы скомпилировать libmaycloud, понадобится установить следующие пакеты (Ubuntu 18.04 LTS):
+Для того, чтобы скомпилировать libmaycloud в минимальной конфигурации, понадобится установить следующие пакеты (Ubuntu 20.04 LTS):
 
 * ``libudns-dev``
-* ``libmariadbclient-dev``, ``libperconaserverclient20-dev`` или ``libmysqlclient-dev``
 * ``libsqlite3-dev``
 * ``libexpat1-dev``
+
+```bash
+sudo apt install libudns-dev libsqlite3-dev libexpat1-dev
+```

@@ -35,27 +35,12 @@ public:
 	/**
 	* Конструктор
 	*/
-	AsyncWebServer();
+	AsyncWebServer(NetDaemon *daemon);
 	
 	/**
 	* Деструктор
 	*/
 	~AsyncWebServer();
-	
-	/**
-	* Подключиться к порту
-	*/
-	bool bind(int port);
-	
-	/**
-	* Подключиться к IP и порту
-	*/
-	bool bind(const char *ip, const char *port);
-
-	/**
-	* Закрыть сокет
-	*/
-	void close();
 
 	/**
 	 * Добавить обработчик GET-запроса
@@ -66,6 +51,11 @@ public:
 	 * Обработчик по умолчанию
 	 */
 	static void defaultRequestHandler(HttpRequest *request, HttpResponse *response, void *userdata);
+
+	/**
+	 * Обработать входящий HTTP-запрос
+	 */
+	void handleRequest(HttpRequest *request, HttpResponse *response);
 };
 
 #endif // ASYNCWEBSERVER_H

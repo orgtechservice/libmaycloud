@@ -18,12 +18,14 @@ class AsyncWebServer;
 class HttpConnection: public AsyncStream
 {
 protected:
-	/*std::string request_headers;
-	std::string request_body;
-	bool got_request_headers;
-	bool got_request_body;*/
 	HttpRequest *request;
 	HttpResponse *response;
+	AsyncWebServer *server;
+
+	/**
+	 * Отправить клиенту сформированный хэндлером HTTP-ответ
+	 */
+	void sendResponse();
 
 public:
 	HttpConnection(int fd, AsyncWebServer *server);
@@ -41,6 +43,8 @@ public:
 	 * можем только корректно закрыть соединение с нашей стороны.
 	 */
 	void onPeerDown();
+
+	void onEmpty();
 };
 
 #endif

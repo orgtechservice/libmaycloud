@@ -7,10 +7,18 @@
 
 class HttpRequest: public HttpMessage
 {
+protected:
+	bool got_headers;
+	bool got_body;
+	std::string raw_headers;
+
 public:
 	HttpRequest();
 	~HttpRequest();
+	void parseHeaders();
 	void feed(const std::string &data);
+	std::string path();
+	bool ready();
 };
 
 #endif

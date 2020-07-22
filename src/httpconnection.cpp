@@ -5,6 +5,7 @@
  * Конструктор HTTP-запроса на базе клиентского сокета
  */
 HttpConnection::HttpConnection(int fd, AsyncWebServer *server): AsyncStream(fd) {
+	this->server = server;
 	request = new HttpRequest();
 	response = new HttpResponse();
 }
@@ -21,21 +22,25 @@ HttpConnection::~HttpConnection() {
  * Обработчик прочитанных данных
  */
 void HttpConnection::onRead(const char *data, size_t len) {
+	//std::cout << "[AsyncWebServer::onRead] reading data" << std::endl;
 	std::string buf(data, len);
 	request->feed(buf);
+	if(request->ready()) {
+		server->handleRequest(request, response);
+		sendResponse();
+	}
+}
 
-	/*
-	if(!got_request_headers) {
-		size_t pos = buf.find("\n\n");
-		if(pos == std::string::npos) {
-			request_headers += buf;
-		} else {
-			std::string last_part = buf.substr(0, pos);
-			request_headers += last_part;
-			got_request_headers = true;
-			got_request_body = true; // tmp
-		}
-	}*/
+/**
+ * Отправить клиенту сформированный хэндлером HTTP-ответ
+ */
+void HttpConnection::sendResponse() {
+	std::cout << "[AsyncWebServer::sendResponse] sending response" << std::endl;
+	std::string raw_response = response->toString();
+	//putInBuffer(raw_response.c_str(), raw_response.length());
+	put(raw_response.c_str(), raw_response.length()); // STUB
+
+	//shutdown(2);
 }
 
 /**
@@ -45,5 +50,10 @@ void HttpConnection::onRead(const char *data, size_t len) {
  * можем только корректно закрыть соединение с нашей стороны.
  */
 void HttpConnection::onPeerDown() {
+	close();
+}
 
+void HttpConnection::onEmpty() {
+	close();
+	leaveDaemon();
 }

@@ -3,7 +3,7 @@
 /**
 * Конструктор
 */
-AsyncWebServer::AsyncWebServer() {
+AsyncWebServer::AsyncWebServer(NetDaemon *daemon) {
     get("/", & defaultRequestHandler, (void *) this);
 }
 
@@ -11,7 +11,7 @@ AsyncWebServer::AsyncWebServer() {
 * Деструктор
 */
 AsyncWebServer::~AsyncWebServer() {
-	close();
+	
 }
 
 void AsyncWebServer::onAccept() {
@@ -35,8 +35,6 @@ void AsyncWebServer::onAccept() {
 		ptr<HttpConnection> client = new HttpConnection(sock, this);
 		getDaemon()->addObject(client);
 	}
-
-	// TODO handle request
 }
 
 /**
@@ -50,10 +48,33 @@ void AsyncWebServer::get(const std::string &path, http_request_handler_t handler
 
 /**
  * Обработчик по умолчанию
+ * Задаётся для корня (/) по дефолту
  */
 void AsyncWebServer::defaultRequestHandler(HttpRequest *request, HttpResponse *response, void *userdata) {
 	//AsyncWebServer *server = (AsyncWebServer *) userdata;
 	response->setStatus(200);
 	response->setContentType("text/html;charset=utf-8");
 	response->setBody("<html><body><h1>AsyncWebServer is working!</h1></body></html>\n");
+}
+
+/**
+ * Обработать входящий HTTP-запрос,
+ * То есть найти подходящий обработчик и вызвать его, скормив данные request и response.
+ * Если обработчик не зарегистрирован, сформировать ошибку 404
+ * @param HttpRequest* указатель на полученный HTTP-запрос
+ * @param HttpResponse* указатель на формируемый ответ
+ */
+void AsyncWebServer::handleRequest(HttpRequest *request, HttpResponse *response) {
+	std::cout << "[AsyncWebServer::handleRequest] got an incoming HTTP request" << std::endl;
+	std::string path = request->path();
+	auto it = routes.find(path);
+	if(it == routes.end()) {
+		response->setStatus(404);
+		response->setContentType("text/html;charset=utf-8");
+		response->setBody("<html><body><h1>Not Found</h1></body></html>\n");
+		return;
+	}
+	
+	// Вызов зарегистрированного хэндлера
+	it->second.first(request, response, it->second.second);
 }

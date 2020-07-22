@@ -1,7 +1,13 @@
 
 #include <maycloud/httprequest.h>
 
-HttpRequest::HttpRequest(HttpConnection *connection): HttpMessage(connection), raw_headers("") {
+#include <maycloud/easylib.h>
+
+#include <algorithm>
+#include <vector>
+#include <iostream> // tmp
+
+HttpRequest::HttpRequest(HttpConnection *connection): HttpMessage(connection), raw_headers(""), _method("") {
 	got_headers = false;
 	got_body = false;
 }
@@ -26,17 +32,40 @@ void HttpRequest::feed(const std::string &data) {
 			got_headers = true;
 			got_body = true; // STUB
 
-			parseHeaders();
+			bool ok = parseHeaders();
+			// TODO обработка статуса парсинга
 		}
 	}
 }
 
-void HttpRequest::parseHeaders() {
-	// STUB
+bool HttpRequest::parseHeaders() {
+	//std::cout << "[HttpRequest::parseHeaders]" << std::endl;
+	std::vector<std::string> supported_methods {"GET", "POST"};
+	EasyVector lines = explode("\n", raw_headers);
+	int count = lines.size();
+	for(int i = 0; i < count; i ++) {
+		std::string line = lines[i];
+		if(i == 0) {
+			// Строка запроса
+			EasyVector parts = explode(" ", line);
+			if(parts.size() == 3) {
+				_method = parts[0];
+				if(std::find(supported_methods.begin(), supported_methods.end(), _method) == supported_methods.end()) {
+					return false; // неподдерживаемый метод
+				}
+				_path = parts[1];
+				// parts[3] — версия протокола
+			} else {
+				return false;
+			}
+		}
+		//std::cout << ' ' << lines[i] << std::endl;
+	}
+	return true;
 }
 
 std::string HttpRequest::path() {
-	return std::string("/"); // STUB
+	return _path;
 }
 
 /**

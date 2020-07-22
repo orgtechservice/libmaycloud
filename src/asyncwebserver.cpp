@@ -5,7 +5,7 @@
 */
 AsyncWebServer::AsyncWebServer(NetDaemon *daemon): _server_id("") {
 	_server_id = "libmaycloud/0.1 (github.com/orgtechservice)";
-    get("/", & defaultRequestHandler, (void *) this);
+	get("/", & defaultRequestHandler, (void *) this);
 }
 
 /**
@@ -52,10 +52,11 @@ void AsyncWebServer::get(const std::string &path, http_request_handler_t handler
  * Задаётся для корня (/) по дефолту
  */
 void AsyncWebServer::defaultRequestHandler(HttpRequest *request, HttpResponse *response, void *userdata) {
-	//AsyncWebServer *server = (AsyncWebServer *) userdata;
-	response->setStatus(200);
-	response->setContentType("text/html;charset=utf-8");
-	response->setBody("<html><body><h1>AsyncWebServer is working!</h1></body></html>\n");
+	AsyncWebServer *server = (AsyncWebServer *) userdata;
+	std::string title("Hello, world!");
+	std::string body("Congratulations, your AsyncWebServer is working. Now add some request handlers.");
+	std::string raw_response = server->simpleHtmlPage(title, body);
+	response->setBody(raw_response);
 }
 
 /**
@@ -70,9 +71,9 @@ void AsyncWebServer::handleRequest(HttpRequest *request, HttpResponse *response)
 	std::string path = request->path();
 	auto it = routes.find(path);
 	if(it == routes.end()) {
+		std::string raw_response = simpleHtmlPage("Not Found (404)", "The requested web page does not exist within the server.");
 		response->setStatus(404);
-		response->setContentType("text/html;charset=utf-8");
-		response->setBody("<html><body><h1>Not Found</h1></body></html>\n");
+		response->setBody(raw_response);
 		return;
 	}
 	
@@ -82,4 +83,9 @@ void AsyncWebServer::handleRequest(HttpRequest *request, HttpResponse *response)
 
 std::string AsyncWebServer::serverIdString() {
 	return _server_id;
+}
+
+std::string AsyncWebServer::simpleHtmlPage(const std::string &title, const std::string &body) {
+	return std::string("<html><head><title>") + title + std::string("</title></head><body><h1>")
+		+ title + std::string("</h1><div>") + body + std::string("</div><hr/><a href=\"https://github.com/orgtechservice\">") + _server_id + std::string("</a></body></html>");
 }

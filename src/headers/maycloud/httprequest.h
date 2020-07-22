@@ -13,11 +13,13 @@ protected:
 	bool got_headers;
 	bool got_body;
 	std::string raw_headers;
+	std::string _method;
+	std::string _path;
 
 public:
 	HttpRequest(HttpConnection *connection);
 	~HttpRequest();
-	void parseHeaders();
+	bool parseHeaders();
 	void feed(const std::string &data);
 	std::string path();
 	bool ready();

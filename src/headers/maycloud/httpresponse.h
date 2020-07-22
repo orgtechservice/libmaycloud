@@ -9,15 +9,20 @@ class HttpConnection;
 
 class HttpResponse: public HttpMessage
 {
+protected:
+	unsigned short int _status;
+
 public:
 	HttpResponse(HttpConnection *connection);
 	~HttpResponse();
 
-	void setStatus(unsigned short int status);
+	void setStatus(int status);
 	void setContentType(const std::string &content_type);
 	void setBody(const std::string &body);
 
 	std::string toString();
+
+	std::string textByCode(int status);
 };
 
 #endif

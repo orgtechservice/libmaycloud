@@ -11,6 +11,8 @@
 
 #define qstr(s) s
 
+EasyVector explode(const std::string &delimiter, const std::string &str);
+
 std::string implode(const std::string &sep, const std::list<std::string> &list);
 
 /**

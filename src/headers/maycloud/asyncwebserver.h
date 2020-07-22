@@ -18,7 +18,7 @@ typedef void (*http_request_handler_t)(HttpRequest *request, HttpResponse *respo
 typedef std::pair<http_request_handler_t, void *> http_route_map_item_t;
 
 /**
-* Базовый класс для сервера HTTP
+* Встраиваемый HTTP-сервер
 */
 class AsyncWebServer: public AsyncServer
 {
@@ -68,6 +68,11 @@ public:
 	 * Получить строку идентификации сервера
 	 */
 	std::string serverIdString();
+
+	/**
+	 * Сформировать простую служебную веб-страницу
+	 */
+	std::string simpleHtmlPage(const std::string &title, const std::string &body);
 };
 
 #endif // ASYNCWEBSERVER_H

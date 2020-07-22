@@ -4,6 +4,31 @@
 #include <cstring>
 #include <cstdio>
 #include <iostream>
+#include <sstream>
+
+EasyVector explode(const std::string &delimiter, const std::string &str) {
+	EasyVector result;
+
+	int length = str.length();
+	int delimiter_length = delimiter.length();
+	if(delimiter_length==0) return result;
+
+	int i = 0;
+	int k = 0;
+	while(i < length) {
+		int j = 0;
+		while((i + j < length) && (j < delimiter_length) && (str[i + j] == delimiter[j])) j++;
+		if(j == delimiter_length) {
+			result.push_back(str.substr(k, i - k));
+			i += delimiter_length;
+			k = i;
+		} else {
+			i ++;
+		}
+	}
+	result.push_back(str.substr(k, i - k));
+	return result;
+}
 
 std::string implode(const std::string &sep, const std::list<std::string> &list)
 {
@@ -180,59 +205,59 @@ int easyExec(const std::string &filename, EasyVector args, EasyRow env)
 * Получить вывод команды командной строки
 */
 std::string getCmdOutput(const std::string& cmd) {
-    char buffer[512];
-    std::string result;
-    FILE *pipe = popen(cmd.c_str(), "r");
-    if (!pipe) {
-        std::cerr << "getCmdOutput(" + cmd + "): popen() failed\n";
-        return "";
-    }
+	char buffer[512];
+	std::string result;
+	FILE *pipe = popen(cmd.c_str(), "r");
+	if (!pipe) {
+		std::cerr << "getCmdOutput(" + cmd + "): popen() failed\n";
+		return "";
+	}
 
-    while (fgets(buffer, sizeof buffer, pipe) != NULL) {
-        result += buffer;
-    }
+	while (fgets(buffer, sizeof buffer, pipe) != NULL) {
+		result += buffer;
+	}
 
-    pclose(pipe);
-    return result;
+	pclose(pipe);
+	return result;
 }
 
 bool sendCmd(const std::string &cmd) {
-    return !system(cmd.c_str());
+	return !system(cmd.c_str());
 }
 
 bool sendCmd(const std::string &cmd, const std::string &error_message) {
-    if (!system(cmd.c_str())) {
-        return true;
-    } else {
-        std::cerr << error_message << '\n';
-        return false;
-    }
+	if (!system(cmd.c_str())) {
+		return true;
+	} else {
+		std::cerr << error_message << '\n';
+		return false;
+	}
 }
 
 bool sendCmdLog(const std::string &cmd) {
-    if (!system(cmd.c_str())) {
-        logger.information(cmd.c_str());
-        return true;
-    } else {
-        return false;
-    }
+	if (!system(cmd.c_str())) {
+		logger.information(cmd.c_str());
+		return true;
+	} else {
+		return false;
+	}
 }
 
 bool sendCmdLog(const std::string &cmd, const std::string &success_log_message) {
-    if (!system(cmd.c_str())) {
-        logger.information(success_log_message.c_str());
-        return true;
-    } else {
-        return false;
-    }
+	if (!system(cmd.c_str())) {
+		logger.information(success_log_message.c_str());
+		return true;
+	} else {
+		return false;
+	}
 }
 
 bool sendCmdLog(const std::string &cmd, const std::string &error_message, const std::string &success_log_message) {
-    if (!system(cmd.c_str())) {
-        logger.information(success_log_message.c_str());
-        return true;
-    } else {
-        std::cerr << error_message << '\n';
-        return false;
-    }
+	if (!system(cmd.c_str())) {
+		logger.information(success_log_message.c_str());
+		return true;
+	} else {
+		std::cerr << error_message << '\n';
+		return false;
+	}
 }

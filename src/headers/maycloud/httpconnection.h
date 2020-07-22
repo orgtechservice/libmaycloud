@@ -10,6 +10,8 @@
 
 #include <string>
 
+class HttpRequest;
+class HttpResponse;
 class AsyncWebServer;
 
 /**
@@ -18,9 +20,9 @@ class AsyncWebServer;
 class HttpConnection: public AsyncStream
 {
 protected:
-	HttpRequest *request;
-	HttpResponse *response;
-	AsyncWebServer *server;
+	HttpRequest *_request;
+	HttpResponse *_response;
+	AsyncWebServer *_server;
 
 	/**
 	 * Отправить клиенту сформированный хэндлером HTTP-ответ
@@ -45,6 +47,8 @@ public:
 	void onPeerDown();
 
 	void onEmpty();
+
+	AsyncWebServer *server();
 };
 
 #endif

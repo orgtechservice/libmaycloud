@@ -1,7 +1,7 @@
 
 #include <maycloud/httprequest.h>
 
-HttpRequest::HttpRequest(): raw_headers("") {
+HttpRequest::HttpRequest(HttpConnection *connection): HttpMessage(connection), raw_headers("") {
 	got_headers = false;
 	got_body = false;
 }

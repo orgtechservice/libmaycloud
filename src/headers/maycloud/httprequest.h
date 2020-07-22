@@ -5,6 +5,8 @@
 
 #include <maycloud/httpmessage.h>
 
+class HttpConnection;
+
 class HttpRequest: public HttpMessage
 {
 protected:
@@ -13,7 +15,7 @@ protected:
 	std::string raw_headers;
 
 public:
-	HttpRequest();
+	HttpRequest(HttpConnection *connection);
 	~HttpRequest();
 	void parseHeaders();
 	void feed(const std::string &data);

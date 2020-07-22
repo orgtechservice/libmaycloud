@@ -2,11 +2,15 @@
 #define HTTP_RESPONSE_H
 
 #include <maycloud/httpmessage.h>
+#include <maycloud/httpconnection.h>
+
+class HttpMessage;
+class HttpConnection;
 
 class HttpResponse: public HttpMessage
 {
 public:
-	HttpResponse();
+	HttpResponse(HttpConnection *connection);
 	~HttpResponse();
 
 	void setStatus(unsigned short int status);

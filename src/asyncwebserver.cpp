@@ -3,7 +3,8 @@
 /**
 * Конструктор
 */
-AsyncWebServer::AsyncWebServer(NetDaemon *daemon) {
+AsyncWebServer::AsyncWebServer(NetDaemon *daemon): _server_id("") {
+	_server_id = "libmaycloud/0.1 (github.com/orgtechservice)";
     get("/", & defaultRequestHandler, (void *) this);
 }
 
@@ -77,4 +78,8 @@ void AsyncWebServer::handleRequest(HttpRequest *request, HttpResponse *response)
 	
 	// Вызов зарегистрированного хэндлера
 	it->second.first(request, response, it->second.second);
+}
+
+std::string AsyncWebServer::serverIdString() {
+	return _server_id;
 }

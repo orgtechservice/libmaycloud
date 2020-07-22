@@ -5,9 +5,9 @@
  * Конструктор HTTP-запроса на базе клиентского сокета
  */
 HttpConnection::HttpConnection(int fd, AsyncWebServer *server): AsyncStream(fd) {
-	this->server = server;
-	request = new HttpRequest();
-	response = new HttpResponse();
+	_server = server;
+	_request = new HttpRequest(this);
+	_response = new HttpResponse(this);
 }
 
 /**
@@ -15,8 +15,8 @@ HttpConnection::HttpConnection(int fd, AsyncWebServer *server): AsyncStream(fd) 
  */
 HttpConnection::~HttpConnection() {
 	// Удаляем созданные ранее объекты запроса и ответа
-	delete response;
-	delete request;
+	delete _response;
+	delete _request;
 
 	// Закрываем сокет если ещё открыт
 	close();
@@ -31,9 +31,9 @@ HttpConnection::~HttpConnection() {
 void HttpConnection::onRead(const char *data, size_t len) {
 	//std::cout << "[AsyncWebServer::onRead] reading data" << std::endl;
 	std::string buf(data, len);
-	request->feed(buf);
-	if(request->ready()) {
-		server->handleRequest(request, response);
+	_request->feed(buf);
+	if(_request->ready()) {
+		_server->handleRequest(_request, _response);
 		sendResponse();
 	}
 }
@@ -43,7 +43,7 @@ void HttpConnection::onRead(const char *data, size_t len) {
  */
 void HttpConnection::sendResponse() {
 	std::cout << "[AsyncWebServer::sendResponse] sending response" << std::endl;
-	std::string raw_response = response->toString();
+	std::string raw_response = _response->toString();
 	//putInBuffer(raw_response.c_str(), raw_response.length());
 	put(raw_response.c_str(), raw_response.length()); // STUB
 
@@ -66,4 +66,8 @@ void HttpConnection::onPeerDown() {
  */
 void HttpConnection::onEmpty() {
 	delete this;
+}
+
+AsyncWebServer *HttpConnection::server() {
+	return _server;
 }

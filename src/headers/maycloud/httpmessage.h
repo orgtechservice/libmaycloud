@@ -4,15 +4,19 @@
 #include <map>
 #include <string>
 
+class HttpConnection;
+
 class HttpMessage
 {
 protected:
 	std::map<std::string, std::string> headers;
 	std::string body;
+	HttpConnection *_connection;
 
 public:
-	HttpMessage();
+	HttpMessage(HttpConnection *connection);
 	~HttpMessage();
+	HttpConnection *connection();
 };
 
 #endif

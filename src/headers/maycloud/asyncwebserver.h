@@ -12,6 +12,8 @@
 #include <maycloud/httpresponse.h>
 #include <maycloud/httpconnection.h>
 
+class HttpResponse;
+
 typedef void (*http_request_handler_t)(HttpRequest *request, HttpResponse *response, void *userdata);
 typedef std::pair<http_request_handler_t, void *> http_route_map_item_t;
 
@@ -30,6 +32,11 @@ protected:
 	 * Карта обработчиков запросов
 	 */
 	std::map<std::string, http_route_map_item_t> routes;
+
+	/**
+	 * Строка идентификации сервера
+	 */
+	std::string _server_id;
 
 public:
 	/**
@@ -56,6 +63,11 @@ public:
 	 * Обработать входящий HTTP-запрос
 	 */
 	void handleRequest(HttpRequest *request, HttpResponse *response);
+
+	/**
+	 * Получить строку идентификации сервера
+	 */
+	std::string serverIdString();
 };
 
 #endif // ASYNCWEBSERVER_H

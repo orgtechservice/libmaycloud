@@ -1,34 +1,16 @@
-#ifndef HTTPREQUEST_H
-#define HTTPREQUEST_H
+#ifndef HTTP_REQUEST_H
+#define HTTP_REQUEST_H
 
-#include <arpa/inet.h>
-#include <sys/epoll.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <sys/select.h>
+#include <string>
 
-#include <maycloud/ipv4.h>
-#include <maycloud/ipv6.h>
-#include <maycloud/asyncobject.h>
+#include <maycloud/httpmessage.h>
 
-/**
-* HTTP-запрос
-*/
-class HttpRequest: public AsyncObject
+class HttpRequest: public HttpMessage
 {
 public:
-    HttpRequest(int fd);
-    ~HttpRequest();
-
-    /**
-	* Вернуть маску ожидаемых событий
-	*/
-	virtual uint32_t getEventsMask();
-	
-	/**
-	* Обработчик события
-	*/
-	virtual void onEvent(uint32_t events);
+	HttpRequest();
+	~HttpRequest();
+	void feed(const std::string &data);
 };
 
-#endif // HTTPREQUEST_H
+#endif

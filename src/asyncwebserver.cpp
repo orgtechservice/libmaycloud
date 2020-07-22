@@ -32,9 +32,16 @@ void AsyncWebServer::onAccept() {
 	logger.information("new request from %s", ipstr);
 
 	if(sock) {
-		ptr<HttpRequest> client = new HttpRequest(sock);
+		ptr<HttpConnection> client = new HttpConnection(sock);
 		getDaemon()->addObject(client);
 	}
 
 	// TODO handle request
+}
+
+/**
+ * Добавить обработчик GET-запроса
+ */
+void AsyncWebServer::get(const std::string &path, http_request_handler_t handler, void *userdata) {
+	std::cout << "[AsyncWebServer] STUB: register request handler" << std::endl;
 }

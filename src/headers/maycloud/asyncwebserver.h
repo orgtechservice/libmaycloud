@@ -8,7 +8,9 @@
 #include <maycloud/netdaemon.h>
 #include <maycloud/asyncserver.h>
 #include <maycloud/logger.h>
-#include <maycloud/httprequest.h>
+#include <maycloud/httpconnection.h>
+
+typedef void (*http_request_handler_t)(HttpRequest *request, HttpResponse *reponse, void *userdata);
 
 /**
 * Базовый класс для сервера HTTP
@@ -46,6 +48,11 @@ public:
 	* Закрыть сокет
 	*/
 	void close();
+
+	/**
+	 * Добавить обработчик GET-запроса
+	 */
+	void get(const std::string &path, http_request_handler_t handler, void *userdata);
 };
 
 #endif // ASYNCWEBSERVER_H

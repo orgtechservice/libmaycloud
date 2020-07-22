@@ -8,9 +8,12 @@
 #include <maycloud/netdaemon.h>
 #include <maycloud/asyncserver.h>
 #include <maycloud/logger.h>
+#include <maycloud/httprequest.h>
+#include <maycloud/httpresponse.h>
 #include <maycloud/httpconnection.h>
 
-typedef void (*http_request_handler_t)(HttpRequest *request, HttpResponse *reponse, void *userdata);
+typedef void (*http_request_handler_t)(HttpRequest *request, HttpResponse *response, void *userdata);
+typedef std::pair<http_request_handler_t, void *> http_route_map_item_t;
 
 /**
 * Базовый класс для сервера HTTP
@@ -22,6 +25,11 @@ protected:
 	 * Принять входящее соединение
 	 */
 	virtual void onAccept();
+
+	/**
+	 * Карта обработчиков запросов
+	 */
+	std::map<std::string, http_route_map_item_t> routes;
 
 public:
 	/**
@@ -53,6 +61,11 @@ public:
 	 * Добавить обработчик GET-запроса
 	 */
 	void get(const std::string &path, http_request_handler_t handler, void *userdata);
+
+	/**
+	 * Обработчик по умолчанию
+	 */
+	static void defaultRequestHandler(HttpRequest *request, HttpResponse *response, void *userdata);
 };
 
 #endif // ASYNCWEBSERVER_H

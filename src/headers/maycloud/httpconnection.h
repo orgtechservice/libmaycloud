@@ -4,10 +4,13 @@
 #include <maycloud/ipv4.h>
 #include <maycloud/ipv6.h>
 #include <maycloud/asyncstream.h>
+#include <maycloud/asyncwebserver.h>
 #include <maycloud/httprequest.h>
 #include <maycloud/httpresponse.h>
 
 #include <string>
+
+class AsyncWebServer;
 
 /**
 * HTTP-запрос
@@ -23,7 +26,7 @@ protected:
 	HttpResponse *response;
 
 public:
-	HttpConnection(int fd);
+	HttpConnection(int fd, AsyncWebServer *server);
 	~HttpConnection();
 
 	/**

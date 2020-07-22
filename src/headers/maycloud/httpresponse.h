@@ -8,6 +8,10 @@ class HttpResponse: public HttpMessage
 public:
 	HttpResponse();
 	~HttpResponse();
+
+	void setStatus(unsigned short int status);
+	void setContentType(const std::string &content_type);
+	void setBody(const std::string &body);
 };
 
 #endif

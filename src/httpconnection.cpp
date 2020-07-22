@@ -4,7 +4,7 @@
 /**
  * Конструктор HTTP-запроса на базе клиентского сокета
  */
-HttpConnection::HttpConnection(int fd): AsyncStream(fd) {
+HttpConnection::HttpConnection(int fd, AsyncWebServer *server): AsyncStream(fd) {
 	request = new HttpRequest();
 	response = new HttpResponse();
 }

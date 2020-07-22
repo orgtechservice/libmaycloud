@@ -33,5 +33,5 @@ cd libmaycloud
 * ``libexpat1-dev``
 
 ```bash
-sudo apt install libudns-dev libsqlite3-dev libexpat1-dev
+sudo apt install libudns-dev libsqlite3-dev libexpat1-dev cmake build-essential
 ```

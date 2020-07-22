@@ -28,10 +28,13 @@ cd libmaycloud
 
 Для того, чтобы скомпилировать libmaycloud в минимальной конфигурации, понадобится установить следующие пакеты (Ubuntu 20.04 LTS):
 
+* ``cmake``
+* ``build-essential``
+* ``pkg-config``
 * ``libudns-dev``
 * ``libsqlite3-dev``
 * ``libexpat1-dev``
 
 ```bash
-sudo apt install libudns-dev libsqlite3-dev libexpat1-dev cmake build-essential
+sudo apt install libudns-dev libsqlite3-dev libexpat1-dev cmake build-essential pkg-config
 ```

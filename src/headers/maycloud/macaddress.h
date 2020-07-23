@@ -14,7 +14,7 @@
 class MACAddress
 {
 private:
-	unsigned char mac[6]{};
+	unsigned char mac[6];
 public:
 	inline MACAddress() { memset(mac, 0, sizeof(mac)); }
 	inline MACAddress(const MACAddress& b) { memcpy(mac, b.mac, sizeof(mac)); }

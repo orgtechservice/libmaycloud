@@ -8,15 +8,18 @@
 #include <maycloud/netdaemon.h>
 #include <maycloud/asyncserver.h>
 #include <maycloud/logger.h>
-#include <maycloud/httprequest.h>
-#include <maycloud/httpresponse.h>
-#include <maycloud/httpconnection.h>
-#include <maycloud/httpconnection.h>
 
+class HttpRequest;
 class HttpResponse;
+class AsyncWebServer;
+
+#include <maycloud/httpconnection.h>
 
 typedef void (*http_request_handler_t)(HttpRequest *request, HttpResponse *response, void *userdata);
 typedef std::pair<http_request_handler_t, void *> http_route_map_item_t;
+
+#include <maycloud/httprequest.h>
+#include <maycloud/httpresponse.h>
 
 /**
 * Встраиваемый HTTP-сервер

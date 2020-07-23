@@ -6,9 +6,6 @@
 #include <maycloud/httpresponse.h>
 #include <maycloud/httpmessage.h>
 
-class HttpConnection;
-class HttpResponse;
-
 class HttpRequest: public HttpMessage
 {
 protected:

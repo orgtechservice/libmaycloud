@@ -38,7 +38,7 @@ endif()
 configure_file(${PROJECT_SOURCE_DIR}/src/headers/maycloud/config.h.in ${PROJECT_SOURCE_DIR}/src/headers/maycloud/config.h @ONLY)
 
 # Каталоги для добавления в список включения (опция -I компилятора)
-include_directories(src/headers)
+include_directories(${PROJECT_SOURCE_DIR}/src/headers)
 
 # Цель, создающая статическую библиотеку libmaycloud.a
 add_library(maycloud STATIC ${LIBMAYCLOUD_SOURCE})

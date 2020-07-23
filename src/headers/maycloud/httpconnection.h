@@ -5,14 +5,10 @@
 #include <maycloud/ipv6.h>
 #include <maycloud/asyncstream.h>
 #include <maycloud/asyncwebserver.h>
-#include <maycloud/httprequest.h>
-#include <maycloud/httpresponse.h>
+//#include <maycloud/httprequest.h>
+//#include <maycloud/httpresponse.h>
 
 #include <string>
-
-class HttpRequest;
-class HttpResponse;
-class AsyncWebServer;
 
 /**
 * HTTP-запрос

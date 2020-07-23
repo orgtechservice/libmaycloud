@@ -15,7 +15,9 @@ protected:
 	std::string raw_headers;
 	std::string _method;
 	std::string _path;
+	std::string _host;
 	int _error;
+	std::map<std::string, std::string> _cookies;
 
 public:
 	HttpRequest(HttpConnection *connection);
@@ -24,6 +26,7 @@ public:
 	void feed(const std::string &data);
 	std::string path();
 	std::string method();
+	std::string host();
 	bool ready();
 	int error();
 };

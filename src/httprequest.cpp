@@ -76,6 +76,10 @@ std::string HttpRequest::method() {
 	return _method;
 }
 
+std::string HttpRequest::host() {
+	return _host;
+}
+
 /**
  * Вернуть состояние готовности HTTP-запроса (запрос полностью считан, можно отправлять ответ)
  */

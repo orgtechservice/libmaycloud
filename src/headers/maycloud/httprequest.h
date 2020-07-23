@@ -3,9 +3,11 @@
 
 #include <string>
 
+#include <maycloud/httpresponse.h>
 #include <maycloud/httpmessage.h>
 
 class HttpConnection;
+class HttpResponse;
 
 class HttpRequest: public HttpMessage
 {
@@ -37,6 +39,7 @@ public:
 	std::string username();
 	std::string password();
 	void handleBasicAuth(const std::string &base64_auth);
+	bool authenticateUser(HttpResponse *response, const std::string &username, const std::string &password, const std::string &realm);
 };
 
 #endif

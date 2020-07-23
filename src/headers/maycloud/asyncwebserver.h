@@ -11,6 +11,7 @@
 #include <maycloud/httprequest.h>
 #include <maycloud/httpresponse.h>
 #include <maycloud/httpconnection.h>
+#include <maycloud/httpconnection.h>
 
 class HttpResponse;
 

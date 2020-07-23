@@ -133,3 +133,17 @@ int HttpRequest::error() {
 bool HttpRequest::hasAuthInfo() {
 	return has_auth_info;
 }
+
+bool HttpRequest::authenticateUser(HttpResponse *response, const std::string &username, const std::string &password, const std::string &realm) {
+	if(!has_auth_info) {
+		response->requireBasicAuth(realm);
+		return false;
+	} else {
+		if((_username == username) && (_password == password)) {
+			return true;
+		} else {
+			response->requireBasicAuth(realm);
+			return false;
+		}
+	}
+}

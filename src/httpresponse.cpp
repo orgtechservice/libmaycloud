@@ -7,9 +7,10 @@ HttpResponse::HttpResponse(HttpConnection *connection): HttpMessage(connection) 
 	headers["Server"] = connection->server()->serverIdString();
 	_status = 200;
 	status_map[200] = "OK";
-	status_map[404] = "Object Not Found";
 	status_map[400] = "Bad Request";
+	status_map[401] = "Authorization Required";
 	status_map[403] = "Forbidden";
+	status_map[404] = "Object Not Found";
 	status_map[405] = "Method Not Allowed";
 	status_map[410] = "Gone";
 }
@@ -29,6 +30,7 @@ void HttpResponse::setStatus(int code) {
 void HttpResponse::setStatusPage(int code) {
 	setStatus(code);
 	if(code == 400) setSimpleHtmlPage("Bad Request (400)", "The server was unable to parse your request.");
+	if(code == 401) setSimpleHtmlPage("Authorization Required (401)", "You should provide valid username and password to access the requested page.");
 	if(code == 404) setSimpleHtmlPage("Not Found (404)", "The requested web page does not exist within the server.");
 	if(code == 405) setSimpleHtmlPage("Method Not Allowed (405)", "The requested web page cannot be requested using the chosen method.");
 }
@@ -78,4 +80,12 @@ std::string HttpResponse::simpleHtmlPage(const std::string &title, const std::st
  */
 void HttpResponse::setSimpleHtmlPage(const std::string &title, const std::string &body) {
 	_body = simpleHtmlPage(title, body);
+}
+
+/**
+ * Сформировать простую веб-страницу и установить её в качестве содержимого ответа
+ */
+void HttpResponse::requireBasicAuth(const std::string &realm) {
+	headers["WWW-Authenticate"] = "Basic realm=\"" + realm + "\"";
+	setStatusPage(401);
 }

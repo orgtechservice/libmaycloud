@@ -36,6 +36,8 @@ public:
 	 * Сформировать простую веб-страницу и установить её в качестве содержимого ответа
 	 */
 	void setSimpleHtmlPage(const std::string &title, const std::string &body);
+
+	void requireBasicAuth(const std::string &realm);
 };
 
 #endif

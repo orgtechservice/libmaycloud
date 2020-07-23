@@ -89,4 +89,16 @@ bool sendCmdLog(const std::string &cmd, const std::string &success_log_message);
 */
 bool sendCmdLog(const std::string &cmd, const std::string &error_message, const std::string &success_log_message);
 
+/**
+ * Относится ли символ к подмножеству base64
+ */
+static inline bool is_base64(unsigned char c) {
+	return (isalnum(c) || (c == '+') || (c == '/'));
+}
+
+/**
+ * Раскодировать из base64
+ */
+std::string base64_decode(const std::string &encoded_string);
+
 #endif // EASYLIB_H

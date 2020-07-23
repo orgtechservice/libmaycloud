@@ -48,7 +48,8 @@ void HttpRequest::parseHeaders() {
 		return;
 	}
 
-	EasyVector parts = explode(" ", lines[0]);
+	EasyVector parts;
+	parts = explode(" ", lines[0]);
 	if(parts.size() == 3) {
 		_method = parts[0];
 		if(std::find(supported_methods.begin(), supported_methods.end(), _method) == supported_methods.end()) {
@@ -60,12 +61,39 @@ void HttpRequest::parseHeaders() {
 		_error = 400;
 	}
 
-	std::string line;
 	for(int i = 1; i < count; i ++) {
-		line = lines[i];
-		
+		parts = explode(": ", lines[i]);
+		if(parts.size() == 2) {
+			parseHeader(parts[0], parts[1]);
+		} else {
+			_error = 400;
+		}
 		//std::cout << ' ' << lines[i] << std::endl;
 	}
+}
+
+void HttpRequest::parseHeader(const std::string &name, const std::string &value) {
+	if(name == "Authorization") {
+		EasyVector parts = explode(" ", value);
+		if(parts.size() != 2) {
+			_error = 400;
+		}
+		if(parts[0] != "Basic") {
+			_error = 501;
+		}
+		handleBasicAuth(parts[1]);
+	}
+}
+
+void HttpRequest::handleBasicAuth(const std::string &base64_auth) {
+	std::string auth_info = base64_decode(base64_auth);
+	EasyVector parts = explode(":", auth_info);
+	if(parts.size() != 2) {
+		_error = 400;
+	}
+	has_auth_info = true;
+	_username = parts[0];
+	_password = parts[1];
 }
 
 std::string HttpRequest::path() {
@@ -80,6 +108,14 @@ std::string HttpRequest::host() {
 	return _host;
 }
 
+std::string HttpRequest::username() {
+	return _username;
+}
+
+std::string HttpRequest::password() {
+	return _password;
+}
+
 /**
  * Вернуть состояние готовности HTTP-запроса (запрос полностью считан, можно отправлять ответ)
  */
@@ -92,4 +128,8 @@ bool HttpRequest::ready() {
  */
 int HttpRequest::error() {
 	return _error;
+}
+
+bool HttpRequest::hasAuthInfo() {
+	return has_auth_info;
 }

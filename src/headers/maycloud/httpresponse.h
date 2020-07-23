@@ -10,19 +10,21 @@ class HttpConnection;
 class HttpResponse: public HttpMessage
 {
 protected:
-	unsigned short int _status;
+	int _status;
+	std::map<int, std::string> status_map;
 
 public:
 	HttpResponse(HttpConnection *connection);
 	~HttpResponse();
 
-	void setStatus(int status);
+	void setStatus(int code);
 	void setContentType(const std::string &content_type);
 	void setBody(const std::string &body);
 
 	std::string toString();
 
-	std::string textByCode(int status);
+	std::string statusText();
+	std::string statusText(int code);
 };
 
 #endif

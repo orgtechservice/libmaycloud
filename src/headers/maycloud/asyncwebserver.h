@@ -29,9 +29,14 @@ protected:
 	virtual void onAccept();
 
 	/**
-	 * Карта обработчиков запросов
+	 * Карта обработчиков GET-запросов
 	 */
-	std::map<std::string, http_route_map_item_t> routes;
+	std::map<std::string, http_route_map_item_t> get_routes;
+
+	/**
+	 * Карта обработчиков POST-запросов
+	 */
+	std::map<std::string, http_route_map_item_t> post_routes;
 
 	/**
 	 * Строка идентификации сервера
@@ -53,6 +58,11 @@ public:
 	 * Добавить обработчик GET-запроса
 	 */
 	void get(const std::string &path, http_request_handler_t handler, void *userdata);
+
+	/**
+	 * Добавить обработчик POST-запроса
+	 */
+	void post(const std::string &path, http_request_handler_t handler, void *userdata);
 
 	/**
 	 * Обработчик по умолчанию

@@ -44,10 +44,7 @@ void HttpConnection::onRead(const char *data, size_t len) {
 void HttpConnection::sendResponse() {
 	std::cout << "[AsyncWebServer::sendResponse] sending response" << std::endl;
 	std::string raw_response = _response->toString();
-	//putInBuffer(raw_response.c_str(), raw_response.length());
-	put(raw_response.c_str(), raw_response.length()); // STUB
-
-	//shutdown(2);
+	putInBuffer(raw_response.c_str(), raw_response.length());
 }
 
 /**

@@ -15,14 +15,17 @@ protected:
 	std::string raw_headers;
 	std::string _method;
 	std::string _path;
+	int _error;
 
 public:
 	HttpRequest(HttpConnection *connection);
 	~HttpRequest();
-	bool parseHeaders();
+	void parseHeaders();
 	void feed(const std::string &data);
 	std::string path();
+	std::string method();
 	bool ready();
+	int error();
 };
 
 #endif

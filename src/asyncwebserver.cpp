@@ -3,7 +3,7 @@
 /**
 * Конструктор
 */
-AsyncWebServer::AsyncWebServer(NetDaemon *daemon): _server_id("") {
+AsyncWebServer::AsyncWebServer(NetDaemon *daemon) {
 	_server_id = "libmaycloud/0.1 (github.com/orgtechservice)";
 	get("/", & defaultRequestHandler, (void *) this);
 }
@@ -42,9 +42,18 @@ void AsyncWebServer::onAccept() {
  * Добавить обработчик GET-запроса
  */
 void AsyncWebServer::get(const std::string &path, http_request_handler_t handler, void *userdata) {
-	std::cout << "[AsyncWebServer] STUB: register request handler" << std::endl;
+	//std::cout << "[AsyncWebServer] STUB: register GET request handler" << std::endl;
 	http_route_map_item_t target(handler, userdata);
-	routes[path] = target;
+	get_routes[path] = target;
+}
+
+/**
+ * Добавить обработчик POST-запроса
+ */
+void AsyncWebServer::post(const std::string &path, http_request_handler_t handler, void *userdata) {
+	//std::cout << "[AsyncWebServer] STUB: register POST request handler" << std::endl;
+	http_route_map_item_t target(handler, userdata);
+	post_routes[path] = target;
 }
 
 /**
@@ -69,16 +78,29 @@ void AsyncWebServer::defaultRequestHandler(HttpRequest *request, HttpResponse *r
 void AsyncWebServer::handleRequest(HttpRequest *request, HttpResponse *response) {
 	std::cout << "[AsyncWebServer::handleRequest] got an incoming HTTP request" << std::endl;
 	std::string path = request->path();
-	auto it = routes.find(path);
-	if(it == routes.end()) {
-		std::string raw_response = simpleHtmlPage("Not Found (404)", "The requested web page does not exist within the server.");
-		response->setStatus(404);
-		response->setBody(raw_response);
-		return;
+	std::string method = request->method();
+	if(method == "GET") {
+		auto it = get_routes.find(path);
+		if(it == get_routes.end()) {
+			std::string raw_response = simpleHtmlPage("Not Found (404)", "The requested web page does not exist within the server.");
+			response->setStatus(404);
+			response->setBody(raw_response);
+			return;
+		}
+		// Вызов зарегистрированного хэндлера
+		it->second.first(request, response, it->second.second);
 	}
-	
-	// Вызов зарегистрированного хэндлера
-	it->second.first(request, response, it->second.second);
+	if(method == "POST") {
+		auto it = post_routes.find(path);
+		if(it == post_routes.end()) {
+			std::string raw_response = simpleHtmlPage("Method Not Allowed (405)", "The requested web page cannot be requested using POST method.");
+			response->setStatus(405);
+			response->setBody(raw_response);
+			return;
+		}
+		// Вызов зарегистрированного хэндлера
+		it->second.first(request, response, it->second.second);
+	}
 }
 
 std::string AsyncWebServer::serverIdString() {

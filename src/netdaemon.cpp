@@ -543,7 +543,7 @@ bool NetDaemon::put(int fd, fd_info_t *fb, const char *data, size_t len)
 		return false;
 	}
 	
-	block_t *block;
+	block_t *block = 0;
 	
 	if ( fb->size > 0 )
 	{

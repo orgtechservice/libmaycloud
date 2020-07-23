@@ -1,7 +1,7 @@
 
 #include <maycloud/httpmessage.h>
 
-HttpMessage::HttpMessage(HttpConnection *connection): body("") {
+HttpMessage::HttpMessage(HttpConnection *connection) {
 	_connection = connection;
 }
 

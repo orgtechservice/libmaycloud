@@ -18,11 +18,11 @@ HttpConnection::~HttpConnection() {
 	delete _response;
 	delete _request;
 
-	// Закрываем сокет если ещё открыт
-	close();
-
 	// Покидаем демона, чтобы гарантированно не получать от него больше вызовы
 	leaveDaemon();
+
+	// Закрываем сокет если ещё открыт
+	close();
 }
 
 /**

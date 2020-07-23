@@ -240,7 +240,7 @@ bool NetDaemon::disableObject(ptr<AsyncObject> object)
 	// проверяем корректность файлового дескриптора
 	if ( object->fd < 0 || object->fd >= limit )
 	{
-		logger.unexpected("NetDaemon::disableObject(): wrong file descriptor");
+		logger.unexpected("NetDaemon::disableObject(%d): wrong file descriptor", object->fd);
 		return false;
 	}
 	

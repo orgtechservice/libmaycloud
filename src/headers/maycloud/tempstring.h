@@ -12,7 +12,7 @@ protected:
 	char buff[buffer_size]{};
 public:
 	inline TempString() { buff[0] = 0; }
-	inline TempString(const TempString& b) { strncpy(buff, b.buff, buffer_size - 1); buff[buffer_size - 1] = 0; }
+	inline TempString(const TempString& b) { memcpy(buff, b.buff, buffer_size - 1); buff[buffer_size - 1] = 0; }
 	inline TempString(const char* str) { strncpy(buff, str, buffer_size - 1); buff[buffer_size - 1] = 0; }
 	
 	char* c_str() { return buff; }

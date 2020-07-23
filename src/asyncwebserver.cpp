@@ -61,11 +61,10 @@ void AsyncWebServer::post(const std::string &path, http_request_handler_t handle
  * Задаётся для корня (/) по дефолту
  */
 void AsyncWebServer::defaultRequestHandler(HttpRequest *request, HttpResponse *response, void *userdata) {
-	AsyncWebServer *server = (AsyncWebServer *) userdata;
+	//AsyncWebServer *server = (AsyncWebServer *) userdata;
 	std::string title("Hello, world!");
 	std::string body("Congratulations, your AsyncWebServer is working. Now add some request handlers.");
-	std::string raw_response = server->simpleHtmlPage(title, body);
-	response->setBody(raw_response);
+	response->setSimpleHtmlPage(title, body);
 }
 
 /**
@@ -77,14 +76,18 @@ void AsyncWebServer::defaultRequestHandler(HttpRequest *request, HttpResponse *r
  */
 void AsyncWebServer::handleRequest(HttpRequest *request, HttpResponse *response) {
 	std::cout << "[AsyncWebServer::handleRequest] got an incoming HTTP request" << std::endl;
+	int error = request->error();
+	if(error != 0) {
+		response->setStatusPage(error);
+		return;
+	}
+
 	std::string path = request->path();
 	std::string method = request->method();
 	if(method == "GET") {
 		auto it = get_routes.find(path);
 		if(it == get_routes.end()) {
-			std::string raw_response = simpleHtmlPage("Not Found (404)", "The requested web page does not exist within the server.");
-			response->setStatus(404);
-			response->setBody(raw_response);
+			response->setStatusPage(404);
 			return;
 		}
 		// Вызов зарегистрированного хэндлера
@@ -93,9 +96,7 @@ void AsyncWebServer::handleRequest(HttpRequest *request, HttpResponse *response)
 	if(method == "POST") {
 		auto it = post_routes.find(path);
 		if(it == post_routes.end()) {
-			std::string raw_response = simpleHtmlPage("Method Not Allowed (405)", "The requested web page cannot be requested using POST method.");
-			response->setStatus(405);
-			response->setBody(raw_response);
+			response->setStatusPage(405);
 			return;
 		}
 		// Вызов зарегистрированного хэндлера
@@ -103,11 +104,9 @@ void AsyncWebServer::handleRequest(HttpRequest *request, HttpResponse *response)
 	}
 }
 
+/**
+ * Вернуть строку идентификации сервера
+ */
 std::string AsyncWebServer::serverIdString() {
 	return _server_id;
-}
-
-std::string AsyncWebServer::simpleHtmlPage(const std::string &title, const std::string &body) {
-	return std::string("<html><head><title>") + title + std::string("</title></head><body><h1>")
-		+ title + std::string("</h1><div>") + body + std::string("</div><hr/><a href=\"https://github.com/orgtechservice\">") + _server_id + std::string("</a></body></html>");
 }

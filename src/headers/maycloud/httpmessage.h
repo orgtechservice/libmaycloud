@@ -10,7 +10,7 @@ class HttpMessage
 {
 protected:
 	std::map<std::string, std::string> headers;
-	std::string body;
+	std::string _body;
 	HttpConnection *_connection;
 
 public:

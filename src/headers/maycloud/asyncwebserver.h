@@ -78,11 +78,6 @@ public:
 	 * Получить строку идентификации сервера
 	 */
 	std::string serverIdString();
-
-	/**
-	 * Сформировать простую служебную веб-страницу
-	 */
-	std::string simpleHtmlPage(const std::string &title, const std::string &body);
 };
 
 #endif // ASYNCWEBSERVER_H

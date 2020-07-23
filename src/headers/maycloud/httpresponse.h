@@ -18,6 +18,7 @@ public:
 	~HttpResponse();
 
 	void setStatus(int code);
+	void setStatusPage(int code);
 	void setContentType(const std::string &content_type);
 	void setBody(const std::string &body);
 
@@ -25,6 +26,16 @@ public:
 
 	std::string statusText();
 	std::string statusText(int code);
+
+	/**
+	 * Сформировать простую служебную веб-страницу
+	 */
+	std::string simpleHtmlPage(const std::string &title, const std::string &body);
+
+	/**
+	 * Сформировать простую веб-страницу и установить её в качестве содержимого ответа
+	 */
+	void setSimpleHtmlPage(const std::string &title, const std::string &body);
 };
 
 #endif

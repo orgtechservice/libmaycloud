@@ -9,7 +9,7 @@ class TempString
 {
 protected:
 	static const int buffer_size = 1024;
-	char buff[buffer_size];
+	char buff[buffer_size]{};
 public:
 	inline TempString() { buff[0] = 0; }
 	inline TempString(const TempString& b) { strncpy(buff, b.buff, buffer_size - 1); buff[buffer_size - 1] = 0; }

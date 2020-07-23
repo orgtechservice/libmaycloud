@@ -26,8 +26,15 @@ void HttpResponse::setStatus(int code) {
 	_status = code;
 }
 
+void HttpResponse::setStatusPage(int code) {
+	setStatus(code);
+	if(code == 400) setSimpleHtmlPage("Bad Request (400)", "The server was unable to parse your request.");
+	if(code == 404) setSimpleHtmlPage("Not Found (404)", "The requested web page does not exist within the server.");
+	if(code == 405) setSimpleHtmlPage("Method Not Allowed (405)", "The requested web page cannot be requested using the chosen method.");
+}
+
 void HttpResponse::setBody(const std::string &body) {
-	this->body = body;
+	_body = body;
 }
 
 std::string HttpResponse::toString() {
@@ -37,7 +44,7 @@ std::string HttpResponse::toString() {
 		result += (it->first + ": " + it->second + "\n");
 	}
 	result += "\n";
-	result += body;
+	result += _body;
 	return result;
 }
 
@@ -55,4 +62,19 @@ std::string HttpResponse::statusText(int code) {
 		return it->second;
 	}
 	return "";
+}
+
+/**
+ * Сформировать простую веб-страницу
+ */
+std::string HttpResponse::simpleHtmlPage(const std::string &title, const std::string &body) {
+	return std::string("<html><head><title>") + title + std::string("</title></head><body><h1>")
+		+ title + std::string("</h1><div>") + body + std::string("</div><hr/><a href=\"https://github.com/orgtechservice\">") + _connection->server()->serverIdString() + std::string("</a></body></html>");
+}
+
+/**
+ * Сформировать простую веб-страницу и установить её в качестве содержимого ответа
+ */
+void HttpResponse::setSimpleHtmlPage(const std::string &title, const std::string &body) {
+	_body = simpleHtmlPage(title, body);
 }

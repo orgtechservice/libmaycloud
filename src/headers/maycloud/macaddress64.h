@@ -8,7 +8,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <vector>
-#include <zconf.h>
 #include <string>
 
 class MACAddress64

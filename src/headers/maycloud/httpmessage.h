@@ -16,6 +16,7 @@ protected:
 public:
 	HttpMessage(HttpConnection *connection);
 	~HttpMessage();
+	HttpMessage(const HttpMessage&) = delete;
 	HttpConnection *connection();
 };
 

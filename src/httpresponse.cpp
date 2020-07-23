@@ -42,7 +42,7 @@ void HttpResponse::setBody(const std::string &body) {
 std::string HttpResponse::toString() {
 	headers["Content-Length"] = std::to_string(_body.length());
 	std::string result("");
-	result += std::string("HTTP/1.1 ") + std::to_string(_status) + std::string(" ") + statusText() + std::string("\r\n");
+	result += std::string("HTTP/1.1 ") + std::to_string((unsigned long long)_status) + std::string(" ") + statusText() + std::string("\r\n");
 	for(auto it = headers.begin(); it != headers.end(); ++ it) {
 		result += (it->first + ": " + it->second + "\r\n");
 	}

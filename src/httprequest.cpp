@@ -98,6 +98,7 @@ void HttpRequest::parseRequestPath(const std::string &path) {
 		EasyVector subparts;
 		parts = explode("&", request_string);
 		for(int i = 0; i < parts.size(); i ++) {
+			// TODO handle arrays
 			subparts = explode("=", parts[i]);
 			if(subparts.size() == 1) {
 				_GET[subparts[0]] = "";
@@ -127,7 +128,7 @@ void HttpRequest::handleBasicAuth(const std::string &base64_auth) {
 std::string HttpRequest::get(const std::string &variable, const std::string &default_value) {
 	auto it = _GET.find(variable);
 	if(it == _GET.end()) {
-		return "";
+		return default_value;
 	} else {
 		return it->second;
 	}

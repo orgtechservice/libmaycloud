@@ -19,14 +19,24 @@ HttpResponse::~HttpResponse() {
 
 }
 
+/**
+ * Установить MIME-тип содержимого
+ */
 void HttpResponse::setContentType(const std::string &content_type) {
 	headers["Content-Type"] = content_type;
 }
 
+/**
+ * Установить код ответа code
+ */
 void HttpResponse::setStatus(int code) {
 	_status = code;
 }
 
+/**
+ * Установить в качестве кода ответа code, а в качестве тела —
+ * стандартный для данного кода документ
+ */
 void HttpResponse::setStatusPage(int code) {
 	setStatus(code);
 	if(code == 400) setSimpleHtmlPage("Bad Request (400)", "The server was unable to parse your request.");
@@ -39,6 +49,9 @@ void HttpResponse::setBody(const std::string &body) {
 	_body = body;
 }
 
+/**
+ * Сериализовать HTTP-ответ в строку
+ */
 std::string HttpResponse::toString() {
 	headers["Content-Length"] = std::to_string((unsigned long long) _body.length());
 	std::string result("");
@@ -51,6 +64,9 @@ std::string HttpResponse::toString() {
 	return result;
 }
 
+/**
+ * Получить текущий статусный текст по текущему коду состояния HTTP
+ */
 std::string HttpResponse::statusText() {
 	auto it = status_map.find(_status);
 	if(it != status_map.end()) {
@@ -59,6 +75,9 @@ std::string HttpResponse::statusText() {
 	return "";
 }
 
+/**
+ * Получить статусный текст по коду состояния HTTP
+ */
 std::string HttpResponse::statusText(int code) {
 	auto it = status_map.find(code);
 	if(it != status_map.end()) {

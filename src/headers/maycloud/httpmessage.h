@@ -9,7 +9,7 @@ class HttpConnection;
 class HttpMessage
 {
 protected:
-	std::map<std::string, std::string> headers;
+	std::map<std::string, std::string> _headers;
 	std::string _body;
 	HttpConnection *_connection;
 
@@ -18,6 +18,10 @@ public:
 	~HttpMessage();
 	HttpMessage(const HttpMessage&) = delete;
 	HttpConnection *connection();
+	std::map<std::string, std::string> headers();
+	std::string header(const std::string &header_name, const std::string &default_value);
+	void setHeader(const std::string &header_name, const std::string &value);
+	bool hasHeader(const std::string &header_name);
 };
 
 #endif

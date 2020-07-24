@@ -2,9 +2,9 @@
 #include <maycloud/httpresponse.h>
 
 HttpResponse::HttpResponse(HttpConnection *connection): HttpMessage(connection) {
-	headers["Content-Type"] = "text/html;charset=utf-8";
-	headers["Connection"] = "close";
-	headers["Server"] = connection->server()->serverIdString();
+	_headers["Content-Type"] = "text/html;charset=utf-8";
+	_headers["Connection"] = "close";
+	_headers["Server"] = connection->server()->serverIdString();
 	_status = 200;
 	status_map[200] = "OK";
 	status_map[400] = "Bad Request";
@@ -23,7 +23,7 @@ HttpResponse::~HttpResponse() {
  * Установить MIME-тип содержимого
  */
 void HttpResponse::setContentType(const std::string &content_type) {
-	headers["Content-Type"] = content_type;
+	_headers["Content-Type"] = content_type;
 }
 
 /**
@@ -53,10 +53,10 @@ void HttpResponse::setBody(const std::string &body) {
  * Сериализовать HTTP-ответ в строку
  */
 std::string HttpResponse::toString() {
-	headers["Content-Length"] = std::to_string((unsigned long long) _body.length());
+	_headers["Content-Length"] = std::to_string((unsigned long long) _body.length());
 	std::string result("");
 	result += std::string("HTTP/1.1 ") + std::to_string((unsigned long long) _status) + std::string(" ") + statusText() + std::string("\r\n");
-	for(auto it = headers.begin(); it != headers.end(); ++ it) {
+	for(auto it = _headers.begin(); it != _headers.end(); ++ it) {
 		result += (it->first + ": " + it->second + "\r\n");
 	}
 	result += "\n";
@@ -105,6 +105,6 @@ void HttpResponse::setSimpleHtmlPage(const std::string &title, const std::string
  * Сформировать простую веб-страницу и установить её в качестве содержимого ответа
  */
 void HttpResponse::requireBasicAuth(const std::string &realm) {
-	headers["WWW-Authenticate"] = "Basic realm=\"" + realm + "\"";
+	_headers["WWW-Authenticate"] = "Basic realm=\"" + realm + "\"";
 	setStatusPage(401);
 }

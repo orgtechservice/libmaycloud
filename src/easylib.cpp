@@ -303,3 +303,80 @@ std::string base64_decode(const std::string &encoded_string) {
 
 	return ret;
 }
+
+/**
+ * Locale-independent conversion of ASCII characters to lowercase.
+ */
+int av_tolower(int c) {
+	if (c >= 'A' && c <= 'Z') c ^= 0x20;
+	return c;
+}
+
+/**
+ * Decodes an URL from its percent-encoded form back into normal
+ * representation. This function returns the decoded URL in a string.
+ * The URL to be decoded does not necessarily have to be encoded but
+ * in that case the original string is duplicated.
+ *
+ * @param url a string to be decoded.
+ * @return new string with the URL decoded or NULL if decoding failed.
+ * Note that the returned string should be explicitly freed when not
+ * used anymore.
+ */
+char *urldecode(const char *url)
+{
+	int s = 0, d = 0, url_len = 0;
+	char c;
+	char *dest = NULL;
+
+	if(!url) return NULL;
+
+	url_len = strlen(url) + 1;
+	dest = (char *) malloc(url_len);
+
+	if(!dest) return NULL;
+
+	while(s < url_len) {
+		c = url[s++];
+
+		if(c == '%' && s + 2 < url_len) {
+			char c2 = url[s ++];
+			char c3 = url[s ++];
+			if(isxdigit(c2) && isxdigit(c3)) {
+				c2 = tolower(c2);
+				c3 = tolower(c3);
+
+				if(c2 <= '9')
+					c2 = c2 - '0';
+				else
+					c2 = c2 - 'a' + 10;
+
+				if(c3 <= '9')
+					c3 = c3 - '0';
+				else
+					c3 = c3 - 'a' + 10;
+
+				dest[d ++] = 16 * c2 + c3;
+
+			} else { /* %zz or something other invalid */
+				dest[d ++] = c;
+				dest[d ++] = c2;
+				dest[d ++] = c3;
+			}
+		} else if(c == '+') {
+			dest[d ++] = ' ';
+		} else {
+			dest[d ++] = c;
+		}
+
+	}
+
+	return dest;
+}
+
+std::string urldecode(const std::string &url) {
+	char *buf = urldecode(url.c_str());
+	std::string result(buf);
+	free(buf);
+	return result;
+}

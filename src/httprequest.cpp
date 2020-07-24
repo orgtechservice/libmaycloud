@@ -55,7 +55,8 @@ void HttpRequest::parseHeaders() {
 		if(std::find(supported_methods.begin(), supported_methods.end(), _method) == supported_methods.end()) {
 			_error = 405;
 		}
-		_path = parts[1];
+		parseRequestPath(parts[1]);
+		//_path = parts[1];
 		// parts[3] — версия протокола
 	} else {
 		_error = 400;
@@ -85,6 +86,33 @@ void HttpRequest::parseHeader(const std::string &name, const std::string &value)
 	}
 }
 
+void HttpRequest::parseRequestPath(const std::string &path) {
+	size_t position = path.find('?');
+	if(position == std::string::npos) {
+		_path = path;
+	} else {
+		_path = path.substr(0, position);
+		std::string request_string = urldecode(path.substr(position + 1));
+		//std::cout << "PATH: <" << _path << ">, RS: <" << request_string << ">" << std::endl;
+		EasyVector parts;
+		EasyVector subparts;
+		parts = explode("&", request_string);
+		for(int i = 0; i < parts.size(); i ++) {
+			subparts = explode("=", parts[i]);
+			if(subparts.size() == 1) {
+				_GET[subparts[0]] = "";
+				continue;
+			}
+			if(subparts.size() == 2) {
+				_GET[subparts[0]] = subparts[1];
+				//std::cout << "VAR: <" << subparts[0] << ">, VALUE: <" << subparts[1] << ">" << std::endl;
+				continue;
+			}
+			_error = 400;
+		}
+	}
+}
+
 void HttpRequest::handleBasicAuth(const std::string &base64_auth) {
 	std::string auth_info = base64_decode(base64_auth);
 	EasyVector parts = explode(":", auth_info);
@@ -94,6 +122,23 @@ void HttpRequest::handleBasicAuth(const std::string &base64_auth) {
 	has_auth_info = true;
 	_username = parts[0];
 	_password = parts[1];
+}
+
+std::string HttpRequest::get(const std::string &variable, const std::string &default_value) {
+	auto it = _GET.find(variable);
+	if(it == _GET.end()) {
+		return "";
+	} else {
+		return it->second;
+	}
+}
+
+std::map<std::string, std::string> HttpRequest::get() {
+	return _GET;
+}
+
+bool HttpRequest::getVariableExists(const std::string &variable) {
+	return (_GET.find(variable) != _GET.end());
 }
 
 std::string HttpRequest::path() {

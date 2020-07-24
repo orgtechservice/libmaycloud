@@ -20,16 +20,22 @@ protected:
 	std::string _password;
 	int _error;
 	std::map<std::string, std::string> _cookies;
+	std::map<std::string, std::string> _GET;
+	std::map<std::string, std::string> _POST;
 
 public:
 	HttpRequest(HttpConnection *connection);
 	~HttpRequest();
 	void parseHeaders();
 	void parseHeader(const std::string &name, const std::string &value);
+	void parseRequestPath(const std::string &path);
 	void feed(const std::string &data);
 	std::string path();
 	std::string method();
 	std::string host();
+	std::string get(const std::string &variable, const std::string &default_value = "");
+	std::map<std::string, std::string> get();
+	bool getVariableExists(const std::string &variable);
 	bool ready();
 	int error();
 	bool hasAuthInfo();

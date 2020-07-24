@@ -101,4 +101,10 @@ static inline bool is_base64(unsigned char c) {
  */
 std::string base64_decode(const std::string &encoded_string);
 
+int av_tolower(int c);
+
+char *urldecode(const char *url);
+
+std::string urldecode(const std::string &url);
+
 #endif // EASYLIB_H

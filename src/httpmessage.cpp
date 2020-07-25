@@ -3,6 +3,7 @@
 
 HttpMessage::HttpMessage(HttpConnection *connection) {
 	_connection = connection;
+	_content_length = 0;
 }
 
 HttpMessage::~HttpMessage() {

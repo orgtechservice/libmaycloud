@@ -29,27 +29,26 @@ void HttpRequest::feed(const std::string &data) {
 			parseHeaders();
 
 			std::string leftovers = data.substr(pos + 4);
-			//std::cout << "PART: [" << leftovers << "]" << std::endl;
 			_raw_body += leftovers;
 			if(_raw_body.length() >= _content_length) {
 				got_body = true;
+				parseBody();
+			} else {
+				//std::cout << "WTF, leftovers: <" << leftovers << ">, CL: " << _content_length << std::endl;
 			}
 		}
-	}
-	
-	if(!got_body) {
-		_raw_body += data;
-		//std::cout << "PART: [" << data << "]" << std::endl;
-		if(!hasLength()) {
-			_error = 411;
+	} else {
+		if(!got_body) {
+			_raw_body += data;
+			if(!hasLength()) {
+				_error = 411;
+			}
+			if(_raw_body.length() >= _content_length) {
+				got_body = true;
+			}
+		} else {
+			parseBody();
 		}
-		if(_raw_body.length() >= _content_length) {
-			got_body = true;
-		}
-	}
-
-	if(got_body && (_content_length > 0)) {
-		parseBody();
 	}
 }
 
@@ -101,6 +100,7 @@ void HttpRequest::parseHeader(const std::string &name, const std::string &value)
 	}
 	if(name == "Content-Length") {
 		_content_length = strtoul(value.c_str(), 0, 0);
+		//std::cout << "Got Content-Length, value: " << std::to_string(_content_length) << std::endl;
 	}
 	if(name == "Content-Type") {
 		_content_type = value;
@@ -108,7 +108,10 @@ void HttpRequest::parseHeader(const std::string &name, const std::string &value)
 }
 
 void HttpRequest::parseBody() {
+	if(_raw_body.empty()) return;
+
 	if(_content_type == "application/x-www-form-urlencoded") {
+		parseQueryString(_raw_body, &_POST);
 		return;
 	}
 
@@ -119,31 +122,33 @@ void HttpRequest::parseBody() {
 	_error = 501;
 }
 
+void HttpRequest::parseQueryString(const std::string &query_string, std::map<std::string, std::string> *vars) {
+	EasyVector parts;
+	EasyVector subparts;
+	parts = explode("&", query_string);
+	for(int i = 0; i < parts.size(); i ++) {
+		// TODO handle arrays
+		subparts = explode("=", parts[i]);
+		if(subparts.size() == 1) {
+			(*vars)[subparts[0]] = "";
+			continue;
+		}
+		if(subparts.size() == 2) {
+			(*vars)[subparts[0]] = urldecode(subparts[1]);
+			continue;
+		}
+		_error = 400;
+	}
+}
+
 void HttpRequest::parseRequestPath(const std::string &path) {
 	size_t position = path.find('?');
 	if(position == std::string::npos) {
 		_path = path;
 	} else {
+
 		_path = path.substr(0, position);
-		std::string request_string = urldecode(path.substr(position + 1));
-		//std::cout << "PATH: <" << _path << ">, RS: <" << request_string << ">" << std::endl;
-		EasyVector parts;
-		EasyVector subparts;
-		parts = explode("&", request_string);
-		for(int i = 0; i < parts.size(); i ++) {
-			// TODO handle arrays
-			subparts = explode("=", parts[i]);
-			if(subparts.size() == 1) {
-				_GET[subparts[0]] = "";
-				continue;
-			}
-			if(subparts.size() == 2) {
-				_GET[subparts[0]] = subparts[1];
-				//std::cout << "VAR: <" << subparts[0] << ">, VALUE: <" << subparts[1] << ">" << std::endl;
-				continue;
-			}
-			_error = 400;
-		}
+		parseQueryString(path.substr(position + 1), &_GET);
 	}
 }
 
@@ -171,8 +176,25 @@ std::map<std::string, std::string> HttpRequest::get() {
 	return _GET;
 }
 
+std::string HttpRequest::post(const std::string &variable, const std::string &default_value) {
+	auto it = _POST.find(variable);
+	if(it == _POST.end()) {
+		return default_value;
+	} else {
+		return it->second;
+	}
+}
+
+std::map<std::string, std::string> HttpRequest::post() {
+	return _POST;
+}
+
 bool HttpRequest::getVariableExists(const std::string &variable) {
 	return (_GET.find(variable) != _GET.end());
+}
+
+bool HttpRequest::postVariableExists(const std::string &variable) {
+	return (_POST.find(variable) != _POST.end());
 }
 
 std::string HttpRequest::path() {

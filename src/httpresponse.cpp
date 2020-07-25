@@ -14,6 +14,7 @@ HttpResponse::HttpResponse(HttpConnection *connection): HttpMessage(connection) 
 	status_map[405] = "Method Not Allowed";
 	status_map[410] = "Gone";
 	status_map[411] = "Length Required";
+	status_map[501] = "Not Implemented";
 }
 
 HttpResponse::~HttpResponse() {

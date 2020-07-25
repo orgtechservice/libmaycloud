@@ -30,6 +30,7 @@ public:
 	void parseHeaders();
 	void parseHeader(const std::string &name, const std::string &value);
 	void parseRequestPath(const std::string &path);
+	void parseQueryString(const std::string &query_string, std::map<std::string, std::string> *vars);
 	void parseBody();
 	void feed(const std::string &data);
 	std::string path();
@@ -37,7 +38,10 @@ public:
 	std::string host();
 	std::string get(const std::string &variable, const std::string &default_value = "");
 	std::map<std::string, std::string> get();
+	std::string post(const std::string &variable, const std::string &default_value = "");
+	std::map<std::string, std::string> post();
 	bool getVariableExists(const std::string &variable);
+	bool postVariableExists(const std::string &variable);
 	bool ready();
 	int error();
 	bool hasAuthInfo();

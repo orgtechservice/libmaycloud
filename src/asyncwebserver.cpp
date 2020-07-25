@@ -57,6 +57,16 @@ void AsyncWebServer::post(const std::string &path, http_request_handler_t handle
 }
 
 /**
+ * Добавить обработчик GET+POST-запроса
+ */
+void AsyncWebServer::route(const std::string &path, http_request_handler_t handler, void *userdata) {
+	//std::cout << "[AsyncWebServer] STUB: register GP request handler" << std::endl;
+	http_route_map_item_t target(handler, userdata);
+	get_routes[path] = target;
+	post_routes[path] = target;
+}
+
+/**
  * Обработчик по умолчанию
  * Задаётся для корня (/) по дефолту
  */

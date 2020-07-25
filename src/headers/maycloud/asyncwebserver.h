@@ -69,6 +69,11 @@ public:
 	void post(const std::string &path, http_request_handler_t handler, void *userdata);
 
 	/**
+	 * Добавить обработчик GET+POST-запроса
+	 */
+	void route(const std::string &path, http_request_handler_t handler, void *userdata);
+
+	/**
 	 * Обработчик по умолчанию
 	 */
 	static void defaultRequestHandler(HttpRequest *request, HttpResponse *response, void *userdata);

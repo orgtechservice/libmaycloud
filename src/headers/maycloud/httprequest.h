@@ -12,7 +12,8 @@ protected:
 	bool got_headers;
 	bool got_body;
 	bool has_auth_info;
-	std::string raw_headers;
+	std::string _raw_headers;
+	std::string _raw_body;
 	std::string _method;
 	std::string _path;
 	std::string _host;
@@ -29,6 +30,7 @@ public:
 	void parseHeaders();
 	void parseHeader(const std::string &name, const std::string &value);
 	void parseRequestPath(const std::string &path);
+	void parseBody();
 	void feed(const std::string &data);
 	std::string path();
 	std::string method();

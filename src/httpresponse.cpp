@@ -13,6 +13,7 @@ HttpResponse::HttpResponse(HttpConnection *connection): HttpMessage(connection) 
 	status_map[404] = "Object Not Found";
 	status_map[405] = "Method Not Allowed";
 	status_map[410] = "Gone";
+	status_map[411] = "Length Required";
 }
 
 HttpResponse::~HttpResponse() {
@@ -43,17 +44,20 @@ void HttpResponse::setStatusPage(int code) {
 	if(code == 401) setSimpleHtmlPage("Authorization Required (401)", "You should provide valid username and password to access the requested page.");
 	if(code == 404) setSimpleHtmlPage("Not Found (404)", "The requested web page does not exist within the server.");
 	if(code == 405) setSimpleHtmlPage("Method Not Allowed (405)", "The requested web page cannot be requested using the chosen method.");
+	if(code == 411) setSimpleHtmlPage("Length Required (411)", "The requested web page requires Content-Length to be set.");
+	if(code == 501) setSimpleHtmlPage("Not Implemented (501)", "Something important is not implemented yet.");
 }
 
 void HttpResponse::setBody(const std::string &body) {
 	_body = body;
+	_content_length = _body.length();
 }
 
 /**
  * Сериализовать HTTP-ответ в строку
  */
 std::string HttpResponse::toString() {
-	_headers["Content-Length"] = std::to_string((unsigned long long) _body.length());
+	_headers["Content-Length"] = std::to_string((unsigned long long) _content_length);
 	std::string result("");
 	result += std::string("HTTP/1.1 ") + std::to_string((unsigned long long) _status) + std::string(" ") + statusText() + std::string("\r\n");
 	for(auto it = _headers.begin(); it != _headers.end(); ++ it) {
@@ -98,7 +102,7 @@ std::string HttpResponse::simpleHtmlPage(const std::string &title, const std::st
  * Сформировать простую веб-страницу и установить её в качестве содержимого ответа
  */
 void HttpResponse::setSimpleHtmlPage(const std::string &title, const std::string &body) {
-	_body = simpleHtmlPage(title, body);
+	setBody(simpleHtmlPage(title, body));
 }
 
 /**

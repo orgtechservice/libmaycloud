@@ -19,29 +19,44 @@ HttpRequest::~HttpRequest() {
 
 void HttpRequest::feed(const std::string &data) {
 	if(!got_headers) {
-		size_t pos;
-		pos = data.find("\n\n");
+		size_t pos = data.find("\r\n\r\n");
 		if(pos == std::string::npos) {
-			pos = data.find("\r\n\r\n");
-		}
-
-		if(pos == std::string::npos) {
-			raw_headers += data;
+			_raw_headers += data;
 		} else {
 			std::string last_part = data.substr(0, pos);
-			raw_headers += last_part;
+			_raw_headers += last_part;
 			got_headers = true;
-			got_body = true; // STUB
-
 			parseHeaders();
+
+			std::string leftovers = data.substr(pos + 4);
+			//std::cout << "PART: [" << leftovers << "]" << std::endl;
+			_raw_body += leftovers;
+			if(_raw_body.length() >= _content_length) {
+				got_body = true;
+			}
 		}
+	}
+	
+	if(!got_body) {
+		_raw_body += data;
+		//std::cout << "PART: [" << data << "]" << std::endl;
+		if(!hasLength()) {
+			_error = 411;
+		}
+		if(_raw_body.length() >= _content_length) {
+			got_body = true;
+		}
+	}
+
+	if(got_body && (_content_length > 0)) {
+		parseBody();
 	}
 }
 
 void HttpRequest::parseHeaders() {
 	//std::cout << "[HttpRequest::parseHeaders]" << std::endl;
 	std::vector<std::string> supported_methods {"GET", "POST"};
-	EasyVector lines = explode("\n", raw_headers);
+	EasyVector lines = explode("\r\n", _raw_headers);
 	int count = lines.size();
 	if(count < 1) {
 		_error = 400;
@@ -84,6 +99,24 @@ void HttpRequest::parseHeader(const std::string &name, const std::string &value)
 		}
 		handleBasicAuth(parts[1]);
 	}
+	if(name == "Content-Length") {
+		_content_length = strtoul(value.c_str(), 0, 0);
+	}
+	if(name == "Content-Type") {
+		_content_type = value;
+	}
+}
+
+void HttpRequest::parseBody() {
+	if(_content_type == "application/x-www-form-urlencoded") {
+		return;
+	}
+
+	/*if() { TODO multipart/form-data
+		return;
+	}*/
+
+	_error = 501;
 }
 
 void HttpRequest::parseRequestPath(const std::string &path) {

@@ -30,6 +30,14 @@ bool HttpMessage::hasHeader(const std::string &header_name) {
 	return _headers.find(header_name) != _headers.end();
 }
 
+bool HttpMessage::hasLength() {
+	return hasHeader("Content-Length");
+}
+
 std::map<std::string, std::string> HttpMessage::headers() {
 	return _headers;
+}
+
+std::string HttpMessage::contentType() {
+	return _content_type;
 }

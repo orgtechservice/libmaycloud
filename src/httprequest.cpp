@@ -141,7 +141,7 @@ void HttpRequest::parseMultipartFormData(const std::string &data, const std::str
 	EasyVector parts = explode(boundary, data);
 	std::string delimiter = "\r\n";
 	for(int i = 0; i < parts.size(); i ++) {
-		if(trim(parts[i]) == "--") break;
+		if(trim(parts[i]) == "--") continue;
 		if(parts[i].substr(0, 2) == "\r\n") {
 			parts[i].erase(0, 2);
 			parts[i].erase(parts[i].length() - 4, parts[i].length());
@@ -162,7 +162,7 @@ void HttpRequest::parseMultipartFormData(const std::string &data, const std::str
 }
 
 bool HttpRequest::parseMPPart(const std::string &data, const std::string &newline) {
-	std::cout << "[HttpRequest::parseMPPart] data: [" << data << "]" << std::endl;
+	//std::cout << "[HttpRequest::parseMPPart] data: [" << data << "]" << std::endl;
 	auto it = data.find(newline + newline);
 	if(it == std::string::npos) return false;
 	std::string part_headers_raw = data.substr(0, it);
@@ -183,6 +183,7 @@ bool HttpRequest::parseMPPart(const std::string &data, const std::string &newlin
 }
 
 bool HttpRequest::parseMPPartBody(const std::map<std::string, std::string> &part_headers, const std::string &part_body) {
+	//std::cout << "HttpRequest::parseMPPartBody()\n";
 	auto cd_it = part_headers.find("Content-Disposition");
 	if(cd_it == part_headers.end()) return false;
 
@@ -193,6 +194,7 @@ bool HttpRequest::parseMPPartBody(const std::map<std::string, std::string> &part
 
 	auto filename_it = attributes.find("filename");
 	if(filename_it == attributes.end()) {
+		//std::cout << "MP POST part, name: [" << attributes["name"] << "], body: [" << part_body << "]\n";
 		_POST[attributes["name"]] = part_body;
 	}
 

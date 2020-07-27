@@ -18,9 +18,11 @@ HttpConnection::~HttpConnection() {
 	// Удаляем созданные ранее объекты запроса и ответа
 	delete _response;
 	delete _request;
+	_request = 0;
+	_response = 0;
 
 	// Покидаем демона, чтобы гарантированно не получать от него больше вызовы
-	leaveDaemon();
+	// leaveDaemon();
 
 	// Закрываем сокет если ещё открыт
 	close();
@@ -33,6 +35,7 @@ HttpConnection::~HttpConnection() {
  */
 void HttpConnection::onRead(const char *data, size_t len) {
 	//std::cout << "[AsyncWebServer::onRead] reading data" << std::endl;
+	if(!_request) return;
 	std::string buf(data, len);
 	_request->feed(buf);
 	if(_request->ready()) {

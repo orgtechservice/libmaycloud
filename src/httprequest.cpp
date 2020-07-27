@@ -105,6 +105,7 @@ void HttpRequest::parseHeader(const std::string &name, const std::string &value)
 	if(name == "Content-Type") {
 		_content_type = value;
 	}
+	_headers[name] = value;
 }
 
 void HttpRequest::parseBody() {
@@ -130,7 +131,7 @@ void HttpRequest::parseBody() {
 	}
 
 	std::cout << "[HttpRequest::parseBody] Unknown content type" << std::endl;
-	_error = 501;
+	_error = 415;
 }
 
 /**
@@ -154,7 +155,6 @@ void HttpRequest::parseMultipartFormData(const std::string &data, const std::str
 		//std::cout << "PART: [" << parts[1] << "]\n";
 		
 		if(!parseMPPart(parts[i], delimiter)) {
-			//std::cout << "[HttpRequest::parseMultipartFormData] parse MPPart failed!" << std::endl;
 			_error = 400;
 			return;
 		}

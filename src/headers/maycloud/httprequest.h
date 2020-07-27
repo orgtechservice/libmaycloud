@@ -24,6 +24,10 @@ protected:
 	std::map<std::string, std::string> _GET;
 	std::map<std::string, std::string> _POST;
 
+	bool parseMPPart(const std::string &data, const std::string &newline);
+	bool parseMPPartBody(const std::string &part_header, const std::string &part_body);
+	std::map<std::string, std::string> parseHeaderExtraLine(const std::string &extra);
+
 public:
 	HttpRequest(HttpConnection *connection);
 	~HttpRequest();
@@ -31,6 +35,7 @@ public:
 	void parseHeader(const std::string &name, const std::string &value);
 	void parseRequestPath(const std::string &path);
 	void parseQueryString(const std::string &query_string, std::map<std::string, std::string> *vars);
+	void parseMultipartFormData(const std::string &data, const std::string &boundary);
 	void parseBody();
 	void feed(const std::string &data);
 	std::string path();

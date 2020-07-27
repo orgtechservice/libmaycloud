@@ -110,16 +110,94 @@ void HttpRequest::parseHeader(const std::string &name, const std::string &value)
 void HttpRequest::parseBody() {
 	if(_raw_body.empty()) return;
 
+	// Обычная форма
 	if(_content_type == "application/x-www-form-urlencoded") {
 		parseQueryString(_raw_body, &_POST);
 		return;
 	}
 
-	/*if() { TODO multipart/form-data
+	// Форма в кодировке multipart
+	if(_content_type.length() >= 32 && _content_type.substr(0, 19) == "multipart/form-data") {
+		auto it = _content_type.find("boundary=\"");
+		if(it == std::string::npos) {
+			_error = 400;
+			return;
+		}
+		std::string boundary = _content_type.substr(it + 10);
+		boundary.pop_back(); // удалить финишную кавычку
+		parseMultipartFormData(_raw_body, boundary);
 		return;
-	}*/
+	}
 
 	_error = 501;
+}
+
+/**
+ * Распарсить multipart/form-data
+ * @note оптимизацией и не пахнет, зато наглядно
+ */
+void HttpRequest::parseMultipartFormData(const std::string &data, const std::string &boundary) {
+	EasyVector parts = explode(boundary, data);
+	std::string delimiter = "\r\n";
+	for(int i = 0; i < parts.size(); i ++) {
+		if(parts[i] == "--") continue;
+		if(parts[i].substr(0, 2) == "\r\n") {
+			parts[i].erase(0, 2);
+			parts[i].erase(parts[i].length() - 4, parts[i].length());
+		}
+		if(parts[i].substr(0, 1) == "\n") {
+			delimiter = "\n";
+			parts[i].erase(0, 1);
+			parts[i].erase(parts[i].length() - 2, parts[i].length());
+		}
+
+		if(!parseMPPart(parts[i], delimiter)) {
+			_error = 400;
+			return;
+		}
+	}
+}
+
+bool HttpRequest::parseMPPart(const std::string &data, const std::string &newline) {
+	auto it = data.find(newline);
+	if(it == std::string::npos) return false;
+	std::string part_header = data.substr(0, it);
+	std::string part_body = data.substr(it + (newline.length() * 2));
+	return parseMPPartBody(part_header, part_body);
+}
+
+bool HttpRequest::parseMPPartBody(const std::string &part_header, const std::string &part_body) {
+	//std::cout << "HEADER: [" << part_header << "]\n";
+	auto it = part_header.find("; ");
+	if(it == std::string::npos) return false;
+	std::string cdline = part_header.substr(0, it);
+	if(cdline != "Content-Disposition: form-data") return false;
+
+	std::string extra_line = part_header.substr(it + 2);
+	std::map<std::string, std::string> attributes = parseHeaderExtraLine(extra_line);
+
+	auto name_it = attributes.find("name");
+	if(name_it == attributes.end()) return false;
+
+	auto filename_it = attributes.find("filename");
+	if(filename_it == attributes.end()) {
+		_POST[attributes["name"]] = part_body;
+	}
+
+	return true;
+}
+
+std::map<std::string, std::string> HttpRequest::parseHeaderExtraLine(const std::string &extra) {
+	std::map<std::string, std::string> result;
+	EasyVector items = explode("; ", extra);
+	EasyVector item_parts;
+	for(int i = 0; i < items.size(); i ++) {
+		item_parts = explode("=\"", items[i]);
+		if(item_parts.size() != 2) continue;
+		item_parts[1].pop_back();
+		result[item_parts[0]] = item_parts[1];
+	}
+	return result;
 }
 
 void HttpRequest::parseQueryString(const std::string &query_string, std::map<std::string, std::string> *vars) {

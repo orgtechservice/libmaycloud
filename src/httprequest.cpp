@@ -118,17 +118,18 @@ void HttpRequest::parseBody() {
 
 	// Форма в кодировке multipart
 	if(_content_type.length() >= 32 && _content_type.substr(0, 19) == "multipart/form-data") {
-		auto it = _content_type.find("boundary=\"");
-		if(it == std::string::npos) {
+		auto attributes = parseHeaderExtraLine(_content_type.substr(21));
+		auto it = attributes.find("boundary");
+		if(it == attributes.end()) {
 			_error = 400;
 			return;
 		}
-		std::string boundary = _content_type.substr(it + 10);
-		boundary.pop_back(); // удалить финишную кавычку
-		parseMultipartFormData(_raw_body, boundary);
+
+		parseMultipartFormData(_raw_body, attributes["boundary"]);
 		return;
 	}
 
+	std::cout << "[HttpRequest::parseBody] Unknown content type" << std::endl;
 	_error = 501;
 }
 
@@ -140,7 +141,7 @@ void HttpRequest::parseMultipartFormData(const std::string &data, const std::str
 	EasyVector parts = explode(boundary, data);
 	std::string delimiter = "\r\n";
 	for(int i = 0; i < parts.size(); i ++) {
-		if(parts[i] == "--") continue;
+		if(trim(parts[i]) == "--") break;
 		if(parts[i].substr(0, 2) == "\r\n") {
 			parts[i].erase(0, 2);
 			parts[i].erase(parts[i].length() - 4, parts[i].length());
@@ -150,8 +151,10 @@ void HttpRequest::parseMultipartFormData(const std::string &data, const std::str
 			parts[i].erase(0, 1);
 			parts[i].erase(parts[i].length() - 2, parts[i].length());
 		}
-
+		//std::cout << "PART: [" << parts[1] << "]\n";
+		
 		if(!parseMPPart(parts[i], delimiter)) {
+			//std::cout << "[HttpRequest::parseMultipartFormData] parse MPPart failed!" << std::endl;
 			_error = 400;
 			return;
 		}
@@ -159,22 +162,31 @@ void HttpRequest::parseMultipartFormData(const std::string &data, const std::str
 }
 
 bool HttpRequest::parseMPPart(const std::string &data, const std::string &newline) {
-	auto it = data.find(newline);
+	std::cout << "[HttpRequest::parseMPPart] data: [" << data << "]" << std::endl;
+	auto it = data.find(newline + newline);
 	if(it == std::string::npos) return false;
-	std::string part_header = data.substr(0, it);
-	std::string part_body = data.substr(it + (newline.length() * 2));
-	return parseMPPartBody(part_header, part_body);
+	std::string part_headers_raw = data.substr(0, it);
+	std::string part_body_raw = data.substr(it + (newline.length() * 2));
+
+	// Распарсим заголовки
+	std::map<std::string, std::string> headers;
+	EasyVector header_lines = explode(newline, part_headers_raw);
+	EasyVector parts;
+	for(int i = 0; i < header_lines.size(); i ++) {
+		parts = explode(": ", header_lines[i]);
+		if(parts.size() != 2) return false;
+		headers[parts[0]] = parts[1];
+	}
+
+	// Распарсим тело
+	return parseMPPartBody(headers, part_body_raw);
 }
 
-bool HttpRequest::parseMPPartBody(const std::string &part_header, const std::string &part_body) {
-	//std::cout << "HEADER: [" << part_header << "]\n";
-	auto it = part_header.find("; ");
-	if(it == std::string::npos) return false;
-	std::string cdline = part_header.substr(0, it);
-	if(cdline != "Content-Disposition: form-data") return false;
+bool HttpRequest::parseMPPartBody(const std::map<std::string, std::string> &part_headers, const std::string &part_body) {
+	auto cd_it = part_headers.find("Content-Disposition");
+	if(cd_it == part_headers.end()) return false;
 
-	std::string extra_line = part_header.substr(it + 2);
-	std::map<std::string, std::string> attributes = parseHeaderExtraLine(extra_line);
+	std::map<std::string, std::string> attributes = parseHeaderExtraLine(cd_it->second);
 
 	auto name_it = attributes.find("name");
 	if(name_it == attributes.end()) return false;
@@ -192,10 +204,13 @@ std::map<std::string, std::string> HttpRequest::parseHeaderExtraLine(const std::
 	EasyVector items = explode("; ", extra);
 	EasyVector item_parts;
 	for(int i = 0; i < items.size(); i ++) {
-		item_parts = explode("=\"", items[i]);
+		item_parts = explode("=", items[i]);
 		if(item_parts.size() != 2) continue;
-		item_parts[1].pop_back();
+		if(item_parts[1].substr(0, 1) == "\"") {
+			item_parts[1] = item_parts[1].substr(1, item_parts[1].length() - 2);
+		}
 		result[item_parts[0]] = item_parts[1];
+		//std::cout << "PART NAME: [" << item_parts[0] << "], VAL: [" << item_parts[1] << "]\n";
 	}
 	return result;
 }

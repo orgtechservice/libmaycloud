@@ -3,6 +3,8 @@
 
 #include <list>
 #include <string>
+#include <cctype>
+#include <algorithm>
 #include <maycloud/easyvector.h>
 #include <maycloud/easyrow.h>
 #include <maycloud/logger.h>
@@ -106,5 +108,7 @@ int av_tolower(int c);
 char *urldecode(const char *url);
 
 std::string urldecode(const std::string &url);
+
+std::string trim(const std::string &s);
 
 #endif // EASYLIB_H

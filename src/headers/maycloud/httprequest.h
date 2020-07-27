@@ -25,7 +25,7 @@ protected:
 	std::map<std::string, std::string> _POST;
 
 	bool parseMPPart(const std::string &data, const std::string &newline);
-	bool parseMPPartBody(const std::string &part_header, const std::string &part_body);
+	bool parseMPPartBody(const std::map<std::string, std::string> &part_headers, const std::string &part_body);
 	std::map<std::string, std::string> parseHeaderExtraLine(const std::string &extra);
 
 public:

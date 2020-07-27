@@ -10,8 +10,8 @@ protected:
 
 public:
 	HttpPostFile(HttpRequest *request);
-	setData(const std::string &data);
 	~HttpPostFile();
+	void setData(const std::string &data);
 };
 
 #endif

@@ -8,3 +8,7 @@ HttpPostFile::HttpPostFile(HttpRequest *request) {
 HttpPostFile::~HttpPostFile() {
 
 }
+
+void HttpPostFile::setData(const std::string &data) {
+
+}

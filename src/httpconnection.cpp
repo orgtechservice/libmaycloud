@@ -40,7 +40,7 @@ void HttpConnection::onRead(const char *data, size_t len) {
 	_request->feed(buf);
 	if(_request->ready()) {
 		_server->handleRequest(_request, _response);
-		sendResponse();
+		if(_response->ready()) sendResponse();
 	}
 }
 

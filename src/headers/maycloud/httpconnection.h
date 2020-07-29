@@ -20,11 +20,6 @@ protected:
 	HttpResponse *_response;
 	AsyncWebServer *_server;
 
-	/**
-	 * Отправить клиенту сформированный хэндлером HTTP-ответ
-	 */
-	void sendResponse();
-
 public:
 	HttpConnection(int fd, AsyncWebServer *server);
 	~HttpConnection();
@@ -43,6 +38,11 @@ public:
 	void onPeerDown();
 
 	void onEmpty();
+
+	/**
+	 * Отправить клиенту сформированный хэндлером HTTP-ответ
+	 */
+	void sendResponse();
 
 	AsyncWebServer *server();
 };

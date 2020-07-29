@@ -22,10 +22,17 @@ HttpResponse::HttpResponse(HttpConnection *connection): HttpMessage(connection) 
 	types["txt"] = "text/plain;charset=utf-8";
 	types["ts"] = "application/vnd.apple.mpegurl";
 	types["m3u8"] = "video/mp2t";
+
+	setContentType("text/plain");
+	_ready = true; // по умолчанию — без отложенного IO
+	_handler_info = 0;
 }
 
 HttpResponse::~HttpResponse() {
-
+	if(_handler_info) {
+		delete _handler_info;
+		_handler_info = 0;
+	}
 }
 
 /**
@@ -150,4 +157,52 @@ std::string HttpResponse::mimeTypeByExtension(const std::string &extension) {
 	} else {
 		return it->second;
 	}
+}
+
+bool HttpResponse::ready() {
+	return _ready;
+}
+
+void HttpResponse::setReady(bool ready) {
+	_ready = ready;
+}
+
+void HttpResponse::postpone() {
+	setReady(false);
+}
+
+void HttpResponse::updateFileWaiting(const timeval &tv, void *hi) {
+	std::cout << "HttpResponse::updateFileWaiting()" << std::endl;
+
+	response_handler_info_t *handler_info = (response_handler_info_t *) hi;
+
+	// если всё нормально
+	std::ifstream input(handler_info->filename_to_wait);
+	if(input.good() || (tv.tv_usec > handler_info->expires)) {
+		input.close();
+		handler_info->handler(handler_info->response);
+		handler_info->response->setReady();
+		handler_info->response->connection()->sendResponse();
+	} else {
+		time_t when = time(NULL) + 1;
+		handler_info->response->connection()->server()->daemon()->setTimer(when, updateFileWaiting, hi);
+	}
+}
+
+void HttpResponse::waitForFile(const std::string &filename, response_handler_t handler, uint8_t timeout, void *userdata) {
+	postpone();
+
+	// Текущее время
+	time_t now = time(NULL);
+
+	// Создаём хэндлер отложенного вызова
+	_handler_info = new response_handler_info_t;
+	_handler_info->handler = handler;
+	_handler_info->response = this;
+	_handler_info->filename_to_wait = filename;
+	_handler_info->userdata = userdata;
+	_handler_info->expires = now + timeout;
+
+	time_t when = now + 1;
+	_connection->server()->daemon()->setTimer(when, updateFileWaiting, (void *) _handler_info);
 }

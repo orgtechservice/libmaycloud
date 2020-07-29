@@ -64,6 +64,11 @@ protected:
 	 */
 	std::string _server_id;
 
+	/**
+	 * Демон
+	 */
+	NetDaemon *_daemon;
+
 public:
 	/**
 	* Конструктор
@@ -119,6 +124,8 @@ public:
 	 * Получить строку идентификации сервера
 	 */
 	std::string serverIdString();
+
+	NetDaemon *daemon();
 };
 
 #endif // ASYNCWEBSERVER_H

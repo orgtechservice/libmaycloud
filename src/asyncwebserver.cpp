@@ -4,6 +4,7 @@
 * Конструктор
 */
 AsyncWebServer::AsyncWebServer(NetDaemon *daemon) {
+	_daemon = daemon;
 	_server_id = "libmaycloud/0.1 (github.com/orgtechservice)";
 	get("/", & defaultRequestHandler, (void *) this);
 }
@@ -179,4 +180,8 @@ void AsyncWebServer::handleRequest(HttpRequest *request, HttpResponse *response)
  */
 std::string AsyncWebServer::serverIdString() {
 	return _server_id;
+}
+
+NetDaemon *AsyncWebServer::daemon() {
+	return _daemon;
 }

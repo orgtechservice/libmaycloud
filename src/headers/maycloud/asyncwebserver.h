@@ -98,7 +98,7 @@ public:
 	/**
 	 * Выбрать зарегистрированный обработчик
 	 */
-	http_route_map_item_t *selectRoute(http_route_map_t *routes, http_route_map_t *mask_routes, const std::string &path);
+	http_route_map_item_t *selectRoute(http_route_map_t *routes, http_route_map_t *mask_routes, HttpRequest *request);
 
 	/**
 	 * Обработчик по умолчанию

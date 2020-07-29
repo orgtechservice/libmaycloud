@@ -114,7 +114,8 @@ std::string AsyncWebServer::maskToRegex(const std::string &path) {
 /**
  * Выбрать зарегистрированный обработчик
  */
-http_route_map_item_t *AsyncWebServer::selectRoute(http_route_map_t *routes, http_route_map_t *mask_routes, const std::string &path) {
+http_route_map_item_t *AsyncWebServer::selectRoute(http_route_map_t *routes, http_route_map_t *mask_routes, HttpRequest *request) {
+	std::string path = request->path();
 	auto routes_it = routes->find(path);
 	if(routes_it != routes->end()) {
 		return &(routes_it->second);
@@ -122,7 +123,12 @@ http_route_map_item_t *AsyncWebServer::selectRoute(http_route_map_t *routes, htt
 
 	// Крайне неоптимально, но хотя бы так
 	for(auto mask_routes_it = mask_routes->begin(); mask_routes_it != mask_routes->end(); ++ mask_routes_it) {
-		if(std::regex_match(path, std::regex(mask_routes_it->first))) {
+		std::smatch matches;
+		if(std::regex_match(path, matches, std::regex(mask_routes_it->first))) {
+			for (uint8_t i = 1; i < matches.size(); ++ i) {
+				//std::cout << "[" << sm[i] << "] ";
+				request->addRouteParam(i - 1, matches[i]);
+			}
 			return &(mask_routes_it->second);
 		}
 	}
@@ -156,11 +162,9 @@ void AsyncWebServer::handleRequest(HttpRequest *request, HttpResponse *response)
 		routes = &post_routes;
 		mask_routes = &post_mask_routes;
 	}
-
-	std::string path = request->path();
 	
 	//auto it = routes->find(path);
-	http_route_map_item_t *item = selectRoute(routes, mask_routes, path);
+	http_route_map_item_t *item = selectRoute(routes, mask_routes, request);
 	if(!item) {
 		response->setStatusPage(404);
 		return;

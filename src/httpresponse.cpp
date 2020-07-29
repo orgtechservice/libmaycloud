@@ -115,3 +115,15 @@ void HttpResponse::requireBasicAuth(const std::string &realm) {
 	_headers["WWW-Authenticate"] = "Basic realm=\"" + realm + "\"";
 	setStatusPage(401);
 }
+
+void HttpResponse::sendFile(const std::string &filename) {
+	// TODO sendfile, set MIME type
+	std::ifstream input(filename);
+	if(!input.good()) {
+		setStatusPage(404);
+		return;
+	}
+
+	std::string str((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
+	setBody(str);
+}

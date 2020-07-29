@@ -1,6 +1,8 @@
 #ifndef HTTP_RESPONSE_H
 #define HTTP_RESPONSE_H
 
+#include <fstream>
+
 #include <maycloud/httpmessage.h>
 #include <maycloud/httpconnection.h>
 
@@ -38,6 +40,8 @@ public:
 	void setSimpleHtmlPage(const std::string &title, const std::string &body);
 
 	void requireBasicAuth(const std::string &realm);
+
+	void sendFile(const std::string &filename);
 };
 
 #endif

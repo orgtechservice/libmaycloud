@@ -344,12 +344,12 @@ bool HttpRequest::authenticateUser(HttpResponse *response, const std::string &us
 	}
 }
 
-void HttpRequest::addRouteParam(const std::string &name, const std::string &value) {
-	_route_params[name] = value;
+void HttpRequest::addRouteParam(const uint8_t &index, const std::string &value) {
+	_route_params[index] = value;
 }
 
-std::string HttpRequest::getRouteParam(const std::string &name, const std::string &default_value) {
-	auto it = _route_params.find(name);
+std::string HttpRequest::getRouteParam(const uint8_t &index, const std::string &default_value) {
+	auto it = _route_params.find(index);
 	if(it == _route_params.end()) {
 		return default_value;
 	} else {
@@ -357,10 +357,10 @@ std::string HttpRequest::getRouteParam(const std::string &name, const std::strin
 	}
 }
 
-void HttpRequest::addRouteParams(const std::map<std::string, std::string> &params) {
+void HttpRequest::addRouteParams(const std::map<uint8_t, std::string> &params) {
 	_route_params = params;
 }
 
-std::map<std::string, std::string> HttpRequest::getRouteParams() {
+std::map<uint8_t, std::string> HttpRequest::getRouteParams() {
 	return _route_params;
 }

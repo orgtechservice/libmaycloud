@@ -23,7 +23,7 @@ protected:
 	std::map<std::string, std::string> _cookies;
 	std::map<std::string, std::string> _GET;
 	std::map<std::string, std::string> _POST;
-	std::map<std::string, std::string> _route_params;
+	std::map<uint8_t, std::string> _route_params;
 
 	bool parseMPPart(const std::string &data, const std::string &newline);
 	bool parseMPPartBody(const std::map<std::string, std::string> &part_headers, const std::string &part_body);
@@ -55,10 +55,10 @@ public:
 	std::string password();
 	void handleBasicAuth(const std::string &base64_auth);
 	bool authenticateUser(HttpResponse *response, const std::string &username, const std::string &password, const std::string &realm);
-	void addRouteParam(const std::string &name, const std::string &value);
-	std::string getRouteParam(const std::string &name, const std::string &default_value = "");
-	void addRouteParams(const std::map<std::string, std::string> &params);
-	std::map<std::string, std::string> getRouteParams();
+	void addRouteParam(const uint8_t &index, const std::string &value);
+	std::string getRouteParam(const uint8_t &index, const std::string &default_value = "");
+	void addRouteParams(const std::map<uint8_t, std::string> &params);
+	std::map<uint8_t, std::string> getRouteParams();
 };
 
 #endif

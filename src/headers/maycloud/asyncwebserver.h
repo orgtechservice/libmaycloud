@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <regex>
 
 #include <maycloud/netdaemon.h>
 #include <maycloud/asyncserver.h>
@@ -44,9 +45,19 @@ protected:
 	http_route_map_t get_routes;
 
 	/**
+	 * Карта обработчиков GET-запросов по маске
+	 */
+	http_route_map_t get_mask_routes;
+
+	/**
 	 * Карта обработчиков POST-запросов
 	 */
 	http_route_map_t post_routes;
+
+	/**
+	 * Карта обработчиков POST-запросов по маске
+	 */
+	http_route_map_t post_mask_routes;
 
 	/**
 	 * Строка идентификации сервера
@@ -87,7 +98,7 @@ public:
 	/**
 	 * Выбрать зарегистрированный обработчик
 	 */
-	http_route_map_item_t *selectRoute(http_route_map_t *routes, const std::string &path);
+	http_route_map_item_t *selectRoute(http_route_map_t *routes, http_route_map_t *mask_routes, const std::string &path);
 
 	/**
 	 * Обработчик по умолчанию
@@ -98,6 +109,11 @@ public:
 	 * Обработать входящий HTTP-запрос
 	 */
 	void handleRequest(HttpRequest *request, HttpResponse *response);
+
+	/**
+	 * Преобразовать маску маршрута в регулярное выражение
+	 */
+	std::string maskToRegex(const std::string &path);
 
 	/**
 	 * Получить строку идентификации сервера

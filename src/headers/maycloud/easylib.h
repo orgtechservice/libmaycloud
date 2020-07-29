@@ -5,6 +5,7 @@
 #include <string>
 #include <cctype>
 #include <algorithm>
+#include <regex>
 #include <maycloud/easyvector.h>
 #include <maycloud/easyrow.h>
 #include <maycloud/logger.h>
@@ -110,5 +111,7 @@ char *urldecode(const char *url);
 std::string urldecode(const std::string &url);
 
 std::string trim(const std::string &s);
+
+std::string regexEscape(const std::string &s);
 
 #endif // EASYLIB_H

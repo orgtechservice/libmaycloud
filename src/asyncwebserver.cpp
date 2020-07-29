@@ -42,34 +42,52 @@ void AsyncWebServer::onAccept() {
  * Добавить обработчик GET-запроса
  */
 void AsyncWebServer::get(const std::string &path, http_request_handler_t handler, void *userdata) {
-	//std::cout << "[AsyncWebServer] STUB: register GET request handler" << std::endl;
 	http_route_map_item_t target;
 	target.handler = handler;
 	target.userdata = userdata;
-	get_routes[path] = target;
+
+	bool mask = (path.find("{") != std::string::npos) && (path.find("}") != std::string::npos);
+	if(mask) {
+		get_mask_routes[maskToRegex(path)] = target;
+	} else {
+		get_routes[path] = target;
+	}
 }
 
 /**
  * Добавить обработчик POST-запроса
  */
 void AsyncWebServer::post(const std::string &path, http_request_handler_t handler, void *userdata) {
-	//std::cout << "[AsyncWebServer] STUB: register POST request handler" << std::endl;
 	http_route_map_item_t target;
 	target.handler = handler;
 	target.userdata = userdata;
-	post_routes[path] = target;
+
+	bool mask = (path.find("{") != std::string::npos) && (path.find("}") != std::string::npos);
+	if(mask) {
+		post_mask_routes[maskToRegex(path)] = target;
+	} else {
+		post_routes[path] = target;
+	}
 }
 
 /**
  * Добавить обработчик GET+POST-запроса
  */
 void AsyncWebServer::route(const std::string &path, http_request_handler_t handler, void *userdata) {
-	//std::cout << "[AsyncWebServer] STUB: register GP request handler" << std::endl;
 	http_route_map_item_t target;
 	target.handler = handler;
 	target.userdata = userdata;
-	get_routes[path] = target;
-	post_routes[path] = target;
+
+	bool mask = (path.find("{") != std::string::npos) && (path.find("}") != std::string::npos);
+
+	if(mask) {
+		std::string re = maskToRegex(path);
+		get_mask_routes[re] = target;
+		post_mask_routes[re] = target;
+	} else {
+		get_routes[path] = target;
+		post_routes[path] = target;
+	}
 }
 
 /**
@@ -84,16 +102,30 @@ void AsyncWebServer::defaultRequestHandler(HttpRequest *request, HttpResponse *r
 }
 
 /**
+ * Преобразовать маску маршрута в регулярное выражение
+ */
+std::string AsyncWebServer::maskToRegex(const std::string &path) {
+	std::string mask_quoted = regexEscape(path);
+	std::regex needle { R"(\\\{([a-z]+)\\\})" };
+	std::string result = "^" + std::regex_replace(mask_quoted, needle, "([^/]+)") + "$";
+	return result;
+}
+
+/**
  * Выбрать зарегистрированный обработчик
  */
-http_route_map_item_t *selectRoute(http_route_map_t *routes, const std::string &path) {
-	auto pos = path.find(":");
-	if(pos == std::string::npos) {
-		auto it = routes->find(path);
-		return &(it->second);
+http_route_map_item_t *AsyncWebServer::selectRoute(http_route_map_t *routes, http_route_map_t *mask_routes, const std::string &path) {
+	auto routes_it = routes->find(path);
+	if(routes_it != routes->end()) {
+		return &(routes_it->second);
 	}
 
-	// Parse request mask
+	// Крайне неоптимально, но хотя бы так
+	for(auto mask_routes_it = mask_routes->begin(); mask_routes_it != mask_routes->end(); ++ mask_routes_it) {
+		if(std::regex_match(path, std::regex(mask_routes_it->first))) {
+			return &(mask_routes_it->second);
+		}
+	}
 
 	return NULL;
 }
@@ -115,19 +147,22 @@ void AsyncWebServer::handleRequest(HttpRequest *request, HttpResponse *response)
 
 	std::string method = request->method();
 	http_route_map_t *routes = NULL;
+	http_route_map_t *mask_routes = NULL;
 	if(method == "GET") {
 		routes = &get_routes;
+		mask_routes = &get_mask_routes;
 	}
 	if(method == "POST") {
 		routes = &post_routes;
+		mask_routes = &post_mask_routes;
 	}
 
 	std::string path = request->path();
 	
 	//auto it = routes->find(path);
-	http_route_map_item_t *item = selectRoute(routes, path);
+	http_route_map_item_t *item = selectRoute(routes, mask_routes, path);
 	if(!item) {
-		response->setStatusPage(405);
+		response->setStatusPage(404);
 		return;
 	}
 

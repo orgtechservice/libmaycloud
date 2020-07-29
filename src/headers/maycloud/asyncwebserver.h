@@ -16,7 +16,13 @@ class AsyncWebServer;
 #include <maycloud/httpconnection.h>
 
 typedef void (*http_request_handler_t)(HttpRequest *request, HttpResponse *response, void *userdata);
-typedef std::pair<http_request_handler_t, void *> http_route_map_item_t;
+//typedef std::pair<http_request_handler_t, void *> http_route_map_item_t;
+typedef struct {
+	http_request_handler_t handler;
+	void *userdata;
+	//std::map<std::string, std::string> params;
+} http_route_map_item_t;
+typedef std::map<std::string, http_route_map_item_t> http_route_map_t;
 
 #include <maycloud/httprequest.h>
 #include <maycloud/httpresponse.h>
@@ -35,12 +41,12 @@ protected:
 	/**
 	 * Карта обработчиков GET-запросов
 	 */
-	std::map<std::string, http_route_map_item_t> get_routes;
+	http_route_map_t get_routes;
 
 	/**
 	 * Карта обработчиков POST-запросов
 	 */
-	std::map<std::string, http_route_map_item_t> post_routes;
+	http_route_map_t post_routes;
 
 	/**
 	 * Строка идентификации сервера
@@ -72,6 +78,16 @@ public:
 	 * Добавить обработчик GET+POST-запроса
 	 */
 	void route(const std::string &path, http_request_handler_t handler, void *userdata);
+
+	/**
+	 * Добавить HLS-ресурс
+	 */
+	void hlsRoute(const std::string &path, const std::string &filesystem_path, void *userdata);
+
+	/**
+	 * Выбрать зарегистрированный обработчик
+	 */
+	http_route_map_item_t *selectRoute(http_route_map_t *routes, const std::string &path);
 
 	/**
 	 * Обработчик по умолчанию

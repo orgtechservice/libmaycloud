@@ -43,7 +43,9 @@ void AsyncWebServer::onAccept() {
  */
 void AsyncWebServer::get(const std::string &path, http_request_handler_t handler, void *userdata) {
 	//std::cout << "[AsyncWebServer] STUB: register GET request handler" << std::endl;
-	http_route_map_item_t target(handler, userdata);
+	http_route_map_item_t target;
+	target.handler = handler;
+	target.userdata = userdata;
 	get_routes[path] = target;
 }
 
@@ -52,7 +54,9 @@ void AsyncWebServer::get(const std::string &path, http_request_handler_t handler
  */
 void AsyncWebServer::post(const std::string &path, http_request_handler_t handler, void *userdata) {
 	//std::cout << "[AsyncWebServer] STUB: register POST request handler" << std::endl;
-	http_route_map_item_t target(handler, userdata);
+	http_route_map_item_t target;
+	target.handler = handler;
+	target.userdata = userdata;
 	post_routes[path] = target;
 }
 
@@ -61,7 +65,9 @@ void AsyncWebServer::post(const std::string &path, http_request_handler_t handle
  */
 void AsyncWebServer::route(const std::string &path, http_request_handler_t handler, void *userdata) {
 	//std::cout << "[AsyncWebServer] STUB: register GP request handler" << std::endl;
-	http_route_map_item_t target(handler, userdata);
+	http_route_map_item_t target;
+	target.handler = handler;
+	target.userdata = userdata;
 	get_routes[path] = target;
 	post_routes[path] = target;
 }
@@ -75,6 +81,21 @@ void AsyncWebServer::defaultRequestHandler(HttpRequest *request, HttpResponse *r
 	std::string title("Hello, world!");
 	std::string body("Congratulations, your AsyncWebServer is working. Now add some request handlers.");
 	response->setSimpleHtmlPage(title, body);
+}
+
+/**
+ * Выбрать зарегистрированный обработчик
+ */
+http_route_map_item_t *selectRoute(http_route_map_t *routes, const std::string &path) {
+	auto pos = path.find(":");
+	if(pos == std::string::npos) {
+		auto it = routes->find(path);
+		return &(it->second);
+	}
+
+	// Parse request mask
+
+	return NULL;
 }
 
 /**
@@ -92,26 +113,26 @@ void AsyncWebServer::handleRequest(HttpRequest *request, HttpResponse *response)
 		return;
 	}
 
-	std::string path = request->path();
 	std::string method = request->method();
+	http_route_map_t *routes = NULL;
 	if(method == "GET") {
-		auto it = get_routes.find(path);
-		if(it == get_routes.end()) {
-			response->setStatusPage(404);
-			return;
-		}
-		// Вызов зарегистрированного хэндлера
-		it->second.first(request, response, it->second.second);
+		routes = &get_routes;
 	}
 	if(method == "POST") {
-		auto it = post_routes.find(path);
-		if(it == post_routes.end()) {
-			response->setStatusPage(405);
-			return;
-		}
-		// Вызов зарегистрированного хэндлера
-		it->second.first(request, response, it->second.second);
+		routes = &post_routes;
 	}
+
+	std::string path = request->path();
+	
+	//auto it = routes->find(path);
+	http_route_map_item_t *item = selectRoute(routes, path);
+	if(!item) {
+		response->setStatusPage(405);
+		return;
+	}
+
+	// Вызов зарегистрированного хэндлера
+	item->handler(request, response, item->userdata);
 }
 
 /**

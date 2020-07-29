@@ -343,3 +343,24 @@ bool HttpRequest::authenticateUser(HttpResponse *response, const std::string &us
 		}
 	}
 }
+
+void HttpRequest::addRouteParam(const std::string &name, const std::string &value) {
+	_route_params[name] = value;
+}
+
+std::string HttpRequest::getRouteParam(const std::string &name, const std::string &default_value) {
+	auto it = _route_params.find(name);
+	if(it == _route_params.end()) {
+		return default_value;
+	} else {
+		return it->second;
+	}
+}
+
+void HttpRequest::addRouteParams(const std::map<std::string, std::string> &params) {
+	_route_params = params;
+}
+
+std::map<std::string, std::string> HttpRequest::getRouteParams() {
+	return _route_params;
+}

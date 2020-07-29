@@ -14,6 +14,7 @@ class HttpResponse: public HttpMessage
 protected:
 	int _status;
 	std::map<int, std::string> status_map;
+	std::map<std::string, std::string> types;
 
 public:
 	HttpResponse(HttpConnection *connection);
@@ -42,6 +43,8 @@ public:
 	void requireBasicAuth(const std::string &realm);
 
 	void sendFile(const std::string &filename);
+
+	std::string mimeTypeByExtension(const std::string &extension);
 };
 
 #endif

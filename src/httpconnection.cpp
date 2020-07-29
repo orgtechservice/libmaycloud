@@ -48,7 +48,7 @@ void HttpConnection::onRead(const char *data, size_t len) {
  * Отправить клиенту сформированный хэндлером HTTP-ответ
  */
 void HttpConnection::sendResponse() {
-	std::cout << "[AsyncWebServer::sendResponse] sending response" << std::endl;
+	std::cout << "[AsyncWebServer::sendResponse] sending response of type <" << _response->contentType() << ">" << std::endl;
 	std::string raw_response = _response->toString();
 	putInBuffer(raw_response.c_str(), raw_response.length());
 }

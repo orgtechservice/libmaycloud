@@ -16,6 +16,12 @@ HttpResponse::HttpResponse(HttpConnection *connection): HttpMessage(connection) 
 	status_map[411] = "Length Required";
 	status_map[415] = "Unsupported Media Type";
 	status_map[501] = "Not Implemented";
+	
+	types["html"] = "text/html;charset=utf-8";
+	types["htm"] = "text/html;charset=utf-8";
+	types["txt"] = "text/plain;charset=utf-8";
+	types["ts"] = "application/vnd.apple.mpegurl";
+	types["m3u8"] = "video/mp2t";
 }
 
 HttpResponse::~HttpResponse() {
@@ -26,6 +32,7 @@ HttpResponse::~HttpResponse() {
  * Установить MIME-тип содержимого
  */
 void HttpResponse::setContentType(const std::string &content_type) {
+	_content_type = content_type;
 	_headers["Content-Type"] = content_type;
 }
 
@@ -117,13 +124,30 @@ void HttpResponse::requireBasicAuth(const std::string &realm) {
 }
 
 void HttpResponse::sendFile(const std::string &filename) {
-	// TODO sendfile, set MIME type
+	// TODO sendfile
 	std::ifstream input(filename);
 	if(!input.good()) {
 		setStatusPage(404);
 		return;
 	}
 
+	std::regex re { R"(^(.*)\.([a-zA-Z0-9]+)$)" };
+	std::smatch matches;
+	if(std::regex_match(filename, matches, re)) {
+		std::string content_type = mimeTypeByExtension(matches[2]);
+		setContentType(content_type);
+		//std::cout << "CT: " << content_type << std::endl;
+	}
+
 	std::string str((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
 	setBody(str);
+}
+
+std::string HttpResponse::mimeTypeByExtension(const std::string &extension) {
+	auto it = types.find(extension);
+	if(it == types.end()) {
+		return "text/plain";
+	} else {
+		return it->second;
+	}
 }

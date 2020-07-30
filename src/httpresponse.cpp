@@ -173,7 +173,7 @@ void HttpResponse::updateFileWaiting(const timeval &tv, void *waiting) {
 
 	// если всё нормально
 	std::ifstream input(w->filename_to_wait);
-	if(input.good() || (tv.tv_usec > w->expires)) {
+	if(input.good() || (tv.tv_sec > w->expires)) {
 		input.close();
 		w->handler(w->response, w->handler_userdata);
 		w->response->connection()->sendResponse();
@@ -218,7 +218,7 @@ void HttpResponse::updateFunctionWaiting(const timeval &tv, void *waiting) {
 
 	// если всё нормально
 	std::ifstream input(w->filename_to_wait);
-	if(w->custom_function(w->response, w->custom_function_userdata)) {
+	if(w->custom_function(w->response, w->custom_function_userdata) || (tv.tv_sec > w->expires)) {
 		w->handler(w->response, w->handler_userdata);
 		w->response->connection()->sendResponse();
 	} else {
@@ -227,7 +227,7 @@ void HttpResponse::updateFunctionWaiting(const timeval &tv, void *waiting) {
 	}
 }
 
-void HttpResponse::waitForFunction(custom_function_t custom_function, response_handler_t handler, uint8_t timeout, void *handler_userdata, void *custom_function_userdata) {
+void HttpResponse::waitForFunction(custom_function_t custom_function, response_handler_t handler, uint8_t timeout, void *custom_function_userdata, void *handler_userdata) {
 	// Может ничего и не надо делать
 	if(custom_function(this, custom_function_userdata)) {
 		handler(this, handler_userdata);

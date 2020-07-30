@@ -71,7 +71,7 @@ public:
 
 	static void updateFileWaiting(const timeval &tv, void *hi);
 
-	void waitForFunction(custom_function_t custom_function, response_handler_t handler, uint8_t timeout, void *handler_userdata, void *custom_function_userdata);
+	void waitForFunction(custom_function_t custom_function, response_handler_t handler, uint8_t timeout, void *custom_function_userdata, void *handler_userdata);
 
 	static void updateFunctionWaiting(const timeval &tv, void *hi);
 };

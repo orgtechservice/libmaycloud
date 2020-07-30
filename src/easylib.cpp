@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
 EasyVector explode(const std::string &delimiter, const std::string &str) {
 	EasyVector result;
@@ -403,4 +404,8 @@ bool setPidFile(const char* fn) {
 	fclose(f);
 	
 	return true;
+}
+
+bool fileExists(const std::string& path) {
+    return std::ifstream(path).good();
 }

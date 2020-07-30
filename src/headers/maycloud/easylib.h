@@ -116,4 +116,6 @@ std::string regexEscape(const std::string &s);
 
 bool setPidFile(const char* fn);
 
+bool fileExists(const std::string& path);
+
 #endif // EASYLIB_H

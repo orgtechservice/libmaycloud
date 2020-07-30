@@ -9,12 +9,12 @@
 #include <maycloud/macaddress.h>
 
 class IPv6 {
-    std::vector<u_int8_t> ipv6_;
+    std::vector<uint8_t> ipv6_;
 public:
 
     IPv6() { ipv6_.resize(16); }
 
-    explicit IPv6(std::vector<u_int8_t> v) : ipv6_(std::move(v)) {};
+    explicit IPv6(std::vector<uint8_t> v) : ipv6_(std::move(v)) {};
 
     explicit IPv6(void *buf);
 
@@ -35,7 +35,7 @@ public:
      * Вернуть IPv6 в vector байтов
      * @return vector байтов
      */
-    inline std::vector<u_int8_t> toVector() { return ipv6_; }
+    inline std::vector<uint8_t> toVector() { return ipv6_; }
 
     /**
      * Преобразовать IPv6 через EUI-64

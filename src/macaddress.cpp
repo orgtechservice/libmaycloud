@@ -10,7 +10,7 @@ MACAddress::MACAddress(unsigned char b1, unsigned char b2, unsigned char b3, uns
 	mac[5] = b6;
 }
 
-MACAddress::MACAddress(const std::vector<u_int8_t> &vector) {
+MACAddress::MACAddress(const std::vector<uint8_t> &vector) {
     int size = std::min(6, (int) vector.size());
     for (int i = 0; i < size; ++i) {
         mac[i] = vector[i];
@@ -36,8 +36,8 @@ std::string MACAddress::toShortString() const {
     return str;
 }
 
-std::vector<u_int8_t> MACAddress::getEui64Vector() const {
-    std::vector<u_int8_t> eui64(8);
+std::vector<uint8_t> MACAddress::getEui64Vector() const {
+    std::vector<uint8_t> eui64(8);
     for (int i = 0; i < 3; ++i) {
         eui64[i] = mac[i];
     }

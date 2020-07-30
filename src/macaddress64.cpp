@@ -20,7 +20,7 @@ MACAddress64::MACAddress64(unsigned char b1,
 	mac[7] = b8;
 }
 
-MACAddress64::MACAddress64(const std::vector<u_int8_t> &v) {
+MACAddress64::MACAddress64(const std::vector<uint8_t> &v) {
     int size = std::min(8, (int) v.size());
     for (int i = 0; i < size; ++i) {
         mac[i] = v[i];

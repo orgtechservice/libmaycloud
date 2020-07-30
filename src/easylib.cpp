@@ -391,3 +391,16 @@ std::string regexEscape(const std::string &s) {
 	std::regex specialChars { R"([-[\]{}()*+?.,\^$|#\s])" };
 	return std::regex_replace(s, specialChars, R"(\$&)");
 }
+
+bool setPidFile(const char* fn) {
+	FILE* f = fopen(fn, "w+");
+	if(!f) {
+		perror("Can't create PID-file");
+		return false;
+	}
+
+	fprintf(f, "%u", getpid());
+	fclose(f);
+	
+	return true;
+}

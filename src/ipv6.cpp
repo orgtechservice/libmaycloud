@@ -4,7 +4,7 @@
 IPv6::IPv6(void *buf) {
     ipv6_.resize(16);
     for (int i = 0; i < 16; ++i) {
-        ipv6_[i] = ((u_int8_t *) buf)[i];
+        ipv6_[i] = ((uint8_t *) buf)[i];
     }
 }
 
@@ -27,7 +27,7 @@ std::string IPv6::toShortString() {
 }
 
 void IPv6::makeEui64(const MACAddress &mac48) {
-    std::vector<u_int8_t> eui64 = mac48.getEui64Vector();
+    std::vector<uint8_t> eui64 = mac48.getEui64Vector();
     for (int i = 8; i < 16; ++i) {
         ipv6_[i] = eui64[i - 8];
     }

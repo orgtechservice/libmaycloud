@@ -24,14 +24,13 @@ HttpResponse::HttpResponse(HttpConnection *connection): HttpMessage(connection) 
 	types["m3u8"] = "video/mp2t";
 
 	setContentType("text/plain");
-	_ready = true; // по умолчанию — без отложенного IO
-	_handler_info = 0;
+	_waiting = 0; // по умолчанию — без отложенного IO
 }
 
 HttpResponse::~HttpResponse() {
-	if(_handler_info) {
-		delete _handler_info;
-		_handler_info = 0;
+	if(_waiting) {
+		delete _waiting;
+		_waiting = 0;
 	}
 }
 
@@ -161,49 +160,77 @@ std::string HttpResponse::mimeTypeByExtension(const std::string &extension) {
 }
 
 bool HttpResponse::ready() {
-	return _ready;
+	return (_waiting == 0);
 }
 
-void HttpResponse::setReady(bool ready) {
-	_ready = ready;
-}
-
-void HttpResponse::postpone() {
-	setReady(false);
-}
-
-void HttpResponse::updateFileWaiting(const timeval &tv, void *hi) {
+void HttpResponse::updateFileWaiting(const timeval &tv, void *waiting) {
 	std::cout << "HttpResponse::updateFileWaiting()" << std::endl;
 
-	response_handler_info_t *handler_info = (response_handler_info_t *) hi;
+	waiting_info_t *w = (waiting_info_t *) waiting;
 
 	// если всё нормально
-	std::ifstream input(handler_info->filename_to_wait);
-	if(input.good() || (tv.tv_usec > handler_info->expires)) {
+	std::ifstream input(w->filename_to_wait);
+	if(input.good() || (tv.tv_usec > w->expires)) {
 		input.close();
-		handler_info->handler(handler_info->response);
-		handler_info->response->setReady();
-		handler_info->response->connection()->sendResponse();
+		w->handler(w->response, w->handler_userdata);
+		w->response->connection()->sendResponse();
 	} else {
 		time_t when = time(NULL) + 1;
-		handler_info->response->connection()->server()->daemon()->setTimer(when, updateFileWaiting, hi);
+		w->response->connection()->server()->daemon()->setTimer(when, updateFileWaiting, waiting);
 	}
 }
 
 void HttpResponse::waitForFile(const std::string &filename, response_handler_t handler, uint8_t timeout, void *userdata) {
-	postpone();
-
 	// Текущее время
 	time_t now = time(NULL);
 
-	// Создаём хэндлер отложенного вызова
-	_handler_info = new response_handler_info_t;
-	_handler_info->handler = handler;
-	_handler_info->response = this;
-	_handler_info->filename_to_wait = filename;
-	_handler_info->userdata = userdata;
-	_handler_info->expires = now + timeout;
+	// Создаём ждалку отложенного IO
+	_waiting = new waiting_info_t;
+	_waiting->wait_type = "file";
+	_waiting->handler = handler;
+	_waiting->custom_function = NULL;
+	_waiting->response = this;
+	_waiting->filename_to_wait = filename;
+	_waiting->handler_userdata = userdata;
+	_waiting->custom_function_userdata = NULL;
+	_waiting->expires = now + timeout;
 
 	time_t when = now + 1;
-	_connection->server()->daemon()->setTimer(when, updateFileWaiting, (void *) _handler_info);
+	_connection->server()->daemon()->setTimer(when, updateFileWaiting, (void *) _waiting);
+}
+
+void HttpResponse::updateFunctionWaiting(const timeval &tv, void *waiting) {
+	std::cout << "HttpResponse::updateFunctionWaiting()" << std::endl;
+
+	// Ждалка, изрыгнись из небытия
+	waiting_info_t *w = (waiting_info_t *) waiting;
+
+	// если всё нормально
+	std::ifstream input(w->filename_to_wait);
+	if(w->custom_function(w->response, w->custom_function_userdata)) {
+		w->handler(w->response, w->handler_userdata);
+		w->response->connection()->sendResponse();
+	} else {
+		time_t when = time(NULL) + 1;
+		w->response->connection()->server()->daemon()->setTimer(when, updateFunctionWaiting, waiting);
+	}
+}
+
+void HttpResponse::waitForFunction(custom_function_t custom_function, response_handler_t handler, uint8_t timeout, void *handler_userdata, void *custom_function_userdata) {
+	// Текущее время
+	time_t now = time(NULL);
+
+	// Создаём ждалку отложенного IO
+	_waiting = new waiting_info_t;
+	_waiting->wait_type = "function";
+	_waiting->handler = handler;
+	_waiting->custom_function = custom_function;
+	_waiting->response = this;
+	_waiting->filename_to_wait = "";
+	_waiting->handler_userdata = handler_userdata;
+	_waiting->custom_function_userdata = custom_function_userdata;
+	_waiting->expires = now + timeout;
+
+	time_t when = now + 1;
+	_connection->server()->daemon()->setTimer(when, updateFunctionWaiting, (void *) _waiting);
 }

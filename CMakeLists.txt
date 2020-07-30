@@ -23,7 +23,7 @@ find_library(MYSQL_LIBRARY NAMES mysqlclient perconaserverclient mariadbclient)
 
 # Исходники и заголовочные файлы проекта
 FILE(GLOB LIBMAYCLOUD_SOURCE src/*.cpp)
-FILE(GLOB LIBMAYCLOUD_HEADERS src/headers/maycloud/*.h)
+FILE(GLOB LIBMAYCLOUD_HEADERS src/headers/maycloud/*.h src/headers/maycloud/*.hpp)
 
 IF(NOT MYSQL_LIBRARY)
 	message("\n==============================================\n-- WARNING: Building without MySQL support! --\n==============================================\n")
@@ -32,6 +32,15 @@ IF(NOT MYSQL_LIBRARY)
 else()
 	message("-- Building with MySQL support")
 	set(LIBMAYCLOUD_MYSQL "yes")
+endif()
+
+if(DISABLE_HTTP)
+	message("\n==============================================\n-- WARNING: Building without HTTP support! --\n==============================================\n")
+	LIST(FILTER LIBMAYCLOUD_SOURCE EXCLUDE REGEX "(asyncwebserver|http[a-z]+|html[a-z]+)\\.cpp$")
+	LIST(FILTER LIBMAYCLOUD_HEADERS EXCLUDE REGEX "(asyncwebserver|http[a-z]+|html[a-z]+|inja|json)\\.(h|hpp)$")
+else()
+	message("-- Building with HTTP support")
+	set(LIBMAYCLOUD_HTTP "yes")
 endif()
 
 # Файл активной конфигурации библиотеки

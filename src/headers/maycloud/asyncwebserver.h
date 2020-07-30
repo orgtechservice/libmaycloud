@@ -125,7 +125,7 @@ public:
 	 */
 	std::string serverIdString();
 
-	NetDaemon *daemon();
+	inline NetDaemon *daemon() { return _daemon; }
 };
 
 #endif // ASYNCWEBSERVER_H

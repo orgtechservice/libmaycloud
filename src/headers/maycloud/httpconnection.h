@@ -44,7 +44,7 @@ public:
 	 */
 	void sendResponse();
 
-	AsyncWebServer *server();
+	inline AsyncWebServer *server() { return _server; }
 };
 
 #endif

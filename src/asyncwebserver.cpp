@@ -181,7 +181,3 @@ void AsyncWebServer::handleRequest(HttpRequest *request, HttpResponse *response)
 std::string AsyncWebServer::serverIdString() {
 	return _server_id;
 }
-
-NetDaemon *AsyncWebServer::daemon() {
-	return _daemon;
-}

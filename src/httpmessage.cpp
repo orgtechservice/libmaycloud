@@ -10,10 +10,6 @@ HttpMessage::~HttpMessage() {
 
 }
 
-HttpConnection *HttpMessage::connection() {
-	return _connection;
-}
-
 std::string HttpMessage::header(const std::string &header_name, const std::string &default_value) {
 	auto it = _headers.find(header_name);
 	if(it == _headers.end()) {

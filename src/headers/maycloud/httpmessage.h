@@ -19,7 +19,7 @@ public:
 	HttpMessage(HttpConnection *connection);
 	~HttpMessage();
 	HttpMessage(const HttpMessage&) = delete;
-	HttpConnection *connection();
+	inline HttpConnection *connection() { return _connection; }
 	std::map<std::string, std::string> headers();
 	std::string header(const std::string &header_name, const std::string &default_value);
 	void setHeader(const std::string &header_name, const std::string &value);

@@ -70,10 +70,3 @@ void HttpConnection::onPeerDown() {
 void HttpConnection::onEmpty() {
 	delete this;
 }
-
-/**
- * Вернуть указатель на сервер, к которому установлено данное соединение
- */
-AsyncWebServer *HttpConnection::server() {
-	return _server;
-}

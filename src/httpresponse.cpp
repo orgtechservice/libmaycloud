@@ -120,6 +120,7 @@ std::string HttpResponse::simpleHtmlPage(const std::string &title, const std::st
  */
 void HttpResponse::setSimpleHtmlPage(const std::string &title, const std::string &body) {
 	setBody(simpleHtmlPage(title, body));
+	setContentType("text/html;charset=utf-8");
 }
 
 /**

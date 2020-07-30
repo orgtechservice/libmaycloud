@@ -28,7 +28,9 @@ HttpResponse::HttpResponse(HttpConnection *connection): HttpMessage(connection) 
 }
 
 HttpResponse::~HttpResponse() {
+	// Удалить ждалку и обязательно удалить таймеры
 	if(_waiting) {
+		_connection->server()->daemon()->removeTimer(_waiting->timer_id);
 		delete _waiting;
 		_waiting = 0;
 	}
@@ -177,7 +179,7 @@ void HttpResponse::updateFileWaiting(const timeval &tv, void *waiting) {
 		w->response->connection()->sendResponse();
 	} else {
 		time_t when = time(NULL) + 1;
-		w->response->connection()->server()->daemon()->setTimer(when, updateFileWaiting, waiting);
+		w->timer_id = w->response->connection()->server()->daemon()->setTimer(when, updateFileWaiting, waiting);
 	}
 }
 
@@ -205,7 +207,7 @@ void HttpResponse::waitForFile(const std::string &filename, response_handler_t h
 	_waiting->expires = now + timeout;
 
 	time_t when = now + 1;
-	_connection->server()->daemon()->setTimer(when, updateFileWaiting, (void *) _waiting);
+	_waiting->timer_id = _connection->server()->daemon()->setTimer(when, updateFileWaiting, (void *) _waiting);
 }
 
 void HttpResponse::updateFunctionWaiting(const timeval &tv, void *waiting) {
@@ -221,7 +223,7 @@ void HttpResponse::updateFunctionWaiting(const timeval &tv, void *waiting) {
 		w->response->connection()->sendResponse();
 	} else {
 		time_t when = time(NULL) + 1;
-		w->response->connection()->server()->daemon()->setTimer(when, updateFunctionWaiting, waiting);
+		w->timer_id = w->response->connection()->server()->daemon()->setTimer(when, updateFunctionWaiting, waiting);
 	}
 }
 
@@ -247,5 +249,5 @@ void HttpResponse::waitForFunction(custom_function_t custom_function, response_h
 	_waiting->expires = now + timeout;
 
 	time_t when = now + 1;
-	_connection->server()->daemon()->setTimer(when, updateFunctionWaiting, (void *) _waiting);
+	_waiting->timer_id = _connection->server()->daemon()->setTimer(when, updateFunctionWaiting, (void *) _waiting);
 }

@@ -78,13 +78,11 @@ private:
 		/**
 		* Конструктор
 		*/
-		timer(int aExpires, timer_callback_t aCallback, void *aData):
-			expires(aExpires), callback(aCallback), data(aData)
-		{
+		timer(int aExpires, timer_callback_t aCallback, void *aData): expires(aExpires), callback(aCallback), data(aData) {
 		}
 		
 		/**
-		* Оператор сравнения для приоритетной очереди
+		* Оператор сравнения
 		*/
 		bool operator < (const timer &t) const {
 			return expires < t.expires;
@@ -99,14 +97,14 @@ private:
 	};
 	
 	/**
-	* Очередь таймеров
+	* Карта таймеров
 	*/
-	typedef std::priority_queue<timer> timers_queue_t;
+	typedef std::map<int, timer> timer_map_t;
 	
 	/**
 	* Таймеры
 	*/
-	timers_queue_t timers;
+	timer_map_t timers;
 	
 	/**
 	 * Глобальный таймер
@@ -134,9 +132,9 @@ private:
 	size_t iter;
 	
 	/**
-	* Число таймеров в очереди
+	* Текущий ID таймера
 	*/
-	int timerCount;
+	long timer_id;
 	
 	/**
 	* Структура описывающая один блок буфера
@@ -233,9 +231,9 @@ private:
 	* @param calltime время запуска таймера
 	* @param callback функция обратного вызова
 	* @param data указатель на пользовательские данные
-	* @return TRUE - таймер установлен, FALSE - таймер установить не удалось
+	* @return ID таймера
 	*/
-	bool callAt(time_t calltime, timer_callback_t callback, void *data);
+	long callAt(time_t calltime, timer_callback_t callback, void *data);
 	
 	/**
 	* Обработать таймеры
@@ -377,12 +375,18 @@ public:
 	* @param calltime время запуска таймера
 	* @param callback функция обратного вызова
 	* @param data указатель на пользовательские данные
-	* @return TRUE - таймер установлен, FALSE - таймер установить не удалось
+	* @return ID таймера — таймер установлен, -1 - таймер установить не удалось
 	*/
 	template <class data_t>
-	bool setTimer(time_t calltime, void (*callback)(const timeval &tv, data_t *data), data_t *data)
-	{
+	long setTimer(time_t calltime, void (*callback)(const timeval &tv, data_t *data), data_t *data) {
 		return callAt(calltime, reinterpret_cast<timer_callback_t>(callback), data);
+	}
+
+	/** Удалить таймер однократного вызова
+	 * @param timer_id ID таймера, подлежащего удалению
+	 */
+	void removeTimer(long timer_id) {
+		timers.erase(timer_id);
 	}
 	
 	/**

@@ -20,6 +20,7 @@ typedef struct {
 	time_t expires;
 	void *handler_userdata;
 	void *custom_function_userdata;
+	long timer_id;
 } waiting_info_t;
 
 class HttpResponse: public HttpMessage

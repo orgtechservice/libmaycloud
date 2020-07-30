@@ -24,8 +24,9 @@ static void signalHandler(int signo) {
 * @param fd_limit максимальное число одновременных виртуальных потоков
 * @param buf_size размер файлового буфера в блоках
 */
-NetDaemon::NetDaemon(int fd_limit, int buf_size): active(0), sleep_time(200), gtimer(0), count(0), timerCount(0) {
+NetDaemon::NetDaemon(int fd_limit, int buf_size): active(0), sleep_time(200), gtimer(0), count(0) {
 	signal(SIGCHLD, signalHandler);
+	timer_id = 0;
 	limit = fd_limit;
 	epoll = epoll_create(fd_limit);
 	
@@ -412,38 +413,38 @@ int NetDaemon::prepareExec()
 * @param calltime время запуска таймера
 * @param callback функция обратного вызова
 * @param data указатель на пользовательские данные
-* @return TRUE - таймер установлен, FALSE - таймер установить не удалось
+* @return ID таймера — таймер установлен, -1 — таймер установить не удалось
 */
-bool NetDaemon::callAt(time_t calltime, timer_callback_t callback, void *data)
-{
-	timers.push(timer(calltime, callback, data));
-	timerCount++;
-	return true;
+long NetDaemon::callAt(time_t calltime, timer_callback_t callback, void *data) {
+	timer_id ++;
+	timers[timer_id] = timer(calltime, callback, data);
+	return timer_id;
 }
 
 /**
 * Обработать таймеры
 */
-void NetDaemon::processTimers()
-{
+void NetDaemon::processTimers() {
 	timer t;
 	timeval tv;
 	gettimeofday(&tv, 0);
-	if ( gtimer )
-	{
+	if(gtimer) {
 		gtimer(tv, gtimer_data);
 	}
 	onProcessTimer();
-	while ( timerCount > 0 )
-	{
-		t = timers.top();
-		if ( t.expires <= tv.tv_sec )
-		{
-			timers.pop();
-			timerCount --;
-			t.fire(tv);
+
+	// Не очень эффективно, зато удобно
+	if(!timers.empty()) {
+		std::vector<long> to_del;
+		for(auto timer_it = timers.begin(); timer_it != timers.end(); ++ timer_it) {
+			if(timer_it->second.expires <= tv.tv_sec) {
+				timer_it->second.fire(tv);
+				to_del.push_back(timer_it->first);
+			}
 		}
-		else return;
+		for(auto to_del_it = to_del.begin(); to_del_it != to_del.end(); ++ to_del_it) {
+			timers.erase(*to_del_it);
+		}
 	}
 }
 

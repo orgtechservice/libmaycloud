@@ -413,7 +413,7 @@ int NetDaemon::prepareExec()
 * @param calltime время запуска таймера
 * @param callback функция обратного вызова
 * @param data указатель на пользовательские данные
-* @return ID таймера — таймер установлен, -1 — таймер установить не удалось
+* @return ID таймера
 */
 long NetDaemon::callAt(time_t calltime, timer_callback_t callback, void *data) {
 	timer_id ++;

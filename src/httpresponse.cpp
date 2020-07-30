@@ -166,6 +166,7 @@ bool HttpResponse::ready() {
 void HttpResponse::updateFileWaiting(const timeval &tv, void *waiting) {
 	std::cout << "HttpResponse::updateFileWaiting()" << std::endl;
 
+	// Испражнись с того света обратно
 	waiting_info_t *w = (waiting_info_t *) waiting;
 
 	// если всё нормально
@@ -181,6 +182,14 @@ void HttpResponse::updateFileWaiting(const timeval &tv, void *waiting) {
 }
 
 void HttpResponse::waitForFile(const std::string &filename, response_handler_t handler, uint8_t timeout, void *userdata) {
+	// Может ничего и не надо делать
+	std::ifstream input(filename);
+	if(input.good()) {
+		input.close();
+		handler(this, userdata);
+		return;
+	}
+
 	// Текущее время
 	time_t now = time(NULL);
 
@@ -217,6 +226,12 @@ void HttpResponse::updateFunctionWaiting(const timeval &tv, void *waiting) {
 }
 
 void HttpResponse::waitForFunction(custom_function_t custom_function, response_handler_t handler, uint8_t timeout, void *handler_userdata, void *custom_function_userdata) {
+	// Может ничего и не надо делать
+	if(custom_function(this, custom_function_userdata)) {
+		handler(this, handler_userdata);
+		return;
+	}
+
 	// Текущее время
 	time_t now = time(NULL);
 

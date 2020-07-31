@@ -7,13 +7,9 @@ set(VERSION "0.0.1")
 
 # Основные переменные окружения, задающие флаги компилятора и префикс для установки (также применяется к deb-пакету)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -Wall -pedantic -ffunction-sections")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Os -ffunction-sections")
 set(CMAKE_INSTALL_PREFIX "/usr/local")
-
-if(CMAKE_BUILD_TYPE MATCHES "Debug")
-	add_compile_options(-Wall -pedantic)
-endif()
 
 # Проверим наличие зависимостей
 find_package(EXPAT REQUIRED)

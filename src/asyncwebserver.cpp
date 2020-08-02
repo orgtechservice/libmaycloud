@@ -35,7 +35,7 @@ void AsyncWebServer::onAccept() {
 
 	if(sock) {
 		ptr<HttpConnection> client = new HttpConnection(sock, this);
-		getDaemon()->addObject(client);
+		_daemon->addObject(client);
 	}
 }
 

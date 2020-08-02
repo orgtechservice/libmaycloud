@@ -4,8 +4,10 @@
 // Версия библиотеки
 #define LIBMAYCLOUD_VERSION "0.0.1"
 
-// Размер блока файлового буфера
-#define FDBUFFER_BLOCK_SIZE 1024
+/**
+* Размер блоков для пула BlockPool
+*/
+#define BLOCKPOOL_BLOCK_SIZE 4096
 
 // Размер файлового буфера в блоках
 #define FDBUFFER_DEFAULT_SIZE 16

@@ -7,9 +7,11 @@
 #include <maycloud/config.h>
 #include <maycloud/easylib.h>
 #include <maycloud/processmanager.h>
+#include <maycloud/blockpool.h>
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
+#include <iostream>
 
 #include <fcntl.h>
 #include <errno.h>
@@ -20,8 +22,6 @@
 #include <sys/time.h>
 #include <sys/wait.h>
 
-#include <iostream>
-#include <queue>
 
 /**
 * Callback таймера
@@ -143,22 +143,6 @@ private:
 	long timer_id;
 	
 	/**
-	* Структура описывающая один блок буфера
-	*/
-	struct block_t
-	{
-		/**
-		* Ссылка на следующий блок
-		*/
-		block_t *next;
-		
-		/**
-		* Данные блока
-		*/
-		char data[FDBUFFER_BLOCK_SIZE];
-	};
-	
-	/**
 	* Структура описывающая файловый дескриптор
 	*/
 	struct fd_info_t
@@ -193,26 +177,25 @@ private:
 		*/
 		block_t *last;
 	};
-	
+
 	/**
-	* Размер буфера (в блоках)
-	*/
-	size_t buffer_size;
-	
+	 * Пул блоков для отложенной отправки
+	 */
+	BlockPool *bp;
+
 	/**
-	* Число свободных блоков
-	*/
-	size_t free_blocks;
-	
+	 * Вернуть размер буфера в блоках
+	 */
+	inline int getBufferSize() const {
+		return bp ? bp->getPoolSize() : 0;
+	}
+
 	/**
-	* Буфер
-	*/
-	block_t *buffer;
-	
-	/**
-	* Стек свободных блоков
-	*/
-	block_t *stack;
+	 * Вернуть число свободных блоков в буфере
+	 */
+	size_t getFreeSize() const {
+		return bp ? bp->getFreeCount() : 0;
+	}
 	
 	/**
 	* Таблица файловых дескрипторов
@@ -245,19 +228,6 @@ private:
 	* Обработать таймеры
 	*/
 	void processTimers();
-	
-	/**
-	* Выделить цепочку блоков достаточную для буферизации указаного размера
-	* @param size требуемый размер в байтах
-	* @return список блоков или NULL если невозможно выделить запрощенный размер
-	*/
-	block_t* allocBlocks(size_t size);
-	
-	/**
-	* Освободить цепочку блоков
-	* @param top цепочка блоков
-	*/
-	void freeBlocks(block_t *top);
 	
 	/**
 	* Добавить данные в буфер (thread-unsafe)
@@ -316,11 +286,6 @@ public:
 	* Вернуть максимальное число подконтрольных объектов
 	*/
 	int getObjectLimit() const { return limit; }
-	
-	/**
-	* Вернуть размер буфера в блоках
-	*/
-	int getBufferSize() const { return buffer_size; }
 	
 	/**
 	* Добавить асинхронный объект
@@ -419,12 +384,6 @@ public:
 	* По умолчанию выводит все ошибки в stderr
 	*/
 	virtual void onError(const char *message);
-	
-	/**
-	* Вернуть число свободных блоков в буфере
-	* @return число свободных блоков в буфере
-	*/
-	size_t getFreeSize() { return free_blocks; }
 	
 	/**
 	* Вернуть размер буферизованных данных

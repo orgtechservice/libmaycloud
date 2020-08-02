@@ -3,13 +3,8 @@
 
 using namespace std;
 
-NetDaemon *daemon_instance = 0;
+static NetDaemon *daemon_instance = 0;
 unsigned int sigchld_counter = 0;
-
-void my_gnutls_log_func( int level, const char *message)
-{
-	printf("gnutls: level=%d %s", level, message);
-}
 
 static void signalHandler(int signo) {
 	if(daemon_instance == 0) return;
@@ -32,8 +27,7 @@ NetDaemon::NetDaemon(int fd_limit, int buf_size): active(0), sleep_time(200), gt
 	
 	fds = new fd_info_t[fd_limit];
 	fd_info_t *fb, *fd_end = fds + fd_limit;
-	for(fb = fds; fb < fd_end; fb++)
-	{
+	for(fb = fds; fb < fd_end; fb ++) {
 		fb->obj = 0;
 		fb->size = 0;
 		fb->offset = 0;
@@ -42,15 +36,9 @@ NetDaemon::NetDaemon(int fd_limit, int buf_size): active(0), sleep_time(200), gt
 		fb->last = 0;
 	}
 	
-	free_blocks = buffer_size = buf_size;
-	buffer = new block_t[buf_size];
-	stack = 0;
-	block_t *block, *block_end = buffer + buf_size;
-	for(block = buffer; block < block_end; block++)
-	{
-		memset(block->data, 0, sizeof(block->data));
-		block->next = stack;
-		stack = block;
+	bp = bpPool(buf_size);
+	if(!bp) {
+		printf("NetDaemon failed to get BlockPool\n");
 	}
 
 	/*
@@ -63,13 +51,11 @@ NetDaemon::NetDaemon(int fd_limit, int buf_size): active(0), sleep_time(200), gt
 /**
 * Деструктор демона
 */
-NetDaemon::~NetDaemon()
-{
+NetDaemon::~NetDaemon() {
 	int r = ::close(epoll);
 	if ( r < 0 ) stderror();
 	
 	delete [] fds;
-	delete [] buffer;
 }
 
 /**
@@ -102,8 +88,7 @@ void NetDaemon::stderror()
 * Значение по умолчанию (200мс) выбрано из расчета что обычно
 * не требуется большая точность таймеров и оверхед на CPU нежелателен
 */
-void NetDaemon::setSleepTime(int v)
-{
+void NetDaemon::setSleepTime(int v) {
 	sleep_time = ( v < 0 ) ? 0 : v;
 }
 
@@ -449,47 +434,6 @@ void NetDaemon::processTimers() {
 }
 
 /**
-* Выделить цепочку блоков достаточную для буферизации указаного размера
-* @param size требуемый размер в байтах
-* @return список блоков или NULL если невозможно выделить запрощенный размер
-*/
-NetDaemon::block_t* NetDaemon::allocBlocks(size_t size)
-{
-	// размер в блоках
-	size_t count = (size + FDBUFFER_BLOCK_SIZE - 1) / FDBUFFER_BLOCK_SIZE;
-	
-	if ( count == 0 ) return 0;
-	
-	block_t *block = 0;
-	if ( count <= free_blocks )
-	{
-		block = stack;
-		if ( count > 1 ) for(size_t i = 0; i < (count-1); i++) stack = stack->next;
-		block_t *last = stack;
-		stack = stack->next;
-		last->next = 0;
-		free_blocks -= count;
-	}
-	
-	return block;
-}
-
-/**
-* Освободить цепочку блоков
-* @param top цепочка блоков
-*/
-void NetDaemon::freeBlocks(block_t *top)
-{
-	if ( top == 0 ) return;
-	block_t *last = top;
-	size_t count = 1;
-	while ( last->next ) { count++; last = last->next; }
-	last->next = stack;
-	stack = top;
-	free_blocks += count;
-}
-
-/**
 * Вернуть размер буферизованных данных
 * @param fd файловый дескриптор
 * @return размер буферизованных данных
@@ -550,10 +494,10 @@ bool NetDaemon::put(int fd, fd_info_t *fb, const char *data, size_t len)
 	{
 		// смещение к свободной части последнего блока или 0, если последний
 		// блок заполнен полностью
-		size_t offset = (fb->offset + fb->size) % FDBUFFER_BLOCK_SIZE;
+		size_t offset = (fb->offset + fb->size) % BLOCKPOOL_BLOCK_SIZE;
 		
 		// размер свободной части последнего блока
-		size_t rest = offset > 0 ? FDBUFFER_BLOCK_SIZE - offset : 0;
+		size_t rest = offset > 0 ? BLOCKPOOL_BLOCK_SIZE - offset : 0;
 		
 		// размер недостающей части, которую надо выделить из общего буфера
 		size_t need = len - rest;
@@ -562,7 +506,7 @@ bool NetDaemon::put(int fd, fd_info_t *fb, const char *data, size_t len)
 		else
 		{
 			// выделить недостающие блоки
-			block = allocBlocks(need);
+			block = bp->allocBySize(need);
 			if ( block == 0 ) return false;
 		}
 		
@@ -581,7 +525,7 @@ bool NetDaemon::put(int fd, fd_info_t *fb, const char *data, size_t len)
 	}
 	else // fb->size == 0
 	{
-		block = allocBlocks(len);
+		block = bp->allocBySize(len);
 		if ( block == 0 )
 		{
 			// нет буфера
@@ -593,12 +537,11 @@ bool NetDaemon::put(int fd, fd_info_t *fb, const char *data, size_t len)
 	}
 	
 	// записываем полные блоки
-	while ( len >= FDBUFFER_BLOCK_SIZE )
-	{
-		memcpy(block->data, data, FDBUFFER_BLOCK_SIZE);
-		data += FDBUFFER_BLOCK_SIZE;
-		len -= FDBUFFER_BLOCK_SIZE;
-		fb->size += FDBUFFER_BLOCK_SIZE;
+	while(len >= BLOCKPOOL_BLOCK_SIZE) {
+		memcpy(block->data, data, BLOCKPOOL_BLOCK_SIZE);
+		data += BLOCKPOOL_BLOCK_SIZE;
+		len -= BLOCKPOOL_BLOCK_SIZE;
+		fb->size += BLOCKPOOL_BLOCK_SIZE;
 		fb->last = block;
 		block = block->next;
 	}
@@ -664,7 +607,7 @@ bool NetDaemon::push(int fd)
 	while ( fb->size > 0 )
 	{
 		// размер не записанной части блока
-		size_t rest = FDBUFFER_BLOCK_SIZE - fb->offset;
+		size_t rest = BLOCKPOOL_BLOCK_SIZE - fb->offset;
 		if ( rest > fb->size ) rest = fb->size;
 		
 		// попробовать записать
@@ -675,8 +618,7 @@ bool NetDaemon::push(int fd)
 		fb->offset += r;
 		
 		// если блок записан полностью,
-		if ( r == (ssize_t) rest )
-		{
+		if(r == rest) {
 			// добавить его в список освободившихся
 			block_t *block = fb->first;
 			fb->first = block->next;
@@ -691,7 +633,7 @@ bool NetDaemon::push(int fd)
 		}
 	}
 	
-	freeBlocks(unused);
+	bp->free(unused);
 	
 	return fb->size <= 0;
 }
@@ -701,18 +643,16 @@ bool NetDaemon::push(int fd)
 *
 * @param fd файловый дескриптор
 */
-void NetDaemon::cleanup(int fd)
-{
+void NetDaemon::cleanup(int fd) {
 	// проверяем корректность файлового дескриптора
-	if ( fd < 0 || fd >= limit )
-	{
+	if(fd < 0 || fd >= limit) {
 		// плохой дескриптор
 		fprintf(stderr, "StanzaBuffer[%d]: wrong descriptor\n", fd);
 		return;
 	}
 	
 	fd_info_t *p = &fds[fd];
-	freeBlocks(p->first);
+	free(p->first);
 	p->size = 0;
 	p->offset = 0;
 	p->quota = 0;

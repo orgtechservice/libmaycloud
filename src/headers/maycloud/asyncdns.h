@@ -4,11 +4,6 @@
 #include <maycloud/asyncobject.h>
 #include <maycloud/netdaemon.h>
 
-#include <time.h>
-
-#include <sys/epoll.h>
-#include <sys/types.h>
-
 #include <udns.h>
 
 /**

@@ -6,15 +6,13 @@ using namespace std;
 /**
 * Конструктор
 */
-AsyncObject::AsyncObject(): fd(-1), daemon(0), terminating(false)
-{
+AsyncObject::AsyncObject(): fd(-1), daemon(0) {
 }
 
 /**
 * Конструктор
 */
-AsyncObject::AsyncObject(int afd): fd(afd), daemon(0), terminating(false)
-{
+AsyncObject::AsyncObject(int afd): fd(afd), daemon(0) {
 }
 
 /**
@@ -82,30 +80,6 @@ void AsyncObject::setFd(int newFd)
 void AsyncObject::onError(const char *message)
 {
 	fprintf(stderr, "AsyncObject[%d]: %s\n", fd, message);
-}
-
-/**
-* Сигнал завершения работы
-*
-* Сервер решил закрыть соединение, здесь ещё есть время
-* корректно попрощаться с пиром (peer).
-*/
-void AsyncObject::onTerminate()
-{
-	fprintf(stderr, "AsyncObject::onTerminate() DEPRICATED !!!!!!!!!!!!\n");
-}
-
-/**
-* Послать сигнал завершения
-*/
-void AsyncObject::terminate()
-{
-	fprintf(stderr, "AsyncObject::terminate() DEPRICATED !!!!!!!!!!!!\n");
-	if ( ! terminating )
-	{
-		terminating = true;
-		onTerminate();
-	}
 }
 
 /**

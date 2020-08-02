@@ -618,7 +618,7 @@ bool NetDaemon::push(int fd)
 		fb->offset += r;
 		
 		// если блок записан полностью,
-		if(r == rest) {
+		if(r == (ssize_t) rest) {
 			// добавить его в список освободившихся
 			block_t *block = fb->first;
 			fb->first = block->next;

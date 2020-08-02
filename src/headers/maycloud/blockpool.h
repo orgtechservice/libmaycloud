@@ -96,17 +96,17 @@ public:
 	/**
 	 * Вернуть общее число блоков
 	 */
-	inline int getTotalCount() const { return total_count; }
+	inline size_t getTotalCount() const { return total_count; }
 	
 	/**
 	 * Вернуть число свободных блоков
 	 */
-	inline int getFreeCount() const { return free_count; }
+	inline size_t getFreeCount() const { return free_count; }
 	
 	/**
 	 * Вернуть число свободных блоков
 	 */
-	inline int getBusyCount() const { return total_count - free_count; }
+	inline size_t getBusyCount() const { return total_count - free_count; }
 	
 	/**
 	 * Размер пула в байтах

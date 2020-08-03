@@ -1,17 +1,19 @@
 
 #include <maycloud/httpresponse.h>
 
-static std::map<int, std::string> status_map = {
-	{200, "OK"},
-	{400, "Bad Request"},
-	{401, "Authorization Required"},
-	{403, "Forbidden"},
-	{404, "Object Not Found"},
-	{405, "Method Not Allowed"},
-	{410, "Gone"},
-	{411, "Length Required"},
-	{415, "Unsupported Media Type"},
-	{501, "Not Implemented"}
+typedef std::pair<std::string, std::string> status_pair_t;
+
+static std::map<int, std::pair<std::string, std::string>> status_map = {
+	{200, status_pair_t("OK", "OK")},
+	{400, status_pair_t("Bad Request", "The server was unable to parse your request.")},
+	{401, status_pair_t("Authorization Required", "You should provide valid username and password to access the requested page.")},
+	{403, status_pair_t("Forbidden", "You don’t have permission to browse this page.")},
+	{404, status_pair_t("Object Not Found", "The requested web page does not exist within the server.")},
+	{405, status_pair_t("Method Not Allowed", "The requested web page cannot be requested using the chosen method.")},
+	{410, status_pair_t("Gone", "The requested web page is not available anymore.")},
+	{411, status_pair_t("Length Required", "The requested web page requires Content-Length to be set.")},
+	{415, status_pair_t("Unsupported Media Type", "The server does not support the provided data format.")},
+	{501, status_pair_t("Not Implemented", "Something important is not implemented yet.")}
 };
 
 
@@ -62,14 +64,10 @@ void HttpResponse::setStatus(int code) {
  */
 void HttpResponse::setStatusPage(int code) {
 	setStatus(code);
-	if(code == 400) setSimpleHtmlPage("Bad Request (400)", "The server was unable to parse your request.");
-	if(code == 401) setSimpleHtmlPage("Authorization Required (401)", "You should provide valid username and password to access the requested page.");
-	if(code == 404) setSimpleHtmlPage("Not Found (404)", "The requested web page does not exist within the server.");
-	if(code == 405) setSimpleHtmlPage("Method Not Allowed (405)", "The requested web page cannot be requested using the chosen method.");
-	if(code == 410) setSimpleHtmlPage("Gone (410)", "The requested web page is not available anymore.");
-	if(code == 411) setSimpleHtmlPage("Length Required (411)", "The requested web page requires Content-Length to be set.");
-	if(code == 415) setSimpleHtmlPage("Unsupported Media Type (415)", "The server does not support the provided data format.");
-	if(code == 501) setSimpleHtmlPage("Not Implemented (501)", "Something important is not implemented yet.");
+	auto it = status_map.find(code);
+	if(it != status_map.end()) {
+		setSimpleHtmlPage(it->second.first + "(" + std::to_string(code) + ")", it->second.second);
+	}
 }
 
 void HttpResponse::setBody(const std::string &body) {
@@ -112,7 +110,7 @@ std::string HttpResponse::headersString(unsigned long long content_length) {
 std::string HttpResponse::statusText() {
 	auto it = status_map.find(_status);
 	if(it != status_map.end()) {
-		return it->second;
+		return it->second.first;
 	}
 	return "";
 }
@@ -123,7 +121,7 @@ std::string HttpResponse::statusText() {
 std::string HttpResponse::statusText(int code) {
 	auto it = status_map.find(code);
 	if(it != status_map.end()) {
-		return it->second;
+		return it->second.first;
 	}
 	return "";
 }

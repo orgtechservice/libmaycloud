@@ -104,9 +104,8 @@ void AsyncStream::handleWrite()
 /**
 * Обработка обрыва связи
 */
-void AsyncStream::handlePeerDown()
-{
-	printf("AsyncStream[%d] peer down\n", getFd());
+void AsyncStream::handlePeerDown() {
+	//printf("AsyncStream[%d] peer down\n", getFd());
 	onPeerDown();
 }
 

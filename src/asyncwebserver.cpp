@@ -148,7 +148,7 @@ http_route_map_item_t *AsyncWebServer::selectRoute(http_route_map_t *routes, htt
  * @param HttpResponse* указатель на формируемый ответ
  */
 void AsyncWebServer::handleRequest(HttpRequest *request, HttpResponse *response) {
-	std::cout << "[AsyncWebServer::handleRequest] got an incoming HTTP request" << std::endl;
+	//std::cout << "[AsyncWebServer::handleRequest] got an incoming HTTP request" << std::endl;
 	int error = request->error();
 	if(error != 0) {
 		response->setStatusPage(error);

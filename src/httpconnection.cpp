@@ -5,7 +5,7 @@
  * Конструктор HTTP-запроса на базе клиентского сокета
  */
 HttpConnection::HttpConnection(int fd, AsyncWebServer *server): AsyncStream(fd) {
-	std::cout << "[HttpConnection::HttpConnection] New incoming connection" << std::endl;
+	//std::cout << "[HttpConnection::HttpConnection] New incoming connection" << std::endl;
 	_server = server;
 	_request = new HttpRequest(this);
 	_response = new HttpResponse(this);
@@ -24,7 +24,7 @@ HttpConnection::~HttpConnection() {
 	// Закрываем сокет если ещё открыт
 	close();
 
-	std::cout << "[HttpConnection::~HttpConnection] Connection closed" << std::endl;
+	//std::cout << "[HttpConnection::~HttpConnection] Connection closed" << std::endl;
 }
 
 /**

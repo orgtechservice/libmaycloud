@@ -220,13 +220,14 @@ std::string AsyncWebServer::formatLogEntry(const http_request_log_entry_t &entry
 void AsyncWebServer::logRequest(HttpRequest *request, HttpResponse *response) {
 	if(_logger == NULL) return;
 
-	// Определим время
+	// Определим и красиво отформатируем время
 	char buf[64];
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
-	strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S.", localtime(&tv.tv_sec));
+	strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", localtime(&tv.tv_sec));
 	std::string nice_time(buf);
-	nice_time += std::to_string(tv.tv_usec);
+	sprintf(buf, "%.3F", (tv.tv_usec / 1000000.0));
+	nice_time += (buf + 1);
 	
 	http_request_log_entry_t entry;
 	entry.server = this;

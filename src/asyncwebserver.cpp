@@ -6,6 +6,7 @@
 AsyncWebServer::AsyncWebServer(NetDaemon *daemon) {
 	_daemon = daemon;
 	_server_id = "libmaycloud/0.1 (github.com/orgtechservice)";
+	_logger = defaultRequestLogger;
 	get("/", & defaultRequestHandler, (void *) this);
 }
 
@@ -13,7 +14,9 @@ AsyncWebServer::AsyncWebServer(NetDaemon *daemon) {
 * Деструктор
 */
 AsyncWebServer::~AsyncWebServer() {
-	
+	if(_log.is_open()) {
+		_log.close();
+	}
 }
 
 void AsyncWebServer::onAccept() {
@@ -180,4 +183,59 @@ void AsyncWebServer::handleRequest(HttpRequest *request, HttpResponse *response)
  */
 std::string AsyncWebServer::serverIdString() {
 	return _server_id;
+}
+
+void AsyncWebServer::setRequestLogger(http_request_logger_t logger) {
+	_logger = logger;
+}
+
+bool AsyncWebServer::setRequestLog(const std::string &filename) {
+	_log.open(filename);
+	if(!_log.is_open()) return false;
+	setRequestLogger(fileRequestLogger);
+	return true;
+}
+
+void AsyncWebServer::defaultRequestLogger(const http_request_log_entry_t &entry) {
+	//AsyncWebServer *server = (AsyncWebServer *) entry.server;
+	std::cout << formatLogEntry(entry);;
+}
+
+void AsyncWebServer::fileRequestLogger(const http_request_log_entry_t &entry) {
+	//std::cout << "AsyncWebServer::fileRequestLogger()\n";
+	AsyncWebServer *server = (AsyncWebServer *) entry.server;
+	if(!server->_log.is_open()) {
+		defaultRequestLogger(entry);
+		return;
+	}
+	server->_log << formatLogEntry(entry);
+	server->_log.flush(); // костыль
+}
+
+std::string AsyncWebServer::formatLogEntry(const http_request_log_entry_t &entry) {
+	std::string result("[" + entry.nice_when + "] " + entry.method + " " + entry.path + " " + std::to_string(entry.status) + "\n");
+	return result;
+}
+
+void AsyncWebServer::logRequest(HttpRequest *request, HttpResponse *response) {
+	if(_logger == NULL) return;
+
+	// Определим время
+	char buf[64];
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S.", localtime(&tv.tv_sec));
+	std::string nice_time(buf);
+	nice_time += std::to_string(tv.tv_usec);
+	
+	http_request_log_entry_t entry;
+	entry.server = this;
+	entry.method = request->method();
+	entry.path = request->path();
+	entry.client_ip = "";
+	entry.when = tv;
+	entry.nice_when = nice_time;
+	entry.render_time = 0.0;
+	entry.status = response->status();
+	_logger(entry);
 }

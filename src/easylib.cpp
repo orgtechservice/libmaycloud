@@ -409,3 +409,12 @@ bool setPidFile(const char* fn) {
 bool fileExists(const std::string& path) {
     return std::ifstream(path).good();
 }
+
+/**
+ * Вернуть время в микросекундах
+ */
+double microtime() {
+	struct timeval time;
+	gettimeofday(&time, NULL);
+	return (((unsigned long long) time.tv_sec * 1000000) + time.tv_usec) / 1000000.0;
+}

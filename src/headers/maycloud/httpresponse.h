@@ -41,6 +41,7 @@ public:
 	HttpResponse(HttpConnection *connection);
 	~HttpResponse();
 
+	inline int status() { return _status; }
 	void setStatus(int code);
 	void setStatusPage(int code);
 	void setContentType(const std::string &content_type);

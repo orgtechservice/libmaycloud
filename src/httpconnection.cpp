@@ -21,9 +21,6 @@ HttpConnection::~HttpConnection() {
 	_request = 0;
 	_response = 0;
 
-	// Покидаем демона, чтобы гарантированно не получать от него больше вызовы
-	// leaveDaemon();
-
 	// Закрываем сокет если ещё открыт
 	close();
 
@@ -48,16 +45,18 @@ void HttpConnection::onRead(const char *data, size_t len) {
  * Отправить клиенту сформированный хэндлером HTTP-ответ
  */
 void HttpConnection::sendResponse() {
-	std::cout << "[AsyncWebServer::sendResponse] sending response of type <" << _response->contentType() << ">" << std::endl;
+	//std::cout << "[AsyncWebServer::sendResponse] sending response of type <" << _response->contentType() << ">" << std::endl;
 	std::string raw_response = _response->toString();
 	put(raw_response.c_str(), raw_response.length());
+	_server->logRequest(_request, _response);
 }
 
 /**
  * Отчитаться о самостоятельной отправке отложенного ответа
  */
 void HttpConnection::sentResponse(const std::string &content_type) {
-	std::cout << "[AsyncWebServer::sentResponse] sent response of type <" << content_type << ">" << std::endl;
+	//std::cout << "[AsyncWebServer::sentResponse] sent response of type <" << content_type << ">" << std::endl;
+	_server->logRequest(_request, _response);
 }
 
 /**

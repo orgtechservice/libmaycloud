@@ -1,6 +1,8 @@
 #ifndef EASYLIB_H
 #define EASYLIB_H
 
+#include <sys/time.h>
+
 #include <list>
 #include <string>
 #include <cctype>
@@ -117,5 +119,7 @@ std::string regexEscape(const std::string &s);
 bool setPidFile(const char* fn);
 
 bool fileExists(const std::string& path);
+
+double microtime();
 
 #endif // EASYLIB_H

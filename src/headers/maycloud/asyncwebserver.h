@@ -17,13 +17,25 @@ class AsyncWebServer;
 #include <maycloud/httpconnection.h>
 
 typedef void (*http_request_handler_t)(HttpRequest *request, HttpResponse *response, void *userdata);
-//typedef std::pair<http_request_handler_t, void *> http_route_map_item_t;
+
 typedef struct {
 	http_request_handler_t handler;
 	void *userdata;
-	//std::map<std::string, std::string> params;
 } http_route_map_item_t;
 typedef std::map<std::string, http_route_map_item_t> http_route_map_t;
+
+typedef struct {
+	std::string method;
+	std::string path;
+	std::string client_ip;
+	struct timeval when;
+	std::string nice_when;
+	double render_time;
+	int status;
+	AsyncWebServer *server;
+} http_request_log_entry_t;
+
+typedef void (*http_request_logger_t)(const http_request_log_entry_t &entry);
 
 #include <maycloud/httprequest.h>
 #include <maycloud/httpresponse.h>
@@ -38,6 +50,8 @@ protected:
 	 * Принять входящее соединение
 	 */
 	virtual void onAccept();
+
+	static void logRequest(const http_request_log_entry_t &entry);
 
 	/**
 	 * Карта обработчиков GET-запросов
@@ -68,6 +82,16 @@ protected:
 	 * Демон
 	 */
 	NetDaemon *_daemon;
+
+	/**
+	 * Логгер
+	 */
+	http_request_logger_t _logger;
+
+	/**
+	 * Лог-файл
+	 */
+	std::ofstream _log;
 
 public:
 	/**
@@ -124,6 +148,18 @@ public:
 	 * Получить строку идентификации сервера
 	 */
 	std::string serverIdString();
+
+	void setRequestLogger(http_request_logger_t logger);
+
+	bool setRequestLog(const std::string &filename);
+
+	static void defaultRequestLogger(const http_request_log_entry_t &entry);
+
+	static void fileRequestLogger(const http_request_log_entry_t &entry);
+
+	void logRequest(HttpRequest *request, HttpResponse *response);
+
+	static std::string formatLogEntry(const http_request_log_entry_t &entry);
 
 	inline NetDaemon *daemon() { return _daemon; }
 };

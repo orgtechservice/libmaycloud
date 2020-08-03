@@ -68,5 +68,9 @@ void HttpConnection::onPeerDown() {
  * На этом этапе все данные отправлены и необходимо закрыть соединение
  */
 void HttpConnection::onEmpty() {
-	delete this;
+	if(_response->pending()) {
+		
+	} else {
+		delete this;
+	}
 }

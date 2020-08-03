@@ -22,9 +22,11 @@ HttpResponse::HttpResponse(HttpConnection *connection): HttpMessage(connection) 
 	types["txt"] = "text/plain;charset=utf-8";
 	types["ts"] = "application/vnd.apple.mpegurl";
 	types["m3u8"] = "video/mp2t";
+	types["iso"] = "application/octet-stream";
 
 	setContentType("text/plain");
 	_waiting = 0; // по умолчанию — без отложенного IO
+	_sending = 0; // по умолчанию слалка не задействована
 }
 
 HttpResponse::~HttpResponse() {
@@ -33,6 +35,13 @@ HttpResponse::~HttpResponse() {
 		_connection->server()->daemon()->removeTimer(_waiting->timer_id);
 		delete _waiting;
 		_waiting = 0;
+	}
+
+	// Аналогично со слалкой
+	if(_sending) {
+		_connection->server()->daemon()->removeTimer(_sending->timer_id);
+		delete _sending;
+		_sending = 0;
 	}
 }
 
@@ -81,8 +90,22 @@ std::string HttpResponse::toString() {
 	for(auto it = _headers.begin(); it != _headers.end(); ++ it) {
 		result += (it->first + ": " + it->second + "\r\n");
 	}
-	result += "\n";
+	result += "\r\n";
 	result += _body;
+	return result;
+}
+
+/**
+ * Строка заголовков для отложенной отправки файлов
+ */
+std::string HttpResponse::headersString(unsigned long long content_length) {
+	_headers["Content-Length"] = std::to_string(content_length);
+	std::string result("");
+	result += std::string("HTTP/1.1 ") + std::to_string((unsigned long long) _status) + std::string(" ") + statusText() + std::string("\r\n");
+	for(auto it = _headers.begin(); it != _headers.end(); ++ it) {
+		result += (it->first + ": " + it->second + "\r\n");
+	}
+	result += "\r\n";
 	return result;
 }
 
@@ -133,6 +156,7 @@ void HttpResponse::requireBasicAuth(const std::string &realm) {
 }
 
 void HttpResponse::sendFile(const std::string &filename) {
+	if(_waiting || _sending) return;
 	// TODO sendfile
 	std::ifstream input(filename);
 	if(!input.good()) {
@@ -152,6 +176,55 @@ void HttpResponse::sendFile(const std::string &filename) {
 	setBody(str);
 }
 
+void HttpResponse::sendBigFile(const std::string &filename) {
+	if(_waiting || _sending) return;
+	if(!fileExists(filename)) {
+		setStatusPage(404);
+		return;
+	}
+
+	std::regex re { R"(^(.*)\.([a-zA-Z0-9]+)$)" };
+	std::smatch matches;
+	if(std::regex_match(filename, matches, re)) {
+		std::string content_type = mimeTypeByExtension(matches[2]);
+		setContentType(content_type);
+	}
+
+	int fd = _connection->getFd();
+
+	_sending = new sendfile_info_t;
+	_sending->response = this;
+	_sending->file = fopen(filename.c_str(), "r");
+	fseek(_sending->file, 0, SEEK_END);
+	_sending->filesize = ftell(_sending->file);
+	fseek(_sending->file, 0, SEEK_SET);
+	_sending->position = 0;
+
+	// Костыль адский, но пусть пока так. Ибо если использовать BufferPool, то мы не гарантируем правильный порядок.
+	std::string headers(headersString(_sending->filesize));
+	ssize_t sent = write(fd, headers.c_str(), headers.length());
+	if(sent != (ssize_t) headers.length()) {
+		std::cout << "Sending failed!\n";
+		return;
+	} else {
+		
+	}
+
+	sent = sendfile(fd, fileno(_sending->file), &(_sending->position), _sending->filesize);
+	if(sent == (ssize_t) _sending->filesize) {
+		delete _sending;
+		_sending = 0;
+		std::cout << "Sent all in one pass!\n";
+		return;
+	}
+	if(sent > 0) {
+		_sending->position += sent;
+	}
+	
+	time_t when = time(NULL) + 1;
+	_sending->timer_id = _connection->server()->daemon()->setTimer(when, updateFileSending, (void *) _sending);
+}
+
 std::string HttpResponse::mimeTypeByExtension(const std::string &extension) {
 	auto it = types.find(extension);
 	if(it == types.end()) {
@@ -162,7 +235,28 @@ std::string HttpResponse::mimeTypeByExtension(const std::string &extension) {
 }
 
 bool HttpResponse::ready() {
-	return (_waiting == 0);
+	return (_waiting == 0) && (_sending == 0);
+}
+
+void HttpResponse::updateFileSending(const timeval &tv, void *sending) {
+	std::cout << "HttpResponse::updateFileSending()" << std::endl;
+
+	// Наша слалка
+	sendfile_info_t *s = (sendfile_info_t *) sending;
+
+	ssize_t sent = sendfile(s->response->connection()->getFd(), fileno(s->file), &(s->position), s->filesize);
+	if(sent > 0) {
+		s->position += sent;
+		if(s->position == (ssize_t) s->filesize) {
+			// Всё готово
+			std::cout << "All data have been sent\n";
+			fclose(s->file);
+			// TODO
+			return;
+		}
+	}
+	time_t when = time(NULL) + 1;
+	s->timer_id = s->response->connection()->server()->daemon()->setTimer(when, updateFileSending, sending);
 }
 
 void HttpResponse::updateFileWaiting(const timeval &tv, void *waiting) {
@@ -184,6 +278,8 @@ void HttpResponse::updateFileWaiting(const timeval &tv, void *waiting) {
 }
 
 void HttpResponse::waitForFile(const std::string &filename, response_handler_t handler, uint8_t timeout, void *userdata) {
+	if(_waiting || _sending) return;
+
 	// Может ничего и не надо делать
 	std::ifstream input(filename);
 	if(input.good()) {
@@ -228,6 +324,8 @@ void HttpResponse::updateFunctionWaiting(const timeval &tv, void *waiting) {
 }
 
 void HttpResponse::waitForFunction(custom_function_t custom_function, response_handler_t handler, uint8_t timeout, void *custom_function_userdata, void *handler_userdata) {
+	if(_waiting || _sending) return;
+
 	// Может ничего и не надо делать
 	if(custom_function(this, custom_function_userdata)) {
 		handler(this, handler_userdata);

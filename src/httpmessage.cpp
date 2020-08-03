@@ -9,7 +9,8 @@ static std::map<std::string, std::string> types = {
 	{"m3u8", "video/mp2t"},
 	{"iso", "application/octet-stream"},
 	{"jpg", "image/jpeg"},
-	{"png", "image/png"}
+	{"png", "image/png"},
+	{"mp4", "video/mp4"}
 };
 
 HttpMessage::HttpMessage(HttpConnection *connection) {

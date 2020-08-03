@@ -180,13 +180,16 @@ void HttpResponse::sendFile(const std::string &filename) {
 }
 
 void HttpResponse::handlePendingOperation() {
+	if(_waiting != NULL) return;
+	if(_sending == NULL) return;
+
 	char buf[FD_READ_CHUNK_SIZE];
 	size_t bytes = ::fread(&buf, sizeof(char), FD_READ_CHUNK_SIZE, _sending->file);
 	if(::feof(_sending->file)) {
 		::fclose(_sending->file);
+		_connection->sentResponse(_sending->content_type);
 		delete _sending;
 		_sending = 0;
-		_connection->sentResponse(_sending->content_type);
 	} else {
 		_sending->position += bytes;
 	}

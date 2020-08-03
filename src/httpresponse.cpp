@@ -66,6 +66,7 @@ void HttpResponse::setStatusPage(int code) {
 	if(code == 401) setSimpleHtmlPage("Authorization Required (401)", "You should provide valid username and password to access the requested page.");
 	if(code == 404) setSimpleHtmlPage("Not Found (404)", "The requested web page does not exist within the server.");
 	if(code == 405) setSimpleHtmlPage("Method Not Allowed (405)", "The requested web page cannot be requested using the chosen method.");
+	if(code == 410) setSimpleHtmlPage("Gone (410)", "The requested web page is not available anymore.");
 	if(code == 411) setSimpleHtmlPage("Length Required (411)", "The requested web page requires Content-Length to be set.");
 	if(code == 415) setSimpleHtmlPage("Unsupported Media Type (415)", "The server does not support the provided data format.");
 	if(code == 501) setSimpleHtmlPage("Not Implemented (501)", "Something important is not implemented yet.");

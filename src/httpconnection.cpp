@@ -50,7 +50,14 @@ void HttpConnection::onRead(const char *data, size_t len) {
 void HttpConnection::sendResponse() {
 	std::cout << "[AsyncWebServer::sendResponse] sending response of type <" << _response->contentType() << ">" << std::endl;
 	std::string raw_response = _response->toString();
-	putInBuffer(raw_response.c_str(), raw_response.length());
+	put(raw_response.c_str(), raw_response.length());
+}
+
+/**
+ * Отчитаться о самостоятельной отправке отложенного ответа
+ */
+void HttpConnection::sentResponse(const std::string &content_type) {
+	std::cout << "[AsyncWebServer::sentResponse] sent response of type <" << content_type << ">" << std::endl;
 }
 
 /**
@@ -65,11 +72,12 @@ void HttpConnection::onPeerDown() {
 
 /**
  * Опустошение исходящего буфера.
- * На этом этапе все данные отправлены и необходимо закрыть соединение
+ * Если у нас всё — просто закрываем соединение;
+ * если нет — делаем что-нибудь следующее, например, отправляем следующий кусок
  */
 void HttpConnection::onEmpty() {
 	if(_response->pending()) {
-		
+		_response->handlePendingOperation();
 	} else {
 		delete this;
 	}

@@ -24,11 +24,10 @@ typedef struct {
 	long timer_id;
 } waiting_info_t;
 typedef struct {
-	HttpResponse *response;
 	FILE *file;
 	off_t position;
 	size_t filesize;
-	long timer_id;
+	std::string content_type;
 } sendfile_info_t;
 
 class HttpResponse: public HttpMessage
@@ -70,16 +69,13 @@ public:
 
 	void sendFile(const std::string &filename);
 
-	/**
-	 * На время отладки пусть пока называется так, потом объединим
-	 */
-	void sendBigFile(const std::string &filename);
-
 	std::string mimeTypeByExtension(const std::string &extension);
 
 	bool ready();
 
 	inline bool pending() { return (_waiting != 0) || (_sending != 0); }
+
+	void handlePendingOperation();
 
 	void setReady(bool ready = true);
 
@@ -88,8 +84,6 @@ public:
 	void waitForFile(const std::string &filename, response_handler_t handler, uint8_t timeout, void *userdata);
 
 	static void updateFileWaiting(const timeval &tv, void *hi);
-	
-	static void updateFileSending(const timeval &tv, void *sending);
 
 	void waitForFunction(custom_function_t custom_function, response_handler_t handler, uint8_t timeout, void *custom_function_userdata, void *handler_userdata);
 

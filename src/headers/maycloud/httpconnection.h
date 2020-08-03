@@ -44,6 +44,11 @@ public:
 	 */
 	void sendResponse();
 
+	/**
+	 * Отчитаться об уже отправленном HTTP-ответе
+	 */
+	void sentResponse(const std::string &content_type);
+
 	inline AsyncWebServer *server() { return _server; }
 };
 

@@ -39,7 +39,6 @@ HttpResponse::~HttpResponse() {
 
 	// Аналогично со слалкой
 	if(_sending) {
-		_connection->server()->daemon()->removeTimer(_sending->timer_id);
 		delete _sending;
 		_sending = 0;
 	}
@@ -157,27 +156,6 @@ void HttpResponse::requireBasicAuth(const std::string &realm) {
 
 void HttpResponse::sendFile(const std::string &filename) {
 	if(_waiting || _sending) return;
-	// TODO sendfile
-	std::ifstream input(filename);
-	if(!input.good()) {
-		setStatusPage(404);
-		return;
-	}
-
-	std::regex re { R"(^(.*)\.([a-zA-Z0-9]+)$)" };
-	std::smatch matches;
-	if(std::regex_match(filename, matches, re)) {
-		std::string content_type = mimeTypeByExtension(matches[2]);
-		setContentType(content_type);
-		//std::cout << "CT: " << content_type << std::endl;
-	}
-
-	std::string str((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
-	setBody(str);
-}
-
-void HttpResponse::sendBigFile(const std::string &filename) {
-	if(_waiting || _sending) return;
 	if(!fileExists(filename)) {
 		setStatusPage(404);
 		return;
@@ -190,39 +168,30 @@ void HttpResponse::sendBigFile(const std::string &filename) {
 		setContentType(content_type);
 	}
 
-	int fd = _connection->getFd();
-
 	_sending = new sendfile_info_t;
-	_sending->response = this;
 	_sending->file = fopen(filename.c_str(), "r");
 	fseek(_sending->file, 0, SEEK_END);
 	_sending->filesize = ftell(_sending->file);
 	fseek(_sending->file, 0, SEEK_SET);
 	_sending->position = 0;
 
-	// Костыль адский, но пусть пока так. Ибо если использовать BufferPool, то мы не гарантируем правильный порядок.
 	std::string headers(headersString(_sending->filesize));
-	ssize_t sent = write(fd, headers.c_str(), headers.length());
-	if(sent != (ssize_t) headers.length()) {
-		std::cout << "Sending failed!\n";
-		return;
-	} else {
-		
-	}
+	_connection->put(headers.c_str(), headers.length());
+}
 
-	sent = sendfile(fd, fileno(_sending->file), &(_sending->position), _sending->filesize);
-	if(sent == (ssize_t) _sending->filesize) {
+void HttpResponse::handlePendingOperation() {
+	char buf[FD_READ_CHUNK_SIZE];
+	size_t bytes = ::fread(&buf, sizeof(char), FD_READ_CHUNK_SIZE, _sending->file);
+	if(::feof(_sending->file)) {
+		::fclose(_sending->file);
 		delete _sending;
 		_sending = 0;
-		std::cout << "Sent all in one pass!\n";
-		return;
+		_connection->sentResponse(_sending->content_type);
+	} else {
+		_sending->position += bytes;
 	}
-	if(sent > 0) {
-		_sending->position += sent;
-	}
-	
-	time_t when = time(NULL) + 1;
-	_sending->timer_id = _connection->server()->daemon()->setTimer(when, updateFileSending, (void *) _sending);
+
+	_connection->put(buf, bytes);
 }
 
 std::string HttpResponse::mimeTypeByExtension(const std::string &extension) {
@@ -236,27 +205,6 @@ std::string HttpResponse::mimeTypeByExtension(const std::string &extension) {
 
 bool HttpResponse::ready() {
 	return (_waiting == 0) && (_sending == 0);
-}
-
-void HttpResponse::updateFileSending(const timeval &tv, void *sending) {
-	std::cout << "HttpResponse::updateFileSending()" << std::endl;
-
-	// Наша слалка
-	sendfile_info_t *s = (sendfile_info_t *) sending;
-
-	ssize_t sent = sendfile(s->response->connection()->getFd(), fileno(s->file), &(s->position), s->filesize);
-	if(sent > 0) {
-		s->position += sent;
-		if(s->position == (ssize_t) s->filesize) {
-			// Всё готово
-			std::cout << "All data have been sent\n";
-			fclose(s->file);
-			// TODO
-			return;
-		}
-	}
-	time_t when = time(NULL) + 1;
-	s->timer_id = s->response->connection()->server()->daemon()->setTimer(when, updateFileSending, sending);
 }
 
 void HttpResponse::updateFileWaiting(const timeval &tv, void *waiting) {

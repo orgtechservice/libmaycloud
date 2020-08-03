@@ -1,6 +1,17 @@
 
 #include <maycloud/httpmessage.h>
 
+static std::map<std::string, std::string> types = {
+	{"html", "text/html;charset=utf-8"},
+	{"htm", "text/html;charset=utf-8"},
+	{"txt", "text/plain;charset=utf-8"},
+	{"ts", "application/vnd.apple.mpegurl"},
+	{"m3u8", "video/mp2t"},
+	{"iso", "application/octet-stream"},
+	{"jpg", "image/jpeg"},
+	{"png", "image/png"}
+};
+
 HttpMessage::HttpMessage(HttpConnection *connection) {
 	_connection = connection;
 	_content_length = 0;
@@ -37,4 +48,13 @@ std::map<std::string, std::string> HttpMessage::headers() {
 
 std::string HttpMessage::contentType() {
 	return _content_type;
+}
+
+std::string HttpMessage::mimeTypeByExtension(const std::string &extension) {
+	auto it = types.find(extension);
+	if(it == types.end()) {
+		return "text/plain";
+	} else {
+		return it->second;
+	}
 }

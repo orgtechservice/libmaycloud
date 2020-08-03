@@ -1,28 +1,25 @@
 
 #include <maycloud/httpresponse.h>
 
+static std::map<int, std::string> status_map = {
+	{200, "OK"},
+	{400, "Bad Request"},
+	{401, "Authorization Required"},
+	{403, "Forbidden"},
+	{404, "Object Not Found"},
+	{405, "Method Not Allowed"},
+	{410, "Gone"},
+	{411, "Length Required"},
+	{415, "Unsupported Media Type"},
+	{501, "Not Implemented"}
+};
+
+
 HttpResponse::HttpResponse(HttpConnection *connection): HttpMessage(connection) {
 	_headers["Content-Type"] = "text/html;charset=utf-8";
 	_headers["Connection"] = "close";
 	_headers["Server"] = connection->server()->serverIdString();
 	_status = 200;
-	status_map[200] = "OK";
-	status_map[400] = "Bad Request";
-	status_map[401] = "Authorization Required";
-	status_map[403] = "Forbidden";
-	status_map[404] = "Object Not Found";
-	status_map[405] = "Method Not Allowed";
-	status_map[410] = "Gone";
-	status_map[411] = "Length Required";
-	status_map[415] = "Unsupported Media Type";
-	status_map[501] = "Not Implemented";
-	
-	types["html"] = "text/html;charset=utf-8";
-	types["htm"] = "text/html;charset=utf-8";
-	types["txt"] = "text/plain;charset=utf-8";
-	types["ts"] = "application/vnd.apple.mpegurl";
-	types["m3u8"] = "video/mp2t";
-	types["iso"] = "application/octet-stream";
 
 	setContentType("text/plain");
 	_waiting = 0; // по умолчанию — без отложенного IO
@@ -174,6 +171,7 @@ void HttpResponse::sendFile(const std::string &filename) {
 	_sending->filesize = ftell(_sending->file);
 	fseek(_sending->file, 0, SEEK_SET);
 	_sending->position = 0;
+	_sending->content_type = _content_type;
 
 	std::string headers(headersString(_sending->filesize));
 	_connection->put(headers.c_str(), headers.length());
@@ -195,15 +193,6 @@ void HttpResponse::handlePendingOperation() {
 	}
 
 	_connection->put(buf, bytes);
-}
-
-std::string HttpResponse::mimeTypeByExtension(const std::string &extension) {
-	auto it = types.find(extension);
-	if(it == types.end()) {
-		return "text/plain";
-	} else {
-		return it->second;
-	}
 }
 
 bool HttpResponse::ready() {

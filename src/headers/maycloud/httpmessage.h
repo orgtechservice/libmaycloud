@@ -26,6 +26,7 @@ public:
 	bool hasHeader(const std::string &header_name);
 	bool hasLength();
 	std::string contentType();
+	std::string mimeTypeByExtension(const std::string &extension);
 };
 
 #endif

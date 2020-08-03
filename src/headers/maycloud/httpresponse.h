@@ -34,8 +34,6 @@ class HttpResponse: public HttpMessage
 {
 protected:
 	int _status;
-	std::map<int, std::string> status_map;
-	std::map<std::string, std::string> types;
 	waiting_info_t *_waiting; // Ждалка
 	sendfile_info_t *_sending; // Слалка
 
@@ -68,8 +66,6 @@ public:
 	void requireBasicAuth(const std::string &realm);
 
 	void sendFile(const std::string &filename);
-
-	std::string mimeTypeByExtension(const std::string &extension);
 
 	bool ready();
 

@@ -50,21 +50,17 @@ void AsyncStream::handleError()
 * (сжатие, шифрование и т.п.). Обработанные данные затем передаются
 * виртуальному методу onRead()
 */
-void AsyncStream::handleRead()
-{
+void AsyncStream::handleRead() {
 	char chunk[FD_READ_CHUNK_SIZE];
 	ssize_t ret;
 
 	ret = ::read(getFd(), chunk, sizeof(chunk));
-	while ( ret > 0 )
-	{
+	while(ret > 0) {
 		putInReadEvent(chunk, ret);
 		ret = ::read(getFd(), chunk, sizeof(chunk));
 	}
-	if ( ret == 0 ) close();
-	if ( ret < 0 )
-	{
-		if ( errno != EAGAIN ) stderror();
+	if(ret < 0) {
+		if(errno != EAGAIN) stderror();
 	}
 }
 

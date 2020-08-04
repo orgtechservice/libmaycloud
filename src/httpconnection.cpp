@@ -81,3 +81,11 @@ void HttpConnection::onEmpty() {
 		delete this;
 	}
 }
+
+/**
+* Обработчик ошибки в асинхронном потоке
+* @param err код ошибки errno
+*/
+void HttpConnection::onAsyncError(int err) {
+	disableObject();
+}

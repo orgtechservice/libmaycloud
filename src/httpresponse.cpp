@@ -13,7 +13,8 @@ static std::map<int, std::pair<std::string, std::string>> status_map = {
 	{410, status_pair_t("Gone", "The requested web page is not available anymore.")},
 	{411, status_pair_t("Length Required", "The requested web page requires Content-Length to be set.")},
 	{415, status_pair_t("Unsupported Media Type", "The server does not support the provided data format.")},
-	{501, status_pair_t("Not Implemented", "Something important is not implemented yet.")}
+	{501, status_pair_t("Not Implemented", "Something important is not implemented yet.")},
+	{503, status_pair_t("Service Unavailable", "The server is temporarily unavailable.")}
 };
 
 

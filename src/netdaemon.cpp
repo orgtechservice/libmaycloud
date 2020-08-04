@@ -652,7 +652,7 @@ void NetDaemon::cleanup(int fd) {
 	}
 	
 	fd_info_t *p = &fds[fd];
-	free(p->first);
+	bp->free(p->first);
 	p->size = 0;
 	p->offset = 0;
 	p->quota = 0;

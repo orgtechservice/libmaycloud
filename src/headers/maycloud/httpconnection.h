@@ -24,6 +24,8 @@ public:
 	HttpConnection(int fd, AsyncWebServer *server);
 	~HttpConnection();
 
+	void onAsyncError(int err);
+
 	/**
 	 * Обработчик прочитанных данных
 	 */

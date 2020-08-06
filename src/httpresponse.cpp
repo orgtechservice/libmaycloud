@@ -173,6 +173,7 @@ void HttpResponse::sendFile(const std::string &filename) {
 	_sending->position = 0;
 	_sending->content_type = _content_type;
 
+	_content_length = _sending->filesize;
 	std::string headers(headersString(_sending->filesize));
 	_connection->put(headers.c_str(), headers.length());
 }

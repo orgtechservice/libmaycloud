@@ -226,7 +226,13 @@ void HttpResponse::updateFileWaiting(const timeval &tv, void *waiting) {
 	if(input.good() || (tv.tv_sec > w->expires)) {
 		input.close();
 		w->handler(w->response, w->handler_userdata);
-		w->response->connection()->sendResponse();
+		delete w->response->_waiting;
+		w->response->_waiting = 0;
+		if(w->response->pending()) {
+			w->response->handlePendingOperation();
+		} else {
+			w->response->connection()->sendResponse();
+		}
 	} else {
 		time_t when = time(NULL) + 1;
 		w->timer_id = w->response->connection()->server()->daemon()->setTimer(when, updateFileWaiting, waiting);
@@ -270,7 +276,13 @@ void HttpResponse::updateFunctionWaiting(const timeval &tv, void *waiting) {
 	std::ifstream input(w->filename_to_wait);
 	if(w->custom_function(w->response, w->custom_function_userdata) || (tv.tv_sec > w->expires)) {
 		w->handler(w->response, w->handler_userdata);
-		w->response->connection()->sendResponse();
+		delete w->response->_waiting;
+		w->response->_waiting = 0;
+		if(w->response->pending()) {
+			w->response->handlePendingOperation();
+		} else {
+			w->response->connection()->sendResponse();
+		}
 	} else {
 		time_t when = time(NULL) + 1;
 		w->timer_id = w->response->connection()->server()->daemon()->setTimer(when, updateFunctionWaiting, waiting);

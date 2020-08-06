@@ -177,6 +177,24 @@ void HttpResponse::sendFile(const std::string &filename) {
 	_connection->put(headers.c_str(), headers.length());
 }
 
+void HttpResponse::sendSmallFile(const std::string &filename) {
+	if(_waiting || _sending) return;
+	if(!fileExists(filename)) {
+		setStatusPage(404);
+		return;
+	}
+
+	std::regex re { R"(^(.*)\.([a-zA-Z0-9]+)$)" };
+	std::smatch matches;
+	if(std::regex_match(filename, matches, re)) {
+		std::string content_type = mimeTypeByExtension(matches[2]);
+		setContentType(content_type);
+	}
+
+	std::ifstream f(filename);
+	setBody(std::string((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>()));
+}
+
 void HttpResponse::handlePendingOperation() {
 	if(_waiting != NULL) return;
 	if(_sending == NULL) return;

@@ -68,6 +68,8 @@ public:
 
 	void sendFile(const std::string &filename);
 
+	void sendSmallFile(const std::string &filename);
+
 	bool ready();
 
 	inline bool pending() { return (_waiting != 0) || (_sending != 0); }

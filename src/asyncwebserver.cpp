@@ -213,7 +213,7 @@ void AsyncWebServer::fileRequestLogger(const http_request_log_entry_t &entry) {
 }
 
 std::string AsyncWebServer::formatLogEntry(const http_request_log_entry_t &entry) {
-	std::string result("[" + entry.nice_when + "] " + entry.method + " " + entry.path + " " + std::to_string(entry.status) + "\n");
+	std::string result("[" + entry.nice_when + "] " + entry.method + " " + entry.path + " " + std::to_string(entry.status) + " (" + std::to_string(entry.bytes) + " bytes)\n");
 	return result;
 }
 
@@ -238,5 +238,6 @@ void AsyncWebServer::logRequest(HttpRequest *request, HttpResponse *response) {
 	entry.nice_when = nice_time;
 	entry.render_time = 0.0;
 	entry.status = response->status();
+	entry.bytes = response->length();
 	_logger(entry);
 }

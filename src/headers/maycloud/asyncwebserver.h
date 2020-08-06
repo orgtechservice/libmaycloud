@@ -33,6 +33,7 @@ typedef struct {
 	double render_time;
 	int status;
 	AsyncWebServer *server;
+	size_t bytes;
 } http_request_log_entry_t;
 
 typedef void (*http_request_logger_t)(const http_request_log_entry_t &entry);

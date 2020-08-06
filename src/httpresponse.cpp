@@ -152,7 +152,7 @@ void HttpResponse::requireBasicAuth(const std::string &realm) {
 }
 
 void HttpResponse::sendFile(const std::string &filename) {
-	if(_waiting || _sending) return;
+	if(_sending) return;
 	if(!fileExists(filename)) {
 		setStatusPage(404);
 		return;
@@ -178,21 +178,23 @@ void HttpResponse::sendFile(const std::string &filename) {
 }
 
 void HttpResponse::sendSmallFile(const std::string &filename) {
-	if(_waiting || _sending) return;
-	if(!fileExists(filename)) {
+	if(_sending) return;
+	std::ifstream input(filename);
+	if(!input.good()) {
 		setStatusPage(404);
 		return;
 	}
-
 	std::regex re { R"(^(.*)\.([a-zA-Z0-9]+)$)" };
 	std::smatch matches;
 	if(std::regex_match(filename, matches, re)) {
 		std::string content_type = mimeTypeByExtension(matches[2]);
 		setContentType(content_type);
+		//std::cout << "CT: " << content_type << std::endl;
 	}
 
-	std::ifstream f(filename);
-	setBody(std::string((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>()));
+	//std::cout << "Setting response body to file content\n";
+	std::string str((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
+	setBody(str);
 }
 
 void HttpResponse::handlePendingOperation() {
@@ -275,12 +277,15 @@ void HttpResponse::updateFunctionWaiting(const timeval &tv, void *waiting) {
 	// если всё нормально
 	std::ifstream input(w->filename_to_wait);
 	if(w->custom_function(w->response, w->custom_function_userdata) || (tv.tv_sec > w->expires)) {
+		//std::cout << "Calling finish function\n";
 		w->handler(w->response, w->handler_userdata);
 		delete w->response->_waiting;
 		w->response->_waiting = 0;
 		if(w->response->pending()) {
+			//std::cout << "Response is in pending state, calling handlePendingOperation\n";
 			w->response->handlePendingOperation();
 		} else {
+			//std::cout << "calling sendResponse()\n";
 			w->response->connection()->sendResponse();
 		}
 	} else {

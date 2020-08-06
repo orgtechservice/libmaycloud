@@ -25,6 +25,7 @@ public:
 	void setHeader(const std::string &header_name, const std::string &value);
 	bool hasHeader(const std::string &header_name);
 	bool hasLength();
+	inline unsigned long length() { return _content_length; }
 	std::string contentType();
 	std::string mimeTypeByExtension(const std::string &extension);
 };

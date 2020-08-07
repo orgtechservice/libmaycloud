@@ -2,6 +2,8 @@
 #define EASYLIB_H
 
 #include <sys/time.h>
+#include <sys/stat.h>
+#include <dirent.h>
 
 #include <list>
 #include <string>
@@ -119,6 +121,8 @@ std::string regexEscape(const std::string &s);
 bool setPidFile(const char* fn);
 
 bool fileExists(const std::string& path);
+
+bool directoryExists(const std::string& path);
 
 double microtime();
 

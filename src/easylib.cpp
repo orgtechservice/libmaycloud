@@ -410,6 +410,16 @@ bool fileExists(const std::string& path) {
     return std::ifstream(path).good();
 }
 
+bool directoryExists(const std::string &path) {
+	DIR *dir;
+	if ((dir = opendir(path.c_str())) != nullptr) {
+		closedir(dir);
+		return true;
+	} else {
+		return false;
+	}
+}
+
 /**
  * Вернуть время в микросекундах
  */

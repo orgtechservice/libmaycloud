@@ -4,6 +4,9 @@
 // Версия библиотеки
 #define LIBMAYCLOUD_VERSION "0.0.1"
 
+// Максимальная длина строки conf-файла
+#define MAX_CONFFILE_LINE 1024
+
 /**
 * Размер блоков для пула BlockPool
 */

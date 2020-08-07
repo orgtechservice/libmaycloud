@@ -126,4 +126,6 @@ bool directoryExists(const std::string& path);
 
 double microtime();
 
+void strReplace(std::string &subject, const std::string &search, const std::string &replace);
+
 #endif // EASYLIB_H

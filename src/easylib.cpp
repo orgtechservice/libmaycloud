@@ -428,3 +428,11 @@ double microtime() {
 	gettimeofday(&time, NULL);
 	return (((unsigned long long) time.tv_sec * 1000000) + time.tv_usec) / 1000000.0;
 }
+
+void strReplace(std::string &subject, const std::string &search, const std::string &replace) {
+	size_t pos = 0;
+	while((pos = subject.find(search, pos)) != std::string::npos) {
+		subject.replace(pos, search.length(), replace);
+		pos += replace.length();
+	}
+}

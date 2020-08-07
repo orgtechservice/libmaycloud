@@ -11,6 +11,8 @@
 #include <fstream>
 #include <map>
 
+#include "config.h"
+
 class Configurer
 {
 public:

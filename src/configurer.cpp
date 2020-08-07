@@ -79,10 +79,10 @@ bool Configurer::loadFile(const char* fn)
 {
 	actual_map = "";
 	std::ifstream file(fn);
-	char param[256];
+	char param[MAX_CONFFILE_LINE];
 	while(file.good())
 	{
-		file.getline(param, 256);
+		file.getline(param, MAX_CONFFILE_LINE);
 		parseParam(param);
 	}
 	file.close();

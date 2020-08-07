@@ -92,7 +92,8 @@ private:
 		* Запустить таймер
 		*/
 		void fire(const timeval &tv) {
-			callback(tv, data);
+			if(callback) callback(tv, data);
+			callback = NULL;
 		}
 	};
 	

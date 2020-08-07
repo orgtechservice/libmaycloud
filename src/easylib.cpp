@@ -412,7 +412,7 @@ bool fileExists(const std::string& path) {
 
 bool directoryExists(const std::string &path) {
 	DIR *dir;
-	if ((dir = opendir(path.c_str())) != nullptr) {
+	if ((dir = opendir(path.c_str())) != NULL) {
 		closedir(dir);
 		return true;
 	} else {

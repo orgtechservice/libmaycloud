@@ -364,3 +364,26 @@ void HttpRequest::addRouteParams(const std::map<uint8_t, std::string> &params) {
 std::map<uint8_t, std::string> HttpRequest::getRouteParams() {
 	return _route_params;
 }
+
+void HttpRequest::initSession(HttpResponse *response, const std::string &cookie_name) {
+	if(hasCookie(cookie_name)) {
+
+	} else {
+		std::string sid = nanosoft::generateSalt(32);
+		std::cout << "New session: " << sid << std::endl;
+		response->setCookie("_lmc_session_" + cookie_name, sid);
+	}
+}
+
+bool HttpRequest::hasCookie(const std::string &cookie_name) {
+	return (_cookies.find(cookie_name) != _cookies.end());
+}
+
+std::string HttpRequest::cookie(const std::string &cookie_name, const std::string &default_value) {
+	auto it = _cookies.find(cookie_name);
+	if(it == _cookies.end()) {
+		return default_value;
+	} else {
+		return it->second;
+	}
+}

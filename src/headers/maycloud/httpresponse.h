@@ -46,6 +46,7 @@ public:
 	void setStatusPage(int code);
 	void setContentType(const std::string &content_type);
 	void setBody(const std::string &body);
+	void setCookie(const std::string &cookie_name, const std::string &value);
 
 	std::string toString();
 

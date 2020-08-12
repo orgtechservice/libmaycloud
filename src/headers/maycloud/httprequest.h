@@ -5,6 +5,7 @@
 
 #include <maycloud/httpresponse.h>
 #include <maycloud/httpmessage.h>
+#include <maycloud/randomstring.h>
 
 class HttpRequest: public HttpMessage
 {
@@ -59,6 +60,9 @@ public:
 	std::string getRouteParam(const uint8_t &index, const std::string &default_value = "");
 	void addRouteParams(const std::map<uint8_t, std::string> &params);
 	std::map<uint8_t, std::string> getRouteParams();
+	void initSession(HttpResponse *response, const std::string &cookie_name = "");
+	bool hasCookie(const std::string &cookie_name);
+	std::string cookie(const std::string &cookie_name, const std::string &default_value = "");
 };
 
 #endif

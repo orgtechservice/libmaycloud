@@ -76,6 +76,10 @@ void HttpResponse::setBody(const std::string &body) {
 	_content_length = _body.length();
 }
 
+void HttpResponse::setCookie(const std::string &cookie_name, const std::string &value) {
+	
+}
+
 /**
  * Сериализовать HTTP-ответ в строку
  */

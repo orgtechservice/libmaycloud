@@ -77,7 +77,7 @@ void HttpResponse::setBody(const std::string &body) {
 }
 
 void HttpResponse::setCookie(const std::string &cookie_name, const std::string &value) {
-	
+	_headers["Set-Cookie"] = cookie_name + "=" + value;
 }
 
 /**

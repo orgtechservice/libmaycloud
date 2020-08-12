@@ -29,16 +29,17 @@ protected:
 	bool parseMPPart(const std::string &data, const std::string &newline);
 	bool parseMPPartBody(const std::map<std::string, std::string> &part_headers, const std::string &part_body);
 	std::map<std::string, std::string> parseHeaderExtraLine(const std::string &extra);
-
-public:
-	HttpRequest(HttpConnection *connection);
-	~HttpRequest();
-	void parseHeaders();
 	void parseHeader(const std::string &name, const std::string &value);
 	void parseRequestPath(const std::string &path);
 	void parseQueryString(const std::string &query_string, std::map<std::string, std::string> *vars);
 	void parseMultipartFormData(const std::string &data, const std::string &boundary);
+	void parseHeaders();
 	void parseBody();
+	void handleCookies(const std::string &cookies);
+
+public:
+	HttpRequest(HttpConnection *connection);
+	~HttpRequest();
 	void feed(const std::string &data);
 	std::string path();
 	std::string method();

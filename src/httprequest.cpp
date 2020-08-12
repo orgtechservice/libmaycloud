@@ -105,6 +105,9 @@ void HttpRequest::parseHeader(const std::string &name, const std::string &value)
 	if(name == "Content-Type") {
 		_content_type = value;
 	}
+	if(name == "Cookie") {
+		handleCookies(value);
+	}
 	_headers[name] = value;
 }
 
@@ -132,6 +135,14 @@ void HttpRequest::parseBody() {
 
 	std::cout << "[HttpRequest::parseBody] Unknown content type" << std::endl;
 	_error = 415;
+}
+
+void HttpRequest::handleCookies(const std::string &cookies) {
+	auto items = parseHeaderExtraLine(cookies);
+	for(auto &item: items) {
+		//std::cout << "Received a cookie: <" << item.first << ">: <" << item.second << ">\n";
+		_cookies[item.first] = item.second;
+	}
 }
 
 /**
@@ -366,11 +377,13 @@ std::map<uint8_t, std::string> HttpRequest::getRouteParams() {
 }
 
 void HttpRequest::initSession(HttpResponse *response, const std::string &cookie_name) {
-	if(hasCookie(cookie_name)) {
-
+	auto it = _cookies.find("_lmc_session_" + cookie_name);
+	if(it != _cookies.end()) {
+		std::string sid = it->second;
+		//std::cout << "Existing session: " << sid << std::endl;
 	} else {
 		std::string sid = nanosoft::generateSalt(32);
-		std::cout << "New session: " << sid << std::endl;
+		//std::cout << "New session: " << sid << std::endl;
 		response->setCookie("_lmc_session_" + cookie_name, sid);
 	}
 }

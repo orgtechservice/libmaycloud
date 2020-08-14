@@ -1,0 +1,24 @@
+# Maintainer: Ilya Averkov <ilya.averkov@gmail.com>
+
+pkgname=libmaycloud
+pkgver=0.0.1
+pkgrel=1
+pkgdesc="MayCloud foundation library"
+arch=(x86_64)
+url="http://www.mkpnet.ru/"
+license=('MIT')
+depends=('expat' 'udns' 'pkgconfig' 'sqlite')
+makedepends=('make' 'cmake' 'gcc')
+source=("git+https://github.com/orgtechservice/libmaycloud.git")
+sha256sums=('SKIP')
+
+build() {
+ cd "$srcdir/libmaycloud"
+ cmake .
+ make
+}
+
+package() {
+ cd "$srcdir/libmaycloud"
+ make DESTDIR=$pkgdir install
+}

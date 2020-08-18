@@ -5,6 +5,7 @@ static std::map<std::string, std::string> types = {
 	{"html", "text/html;charset=utf-8"},
 	{"htm", "text/html;charset=utf-8"},
 	{"txt", "text/plain;charset=utf-8"},
+	{"css", "text/css;charset=utf-8"},
 	{"m3u8", "application/vnd.apple.mpegurl"},
 	{"ts", "video/mp2t"},
 	{"iso", "application/octet-stream"},

@@ -241,3 +241,12 @@ void AsyncWebServer::logRequest(HttpRequest *request, HttpResponse *response) {
 	entry.bytes = response->length();
 	_logger(entry);
 }
+
+void AsyncWebServer::setTemplateRoot(const std::string &path) {
+	_tpl_root = path;
+}
+
+HtmlTemplate *AsyncWebServer::openTemplate(const std::string &filename) {
+	HtmlTemplate *tpl = new HtmlTemplate(_tpl_root + "/" + filename);
+	return tpl;
+}

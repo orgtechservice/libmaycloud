@@ -2,7 +2,8 @@
 #include <maycloud/htmltemplate.h>
 
 HtmlTemplate::HtmlTemplate(const std::string &filename) {
-
+	std::ifstream t(filename);
+	_code = std::string((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 }
 
 HtmlTemplate::HtmlTemplate() {

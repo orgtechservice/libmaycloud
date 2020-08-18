@@ -9,6 +9,7 @@
 #include <maycloud/netdaemon.h>
 #include <maycloud/asyncserver.h>
 #include <maycloud/logger.h>
+#include <maycloud/htmltemplate.h>
 
 class HttpRequest;
 class HttpResponse;
@@ -94,6 +95,11 @@ protected:
 	 */
 	std::ofstream _log;
 
+	/**
+	 * Путь к каталогу с шаблонами
+	 */
+	std::string _tpl_root;
+
 public:
 	/**
 	* Конструктор
@@ -163,6 +169,10 @@ public:
 	static std::string formatLogEntry(const http_request_log_entry_t &entry);
 
 	inline NetDaemon *daemon() { return _daemon; }
+
+	void setTemplateRoot(const std::string &path);
+
+	HtmlTemplate *openTemplate(const std::string &filename);
 };
 
 #endif // ASYNCWEBSERVER_H

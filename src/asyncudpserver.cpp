@@ -98,7 +98,7 @@ bool AsyncUDPServer::bindToDevice(const char *ifname)
 /**
  * Установить флаг Reuse addr
  */
-/*bool AsyncUDPServer::setReuseAddr(bool state)
+bool AsyncUDPServer::setReuseAddr(bool state)
 {
 	int yes = state ? 1 : 0;
 	if ( setsockopt(getFd(), SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1)
@@ -107,7 +107,7 @@ bool AsyncUDPServer::bindToDevice(const char *ifname)
 		return 0;
 	}
 	return 1;
-}*/
+}
 
 /**
  * Установить флаг броадкаста

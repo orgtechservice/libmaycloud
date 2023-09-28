@@ -72,7 +72,7 @@ public:
 	/**
 	 * Установить флаг Reuse addr
 	 */
-	//bool setReuseAddr(bool state);
+	bool setReuseAddr(bool state);
 	
 	/**
 	* Закрыть сокет

@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <vector>
 #include <string>
+#include <cstdint>
 
 class MACAddress64
 {
